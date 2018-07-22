@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_dashboard"
+            android:icon="@drawable/dashboard"
+            android:title="Dashboard" />
+        <item
+            android:id="@+id/nav_addnewpig"
+            android:icon="@drawable/add"
+            android:title="Add New Pig" />
+        <item
+            android:id="@+id/nav_breederrecords"
+            android:icon="@drawable/breederrecords"
+            android:title="Breeder Records" />
+        <item
+            android:id="@+id/nav_breedingrecords"
+            android:icon="@drawable/breedingrecords"
+            android:title="Breeding Records" />
+        <item
+            android:id="@+id/nav_growerrecords"
+            android:icon="@drawable/growerrecords"
+            android:title="Grower Records" />
+        <item
+            android:id="@+id/nav_mortalityandsales"
+            android:icon="@drawable/mortalityandsales"
+            android:title="Mortality and Sales" />
+    </group>
+
+    <group
+        android:id="@+id/menu_bottom"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="View Profile" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_exit_to_app_black_24dp"
+            android:title="Sign Out" >
+        </item>
+    </group>
+
+</menu>

@@ -1,0 +1,83 @@
+<resources>
+    <string name="app_name">Native Pig Dummy</string>
+
+    <string name="open">Open</string>
+    <string name="closed">Closed</string>
+
+    <string name="title_mortality">Mortality</string>
+    <string name="title_sales">Sales</string>
+    <string name="title_others">Others</string>
+
+    <string name="title_sows">Sows</string>
+    <string name="title_boars">Boars</string>
+
+    <string name="title_female">Female Growers</string>
+    <string name="title_male">Male Growers</string>
+
+    <string name="registration_id">Registration ID</string>
+    <string name="body_weight_at_45_days">Body Weight at 45 days</string>
+    <string name="no_data_available">No data available</string>
+    <string name="date_collected">Date Collected</string>
+    <string name="body_weight_at_60_days">Body Weight at 60 days</string>
+    <string name="body_weight_at_90_days">Body Weight at 90 days</string>
+    <string name="body_weight_at_150_days">Body Weight at 150 days</string>
+    <string name="body_weight_at_180_days">Body Weight at 180 days</string>
+    <string name="birthday">Birthday (YYYY-MM-DD)</string>
+    <string name="sex_ratio_m_f">Sex Ratio (M:F)</string>
+    <string name="pedigree">Pedigree</string>
+    <string name="age_at_weaning">Age at Weaning</string>
+    <string name="age_at_first_mating">Age at First Mating</string>
+    <string name="litter_size_born_alive">Litter-size Born Alive</string>
+    <string name="weaning_weight">Weaning Weight</string>
+    <string name="birth_weight">Birth Weight</string>
+    <string name="ear_length">Ear Length</string>
+    <string name="head_length">Head Length</string>
+    <string name="snout_length">Snout Length</string>
+    <string name="body_length">Body Length</string>
+    <string name="heart_girth">Heart Girth</string>
+    <string name="pelvic_width">Pelvic Width</string>
+    <string name="tail_length">Tail Length</string>
+    <string name="height_at_withers">Height at Withers</string>
+    <string name="number_of_normal_teats">Number of Normal Teats</string>
+    <string name="hair_type">Hair Type</string>
+    <string name="hair_length">Hair Length</string>
+    <string name="coat_color">Coat Color</string>
+    <string name="color_pattern">Color Pattern</string>
+    <string name="head_shape">Head Shape</string>
+    <string name="skin_type">Skin Type</string>
+    <string name="ear_type">Ear Type</string>
+    <string name="tail_type">Tail Type</string>
+    <string name="backline">Backline</string>
+    <string name="other_marks">Other Marks</string>
+    <string name="cause_of_death">Cause of Death</string>
+    <string name="date_of_death">Date of Death (YYYY-MM-DD)</string>
+    <string name="choose_pig">Choose Pig</string>
+    <string name="choose_year">Choose Year</string>
+
+
+    <string name="other_prompt">Reason</string>
+    <string-array name="other_records">
+        <item>Donated</item>
+        <item>Culled</item>
+    </string-array>
+
+    <string-array name="status">
+        <item>Bred</item>
+        <item>Pregnant</item>
+        <item>Recycled</item>
+    </string-array>
+
+    <string-array name="classification">
+        <item>Breeder</item>
+        <item>Grower</item>
+    </string-array>
+
+    <string-array name="sex">
+        <item>F</item>
+        <item>M</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
