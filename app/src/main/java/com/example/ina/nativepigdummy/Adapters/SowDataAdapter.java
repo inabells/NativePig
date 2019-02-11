@@ -14,14 +14,16 @@ import com.example.ina.nativepigdummy.Data.SowData;
 import com.example.ina.nativepigdummy.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class SowDataAdapter extends ArrayAdapter<SowData>{
+public class SowDataAdapter extends ArrayAdapter<SowData> {
 
     private static final String TAG = "SowDataAdapter";
 
     private Context mContext;
     private int mResource;
     private int lastPosition = -1;
+//    List list = new ArrayList();
 
     private static class ViewHolder {
         TextView sow_id;
@@ -32,6 +34,7 @@ public class SowDataAdapter extends ArrayAdapter<SowData>{
         mContext = context;
         mResource = resource;
     }
+
 
     @NonNull
     @Override
@@ -44,7 +47,7 @@ public class SowDataAdapter extends ArrayAdapter<SowData>{
 
         final View result;
 
-        ViewHolder holder;
+        SowDataAdapter.ViewHolder holder;
 
 
         if(convertView == null){
