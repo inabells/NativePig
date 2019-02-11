@@ -28,17 +28,23 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.DateDialog;
 import com.example.ina.nativepigdummy.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.Api;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import java.io.ByteArrayOutputStream;
+
+import cz.msebera.android.httpclient.Header;
 
 public class AddNewPigActivity extends AppCompatActivity {
 
@@ -231,32 +237,88 @@ public class AddNewPigActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                RequestParams requestParams = new RequestParams();
                 RadioGroup group = findViewById(R.id.newpig_classification);
-                int idofselected = group.getCheckedRadioButtonId();
-                RadioButton radiobutton = findViewById(idofselected);
+                int selectedId = group.getCheckedRadioButtonId();
+                RadioButton radiobutton = findViewById(selectedId);
 
-                String classification = radiobutton.getText().toString();
-                String animalearnotch = addAnimalEarnotch.getText().toString();
-                String sex = addSex.getSelectedItem().toString();
-                String birthdate = addBirthDate.getText().toString();
-                String weandate = addWeanDate.getText().toString();
-                String birthweight = addBirthWeight.getText().toString();
-                String weanweight = addWeanWeight.getText().toString();
-                String motherearnotch = addMotherEarnotch.getText().toString();
-                String fatherearnotch = addFatherEarnotch.getText().toString();
+                if(addAnimalEarnotch.getText().toString().equals("") && addBirthDate.getText().toString().equals("") && radiobutton == null)
+                    Toast.makeText(AddNewPigActivity.this, "Please fill out Classification, Animal Earnotch and Birth Date", Toast.LENGTH_SHORT).show();
+                else if(addAnimalEarnotch.getText().toString().equals(""))
+                    Toast.makeText(AddNewPigActivity.this, "Please fill out Animal Earnotch", Toast.LENGTH_SHORT).show();
+                else if(addBirthDate.getText().toString().equals(""))
+                    Toast.makeText(AddNewPigActivity.this, "Please fill out Birth Date", Toast.LENGTH_SHORT).show();
+                else if(radiobutton == null)
+                    Toast.makeText(AddNewPigActivity.this, "Please fill out Classification", Toast.LENGTH_SHORT).show();
+                else {
+                    requestParams.add("pig_classification", radiobutton.getText().toString());
+                    requestParams.add("pig_earnotch", addAnimalEarnotch.getText().toString());
+                    requestParams.add("pig_sex", addSex.getSelectedItem().toString());
+                    requestParams.add("pig_birthdate", addBirthDate.getText().toString());
+                    requestParams.add("pig_weaningdate", addWeanDate.getText().toString());
+                    requestParams.add("pig_birthweight", addBirthWeight.getText().toString());
+                    requestParams.add("pig_weaningweight", addWeanWeight.getText().toString());
+                    requestParams.add("pig_mother_earnotch", addMotherEarnotch.getText().toString());
+                    requestParams.add("pig_father_earnotch", addFatherEarnotch.getText().toString());
+                    requestParams.add("pig_registration_id", generateRegistrationId());
 
+                    ApiHelper.addPig("addPig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                            Toast.makeText(AddNewPigActivity.this, "Pig added successfully", Toast.LENGTH_SHORT);
+                            Intent intent = new Intent(AddNewPigActivity.this, AddNewPigActivity.class);
+                            startActivity(intent);
+                        }
 
-                if(animalearnotch.equals("") && birthdate.equals("")){
-                    Toast.makeText(AddNewPigActivity.this, "Please fill out animal earnotch and birthdate", Toast.LENGTH_SHORT).show();
-                }else{
-                    boolean insertData = addnewpigDB.addNewPigData(classification, animalearnotch, sex, birthdate, weandate, birthweight, weanweight, motherearnotch, fatherearnotch);
-                    if(insertData == true) Toast.makeText(AddNewPigActivity.this, "Data successfully inserted", Toast.LENGTH_SHORT).show();
-                    else Toast.makeText(AddNewPigActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                            Toast.makeText(AddNewPigActivity.this, "Error in adding pig", Toast.LENGTH_SHORT);
+                        }
+
+                        @Override
+                        protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                            return null;
+                        }
+                    });
                 }
-
             }
         });
     }
+
+    private String generateRegistrationId() {
+        return "FarmID"+"FarmBreed"+"-"+"Year"+ addSex.getSelectedItem().toString() + addAnimalEarnotch.getText().toString();
+    }
+
+//  public void addPig(){
+//        addButton.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view){
+//                RadioGroup group = findViewById(R.id.newpig_classification);
+//                int idofselected = group.getCheckedRadioButtonId();
+//                RadioButton radiobutton = findViewById(idofselected);
+//
+//                String classification = radiobutton.getText().toString();
+//                String animalearnotch = addAnimalEarnotch.getText().toString();
+//                String sex = addSex.getSelectedItem().toString();
+//                String birthdate = addBirthDate.getText().toString();
+//                String weandate = addWeanDate.getText().toString();
+//                String birthweight = addBirthWeight.getText().toString();
+//                String weanweight = addWeanWeight.getText().toString();
+//                String motherearnotch = addMotherEarnotch.getText().toString();
+//                String fatherearnotch = addFatherEarnotch.getText().toString();
+//
+//
+//                if(animalearnotch.equals("") && birthdate.equals("")){
+//                    Toast.makeText(AddNewPigActivity.this, "Please fill out animal earnotch and birthdate", Toast.LENGTH_SHORT).show();
+//                }else{
+//                    boolean insertData = addnewpigDB.addNewPigData(classification, animalearnotch, sex, birthdate, weandate, birthweight, weanweight, motherearnotch, fatherearnotch);
+//                    if(insertData == true) Toast.makeText(AddNewPigActivity.this, "Data successfully inserted", Toast.LENGTH_SHORT).show();
+//                    else Toast.makeText(AddNewPigActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+//                }
+//
+//            }
+//        });
+//    }
 
 
     @Override

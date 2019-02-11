@@ -20,6 +20,10 @@ public class ApiHelper {
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
+    public static void addPig(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.post(getAbsoluteUrl(url), request, responseHandler);
+    }
+
     private static String getAbsoluteUrl(String url) {
         return BASE_URL + url;
     }
