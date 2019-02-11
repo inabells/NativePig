@@ -18,16 +18,25 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.ViewBreederActivity;
 import com.example.ina.nativepigdummy.Activities.ViewGrowerActivity;
+import com.example.ina.nativepigdummy.Adapters.BoarDataAdapter;
 import com.example.ina.nativepigdummy.Adapters.FemaleGrowerDataAdapter;
 import com.example.ina.nativepigdummy.Adapters.SowDataAdapter;
+import com.example.ina.nativepigdummy.Data.BoarData;
 import com.example.ina.nativepigdummy.Data.FemaleGrowerData;
 import com.example.ina.nativepigdummy.Data.SowData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 
 public class FemaleGrowersFragment extends Fragment {
 
@@ -43,26 +52,35 @@ public class FemaleGrowersFragment extends Fragment {
         setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.fragment_female_growers, container, false);
         nListView = view.findViewById(R.id.listview_female_grower);
-
         myDB = new DatabaseHelper(getActivity());
         femaleList = new ArrayList<>();
-        Cursor data = myDB.getFemaleGrowerContents();
-        int numRows = data.getCount();
-        if(numRows == 0){
-            Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
-        }else{
-            int i=0;
-            while(data.moveToNext()){
-                femaleData = new FemaleGrowerData(data.getString(0));
-                femaleList.add(i, femaleData);
-                System.out.println(data.getString(0));
-                System.out.println(femaleList.get(i).getFemale_grower_reg_id());
+
+
+        ApiHelper.getAllFemaleGrowers("getAllFemaleGrowers", null, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("API HANDLER Success", rawJsonResponse);
+                FemaleGrowerDataAdapter adapter = new FemaleGrowerDataAdapter(getActivity(), R.layout.listview_breeder_grower, femaleList);
+                nListView.setAdapter(adapter);
             }
 
-            FemaleGrowerDataAdapter adapter = new FemaleGrowerDataAdapter(getActivity(), R.layout.listview_breeder_grower, femaleList);
-            nListView.setAdapter(adapter);
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                Log.d("API HANDLER FAIL", errorResponse.toString());
+            }
 
-        }
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONArray jsonArray = new JSONArray(rawJsonData);
+                JSONObject jsonObject;
+                for(int i = jsonArray.length()-1; i >= 0; i--){
+                    jsonObject = (JSONObject) jsonArray.get(i);
+                    femaleList.add(new FemaleGrowerData(jsonObject.getString("pig_registration_id")));
+                }
+                return null;
+            }
+        });
 
         nListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
