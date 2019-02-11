@@ -23,7 +23,6 @@ public class SowDataAdapter extends ArrayAdapter<SowData> {
     private Context mContext;
     private int mResource;
     private int lastPosition = -1;
-//    List list = new ArrayList();
 
     private static class ViewHolder {
         TextView sow_id;

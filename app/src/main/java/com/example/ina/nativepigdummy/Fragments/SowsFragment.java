@@ -33,12 +33,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import cz.msebera.android.httpclient.Header;
+
 public class SowsFragment extends Fragment {
 
     DatabaseHelper myDB;
-    SowDataAdapter sowDataAdapter;
     ArrayList<SowData> sowList;
-    SowData sowData;
     ListView nListView;
     private SearchView searchView = null;
     private SearchView.OnQueryTextListener queryTextListener;
@@ -48,60 +48,35 @@ public class SowsFragment extends Fragment {
         setHasOptionsMenu(true);
         View view =  inflater.inflate(R.layout.fragment_sows, container, false);
         nListView = view.findViewById(R.id.listview_sow);
-//        sowDataAdapter = new SowDataAdapter (getActivity(), R.layout.listview_breeder_grower);
-//        nListView.setAdapter(sowDataAdapter);
         myDB = new DatabaseHelper(getActivity());
+        sowList = new ArrayList<>();
 
 
         ApiHelper.getSows("getAllSows", null, new BaseJsonHttpResponseHandler<Object>() {
             @Override
-            public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String rawJsonResponse, Object response) {
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("API HANDLER Success", rawJsonResponse);
+                SowDataAdapter adapter = new SowDataAdapter(getActivity(), R.layout.listview_breeder_grower, sowList);
+                nListView.setAdapter(adapter);
             }
 
             @Override
-            public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
                 Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
                 Log.d("API HANDLER FAIL", errorResponse.toString());
             }
 
             @Override
             protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                Log.d("API HANDLER parse", rawJsonData);
                 JSONArray jsonArray = new JSONArray(rawJsonData);
+                JSONObject jsonObject;
                 for(int i = jsonArray.length()-1; i >= 0; i--){
-                    JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-                    Log.d("Json Array", jsonObject.getString("pig_registration_id"));
-                    SowData sowData = new SowData(jsonObject.getString("pig_registration_id"));
+                    jsonObject = (JSONObject) jsonArray.get(i);
                     sowList.add(new SowData(jsonObject.getString("pig_registration_id")));
                 }
-
-
-                SowDataAdapter adapter = new SowDataAdapter(getActivity(), R.layout.listview_breeder_grower, sowList);
-                nListView.setAdapter(adapter);
-
                 return null;
             }
         });
-
-//        final Cursor data = myDB.getSowContents();
-//        int numRows = data.getCount();
-//        if(numRows == 0){
-//            Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
-//        }else{
-//            int i=0;
-//            while(data.moveToNext()){
-//                sowData = new SowData(data.getString(0));
-//                sowList.add(i, sowData);
-//                System.out.println(data.getString(0));
-//                System.out.println(sowList.get(i).getSow_reg_id());
-//            }
-//
-//            SowDataAdapter adapter = new SowDataAdapter(getActivity(), R.layout.listview_breeder_grower, sowList);
-//            nListView.setAdapter(adapter);
-//        }
-
-
 
         nListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

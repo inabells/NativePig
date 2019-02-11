@@ -18,13 +18,22 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.ViewBreederActivity;
 import com.example.ina.nativepigdummy.Adapters.BoarDataAdapter;
+import com.example.ina.nativepigdummy.Adapters.SowDataAdapter;
 import com.example.ina.nativepigdummy.Data.BoarData;
+import com.example.ina.nativepigdummy.Data.SowData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 
 public class BoarsFragment extends Fragment {
 
@@ -40,26 +49,34 @@ public class BoarsFragment extends Fragment {
         setHasOptionsMenu(true);
         View view =  inflater.inflate(R.layout.fragment_boars, container, false);
         nListView = view.findViewById(R.id.listview_boar);
-
         myDB = new DatabaseHelper(getActivity());
-
         boarList = new ArrayList<>();
-        Cursor data = myDB.getBoarContents();
-        int numRows = data.getCount();
-        if(numRows == 0){
-            Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
-        }else{
-            int i=0;
-            while(data.moveToNext()){
-                boarData = new BoarData(data.getString(0));
-                boarList.add(i, boarData);
-                System.out.println(data.getString(0));
-                System.out.println(boarList.get(i).getBoar_reg_id());
+
+        ApiHelper.getBoars("getAllBoars", null, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("API HANDLER Success", rawJsonResponse);
+                BoarDataAdapter adapter = new BoarDataAdapter(getActivity(), R.layout.listview_breeder_grower, boarList);
+                nListView.setAdapter(adapter);
             }
 
-            BoarDataAdapter adapter = new BoarDataAdapter(getActivity(), R.layout.listview_breeder_grower, boarList);
-            nListView.setAdapter(adapter);
-        }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                Log.d("API HANDLER FAIL", errorResponse.toString());
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONArray jsonArray = new JSONArray(rawJsonData);
+                JSONObject jsonObject;
+                for(int i = jsonArray.length()-1; i >= 0; i--){
+                    jsonObject = (JSONObject) jsonArray.get(i);
+                    boarList.add(new BoarData(jsonObject.getString("pig_registration_id")));
+                }
+                return null;
+            }
+        });
 
         nListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
