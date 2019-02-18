@@ -55,32 +55,36 @@ public class FemaleGrowersFragment extends Fragment {
         myDB = new DatabaseHelper(getActivity());
         femaleList = new ArrayList<>();
 
-
-        ApiHelper.getAllFemaleGrowers("getAllFemaleGrowers", null, new BaseJsonHttpResponseHandler<Object>() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("API HANDLER Success", rawJsonResponse);
-                FemaleGrowerDataAdapter adapter = new FemaleGrowerDataAdapter(getActivity(), R.layout.listview_breeder_grower, femaleList);
-                nListView.setAdapter(adapter);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                Log.d("API HANDLER FAIL", errorResponse.toString());
-            }
-
-            @Override
-            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                JSONArray jsonArray = new JSONArray(rawJsonData);
-                JSONObject jsonObject;
-                for(int i = jsonArray.length()-1; i >= 0; i--){
-                    jsonObject = (JSONObject) jsonArray.get(i);
-                    femaleList.add(new FemaleGrowerData(jsonObject.getString("pig_registration_id")));
+        if(ApiHelper.isInternetAvailable(getContext())) {
+            ApiHelper.getAllFemaleGrowers("getAllFemaleGrowers", null, new BaseJsonHttpResponseHandler<Object>() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                    Log.d("API HANDLER Success", rawJsonResponse);
+                    FemaleGrowerDataAdapter adapter = new FemaleGrowerDataAdapter(getActivity(), R.layout.listview_breeder_grower, femaleList);
+                    nListView.setAdapter(adapter);
                 }
-                return null;
-            }
-        });
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                    Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                    Log.d("API HANDLER FAIL", errorResponse.toString());
+                }
+
+                @Override
+                protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                    JSONArray jsonArray = new JSONArray(rawJsonData);
+                    JSONObject jsonObject;
+                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                        jsonObject = (JSONObject) jsonArray.get(i);
+                        femaleList.add(new FemaleGrowerData(jsonObject.getString("pig_registration_id")));
+                    }
+                    return null;
+                }
+            });
+        }else{
+            Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_SHORT).show();
+        }
+
 
         nListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

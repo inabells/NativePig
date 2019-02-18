@@ -52,31 +52,35 @@ public class BoarsFragment extends Fragment {
         myDB = new DatabaseHelper(getActivity());
         boarList = new ArrayList<>();
 
-        ApiHelper.getBoars("getAllBoars", null, new BaseJsonHttpResponseHandler<Object>() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("API HANDLER Success", rawJsonResponse);
-                BoarDataAdapter adapter = new BoarDataAdapter(getActivity(), R.layout.listview_breeder_grower, boarList);
-                nListView.setAdapter(adapter);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                Log.d("API HANDLER FAIL", errorResponse.toString());
-            }
-
-            @Override
-            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                JSONArray jsonArray = new JSONArray(rawJsonData);
-                JSONObject jsonObject;
-                for(int i = jsonArray.length()-1; i >= 0; i--){
-                    jsonObject = (JSONObject) jsonArray.get(i);
-                    boarList.add(new BoarData(jsonObject.getString("pig_registration_id")));
+        if(ApiHelper.isInternetAvailable(getContext())) {
+            ApiHelper.getBoars("getAllBoars", null, new BaseJsonHttpResponseHandler<Object>() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                    Log.d("API HANDLER Success", rawJsonResponse);
+                    BoarDataAdapter adapter = new BoarDataAdapter(getActivity(), R.layout.listview_breeder_grower, boarList);
+                    nListView.setAdapter(adapter);
                 }
-                return null;
-            }
-        });
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                    Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                    Log.d("API HANDLER FAIL", errorResponse.toString());
+                }
+
+                @Override
+                protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                    JSONArray jsonArray = new JSONArray(rawJsonData);
+                    JSONObject jsonObject;
+                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                        jsonObject = (JSONObject) jsonArray.get(i);
+                        boarList.add(new BoarData(jsonObject.getString("pig_registration_id")));
+                    }
+                    return null;
+                }
+            });
+        } else{
+            Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_SHORT).show();
+        }
 
         nListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
