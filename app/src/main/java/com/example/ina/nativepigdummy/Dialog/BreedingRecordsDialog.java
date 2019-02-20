@@ -29,6 +29,7 @@ import com.example.ina.nativepigdummy.Data.SowData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -153,19 +154,46 @@ public class BreedingRecordsDialog extends DialogFragment {
                 .setPositiveButton("ADD", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        RequestParams requestParams = new RequestParams();
                         String editsowid = sowid.getText().toString();
                         String editboarid = boarid.getText().toString();
                         String editdatebred = datebred.getText().toString();
 
-                        if(editsowid.length() != 0 && editboarid.length() != 0 && editdatebred.length() != 0){
-                            addBreedingRecordsData(editsowid, editboarid, editdatebred);
-                            sowid.setText("");
-                            boarid.setText("");
-                            datebred.setText("");
-                        }else{
+                        if(editsowid.length() == 0 || editboarid.length() == 0 || editdatebred.length() == 0){
+//                            addBreedingRecordsData(editsowid, editboarid, editdatebred);
+//                            sowid.setText("");
+//                            boarid.setText("");
+//                            datebred.setText("");
                             Toast.makeText(getActivity(),"Please fill out all the fields!",Toast.LENGTH_LONG).show();
-                        }
+                        }else{
+                            if(ApiHelper.isInternetAvailable(getContext())) {
+                                requestParams.add("sow_registration_id", editsowid);
+                                requestParams.add("boar_registration_id", editboarid);
+                                requestParams.add("date_bred", editdatebred);
 
+                                ApiHelper.addBreedingRecord("addBreedingRecord", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+                                    @Override
+                                    public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+//                                        Toast.makeText(getActivity(), "Pig added successfully", Toast.LENGTH_SHORT);
+                                        Log.d("addBreedingRecord", "Succesfully added");
+                                    }
+
+                                    @Override
+                                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                                        Toast.makeText(getActivity(), "Error in adding pig", Toast.LENGTH_SHORT);
+                                        Log.d("addBreedingRecord", "Error occurred");
+                                    }
+
+                                    @Override
+                                    protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                                        return null;
+                                    }
+                                });
+
+                            } else{
+                                Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
+                            }
+                        }
                     }
 
                 });
