@@ -26,6 +26,7 @@ import com.example.ina.nativepigdummy.Data.GetAllPigsData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -116,18 +117,47 @@ public class SalesDialog extends DialogFragment {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        RequestParams requestParams = new RequestParams();
                         String editchoosepig = autoCompleteTextView.getText().toString();
                         String editdatesold = datesold.getText().toString();
                         String editweightsold= weightsold.getText().toString();
-                        String editage = "123";
+                        String editage = "0 months, 0 days";
 
                         if(editchoosepig.length() == 0 || editdatesold.length() == 0 || editweightsold.length() == 0){
                             Toast.makeText(getActivity(),"Please fill out all the fields!",Toast.LENGTH_LONG).show();
                         }else{
-                            addSalesData(editchoosepig,editdatesold, editweightsold,editage);
-                            autoCompleteTextView.setText("");
-                            datesold.setText("");
-                            weightsold.setText("");
+                            if(ApiHelper.isInternetAvailable(getContext())) {
+                                requestParams.add("pig_registration_id", editchoosepig);
+                                requestParams.add("date_removed_died", editdatesold);
+                                requestParams.add("weight_sold", editweightsold);
+                                requestParams.add("age", editage);
+
+                                ApiHelper.addPigMortalitySales("addPigMortalitySales", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+                                    @Override
+                                    public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+            //                            Toast.makeText(getActivity(), "Pig added successfully", Toast.LENGTH_SHORT);
+                                        Log.d("addMortality", "Succesfully added");
+                                    }
+
+                                    @Override
+                                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                                        Toast.makeText(getActivity(), "Error in adding pig", Toast.LENGTH_SHORT);
+                                        Log.d("addMortality", "Error occurred");
+                                    }
+
+                                    @Override
+                                    protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                                        return null;
+                                    }
+                                });
+
+                            } else{
+                                Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
+                            }
+//                            addSalesData(editchoosepig,editdatesold, editweightsold,editage);
+//                            autoCompleteTextView.setText("");
+//                            datesold.setText("");
+//                            weightsold.setText("");
                         }
                     }
 

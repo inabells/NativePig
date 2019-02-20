@@ -24,10 +24,12 @@ import android.widget.Toast;
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.AddNewPigActivity;
 import com.example.ina.nativepigdummy.Activities.MortalityAndSalesActivity;
+import com.example.ina.nativepigdummy.Activities.ViewBreederActivity;
 import com.example.ina.nativepigdummy.Adapters.AutoAdapter;
 import com.example.ina.nativepigdummy.Data.GetAllPigsData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Fragments.MortalityFragment;
+import com.example.ina.nativepigdummy.Fragments.OthersFragment;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -128,26 +130,22 @@ public class MortalityDialog extends DialogFragment {
 
                         if(ApiHelper.isInternetAvailable(getContext())) {
                                 requestParams.add("pig_registration_id", editchoosepig);
-                                requestParams.add("date_died_removed", editdateofdeath);
+                                requestParams.add("date_removed_died", editdateofdeath);
                                 requestParams.add("cause_of_death", editcauseofdeath);
                                 requestParams.add("age", editage);
 
                                 ApiHelper.addPigMortalitySales("addPigMortalitySales", requestParams, new BaseJsonHttpResponseHandler<Object>() {
                                     @Override
                                     public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-    //                                    Toast.makeText(getActivity(), "Pig added successfully", Toast.LENGTH_SHORT).show();
-    //                                    addMortalityData(editchoosepig, editdateofdeath, editcauseofdeath,editage);
-    //                                    autoCompleteTextView.setText("");
-    //                                    dateofdeath.setText("");
-    //                                    causeofdeath.setText("");
+                   //                     Toast.makeText(getActivity(), "Pig added successfully", Toast.LENGTH_SHORT);
                                         Log.d("addMortality", "Succesfully added");
 
                                     }
 
                                     @Override
                                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                                       // Toast.makeText(getActivity(), "Error in adding pig", Toast.LENGTH_SHORT);
-                                        Log.d("addMortality", "ERROR BITCH");
+                                        Toast.makeText(getActivity(), "Error in adding pig", Toast.LENGTH_SHORT);
+                                        Log.d("addMortality", "Error occurred");
                                     }
 
                                     @Override
@@ -159,8 +157,13 @@ public class MortalityDialog extends DialogFragment {
                         } else{
                             Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
                         }
+//                        Intent intent = new Intent(getContext(), MortalityFragment.class);
+//                        getContext().startActivity(intent)
+//                                addMortalityData(editchoosepig, editdateofdeath, editcauseofdeath,editage);
+//                                autoCompleteTextView.setText("");
+//                                dateofdeath.setText("");
+//                                causeofdeath.setText("");
                     }
-
                 });
 
         return builder.create();

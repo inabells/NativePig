@@ -83,7 +83,7 @@ public class ApiHelper {
     }
 
     public static void addPigMortalitySales(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
+        client.post(getAbsoluteUrl(url), request, responseHandler);
     }
 
     private static String getAbsoluteUrl(String url) {
