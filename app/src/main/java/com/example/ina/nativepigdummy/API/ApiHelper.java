@@ -11,7 +11,7 @@ import java.net.InetAddress;
 
 public class ApiHelper {
 
-    private final static String BASE_URL = "http://192.168.1.2:80/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
+    private final static String BASE_URL = "http://192.168.1.13:80/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
     private static AsyncHttpClient client = new AsyncHttpClient();
 
     public ApiHelper(){

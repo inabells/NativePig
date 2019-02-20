@@ -6,6 +6,10 @@ public class OthersData {
     private String reason;
     private String age;
 
+    public OthersData(){
+
+    }
+
     public OthersData(String others_reg_id, String date_removed, String reason, String age) {
         this.others_reg_id = others_reg_id;
         this.date_removed = date_removed;

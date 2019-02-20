@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,6 +20,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Adapters.MortalityDataAdapter;
 import com.example.ina.nativepigdummy.Adapters.OthersDataAdapter;
 import com.example.ina.nativepigdummy.Adapters.SalesDataAdapter;
@@ -30,8 +32,14 @@ import com.example.ina.nativepigdummy.Dialog.MortalityDialog;
 import com.example.ina.nativepigdummy.Dialog.SalesDialog;
 import com.example.ina.nativepigdummy.R;
 import com.github.clans.fab.FloatingActionButton;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 
 public class SalesFragment extends Fragment {
 
@@ -52,21 +60,42 @@ public class SalesFragment extends Fragment {
         myDB = new DatabaseHelper(getActivity());
 
         salesList = new ArrayList<>();
-        Cursor data  = myDB.getSalesContents();
-        int numRows = data.getCount();
-        if(numRows == 0){
-            Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
-        }else{
-            int i=0;
-            while(data.moveToNext()){
-                salesData = new SalesData(data.getString(1), data.getString(2),data.getString(3), data.getString(4));
-                salesList.add(i, salesData);
-                System.out.println(data.getString(1)+" "+data.getString(2)+" "+data.getString(3)+" "+data.getString(4));
-                System.out.println(salesList.get(i).getSales_reg_id());
-                i++;
-            }
-            SalesDataAdapter adapter = new SalesDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, salesList);
-            listView.setAdapter(adapter);
+
+        if(ApiHelper.isInternetAvailable(getContext())) {
+            ApiHelper.getSales("getSales", null, new BaseJsonHttpResponseHandler<Object>() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                    Log.d("API HANDLER Success", rawJsonResponse);
+                    SalesDataAdapter adapter = new SalesDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, salesList);
+                    listView.setAdapter(adapter);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                    Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                    Log.d("API HANDLER FAIL", errorResponse.toString());
+                }
+
+                @Override
+                protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                    JSONArray jsonArray = new JSONArray(rawJsonData);
+                    JSONObject jsonObject;
+                    SalesData mData;
+                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                        jsonObject = (JSONObject) jsonArray.get(i);
+                        mData = new SalesData();
+                        mData.setSales_reg_id(jsonObject.getString("pig_registration_id"));
+                        mData.setDate_sold(jsonObject.getString("date_removed_died"));
+                        mData.setWeight(jsonObject.getString("weight_sold"));
+                        mData.setAge(jsonObject.getString("age"));
+                        salesList.add(mData);
+                    }
+                    return null;
+                }
+            });
+
+        } else{
+            Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_SHORT).show();
         }
 
         sales.setOnClickListener(new View.OnClickListener() {
