@@ -11,11 +11,31 @@ import java.net.InetAddress;
 
 public class ApiHelper {
 
-    private final static String BASE_URL = "http://192.168.1.8:80/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
+    private final static String BASE_URL = "http://192.168.1.2:80/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
     private static AsyncHttpClient client = new AsyncHttpClient();
 
     public ApiHelper(){
 
+    }
+
+    public static void getAllPigs(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void searchPig(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void getMortality(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void getSales(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void getOthers(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
     public static void getSows(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
@@ -36,6 +56,10 @@ public class ApiHelper {
 
     public static void addPig(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.post(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void addPigMortalitySales(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
     private static String getAbsoluteUrl(String url) {

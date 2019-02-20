@@ -6,6 +6,10 @@ public class MortalityData {
     private String cause_of_death;
     private String age;
 
+    public MortalityData(){
+
+    }
+
     public MortalityData(String mortality_reg_id, String date_of_death, String cause_of_death, String age) {
         this.mortality_reg_id = mortality_reg_id;
         this.date_of_death = date_of_death;

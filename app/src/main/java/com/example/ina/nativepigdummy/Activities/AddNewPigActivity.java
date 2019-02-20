@@ -266,14 +266,14 @@ public class AddNewPigActivity extends AppCompatActivity {
                         ApiHelper.addPig("addPig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                                Toast.makeText(AddNewPigActivity.this, "Pig added successfully", Toast.LENGTH_SHORT);
+                                Toast.makeText(AddNewPigActivity.this, "Pig added successfully", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(AddNewPigActivity.this, AddNewPigActivity.class);
                                 startActivity(intent);
                             }
 
                             @Override
                             public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                                Toast.makeText(AddNewPigActivity.this, "Error in adding pig", Toast.LENGTH_SHORT);
+                                Toast.makeText(AddNewPigActivity.this, "Error in adding pig", Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
