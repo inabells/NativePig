@@ -50,6 +50,7 @@ public class MortalityDialog extends DialogFragment {
     private AutoAdapter autoAdapter;
     private EditText dateofdeath;
     private EditText causeofdeath;
+
     ArrayList<GetAllPigsData> pigList;
     List<String> stringList = new ArrayList<>();
     DatabaseHelper myDB;
@@ -126,9 +127,6 @@ public class MortalityDialog extends DialogFragment {
                         final String editage = "0 months, 0 days";
 
                         if(ApiHelper.isInternetAvailable(getContext())) {
-                            if(editchoosepig.length() == 0 || editdateofdeath.length() == 0 || editcauseofdeath.length() == 0){
-                                Toast.makeText(getActivity(),"Please fill out all the fields!",Toast.LENGTH_LONG).show();
-                            }else{
                                 requestParams.add("pig_registration_id", editchoosepig);
                                 requestParams.add("date_died_removed", editdateofdeath);
                                 requestParams.add("cause_of_death", editcauseofdeath);
@@ -137,12 +135,13 @@ public class MortalityDialog extends DialogFragment {
                                 ApiHelper.addPigMortalitySales("addPigMortalitySales", requestParams, new BaseJsonHttpResponseHandler<Object>() {
                                     @Override
                                     public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-//                                        Toast.makeText(getActivity(), "Pig added successfully", Toast.LENGTH_SHORT).show();
+    //                                    Toast.makeText(getActivity(), "Pig added successfully", Toast.LENGTH_SHORT).show();
     //                                    addMortalityData(editchoosepig, editdateofdeath, editcauseofdeath,editage);
     //                                    autoCompleteTextView.setText("");
     //                                    dateofdeath.setText("");
     //                                    causeofdeath.setText("");
-                                        Log.d("addMortality", "Successfully added");
+                                        Log.d("addMortality", "Succesfully added");
+
                                     }
 
                                     @Override
@@ -157,7 +156,6 @@ public class MortalityDialog extends DialogFragment {
                                     }
                                 });
 
-                            }
                         } else{
                             Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
                         }

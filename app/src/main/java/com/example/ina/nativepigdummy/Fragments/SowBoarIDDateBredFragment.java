@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.ViewBreederActivity;
 import com.example.ina.nativepigdummy.Activities.ViewBreedingActivity;
 import com.example.ina.nativepigdummy.Adapters.BreedingRecordDataAdapter;
@@ -33,8 +35,14 @@ import com.example.ina.nativepigdummy.Dialog.BreedingRecordsDialog;
 import com.example.ina.nativepigdummy.Dialog.MortalityDialog;
 import com.example.ina.nativepigdummy.R;
 import com.github.clans.fab.FloatingActionButton;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class SowBoarIDDateBredFragment extends Fragment {
@@ -55,7 +63,7 @@ public class SowBoarIDDateBredFragment extends Fragment {
         myDB = new DatabaseHelper(getActivity());
 
         breedingRecordList = new ArrayList<>();
-        Cursor data  = myDB.getBreedingRecordsContents();
+      /*  Cursor data  = myDB.getBreedingRecordsContents();
         int numRows = data.getCount();
         if(numRows == 0){
             Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
@@ -70,6 +78,42 @@ public class SowBoarIDDateBredFragment extends Fragment {
             }
             BreedingRecordDataAdapter adapter = new BreedingRecordDataAdapter(getActivity(), R.layout.listview_breeding_record, breedingRecordList);
             listView.setAdapter(adapter);
+        }*/
+
+        if(ApiHelper.isInternetAvailable(getContext())) {
+            ApiHelper.getBreedingRecord("getBreedingRecord", null, new BaseJsonHttpResponseHandler<Object>() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                    Log.d("API HANDLER Success", rawJsonResponse);
+                    BreedingRecordDataAdapter adapter = new BreedingRecordDataAdapter(getActivity(), R.layout.listview_breeding_record, breedingRecordList);
+                    listView.setAdapter(adapter);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                    Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                    Log.d("API HANDLER FAIL", errorResponse.toString());
+                }
+
+                @Override
+                protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                    JSONArray jsonArray = new JSONArray(rawJsonData);
+                    JSONObject jsonObject;
+                    BreedingRecordData mData;
+                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                        jsonObject = (JSONObject) jsonArray.get(i);
+                        mData = new BreedingRecordData();
+                        mData.setSow_id(jsonObject.getString("sow_registration_id"));
+                        mData.setBoar_id(jsonObject.getString("boar_registration_id"));
+                        mData.setDate_bred(jsonObject.getString("date_bred"));
+                        breedingRecordList.add(mData);
+                    }
+                    return null;
+                }
+            });
+
+        } else{
+            Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_SHORT).show();
         }
 
         breedingrecord.setOnClickListener(new View.OnClickListener() {

@@ -41,6 +41,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        TextView noOfSows = findViewById(R.id.noOfSows);
+        TextView noOfBoars = findViewById(R.id.noOfBoars);
+        TextView noOfFemaleGrowers = findViewById(R.id.noOfFemaleGrowers);
+        TextView noOfMaleGrowers = findViewById(R.id.noOfMaleGrowers);
+
         Calendar calendar = Calendar.getInstance();
         String currentDate =  DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
         TextView textViewDate = findViewById(R.id.textView_dateToday);

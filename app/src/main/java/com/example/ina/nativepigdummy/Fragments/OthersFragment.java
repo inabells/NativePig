@@ -56,8 +56,8 @@ public class OthersFragment extends Fragment {
 
         myDB = new DatabaseHelper(getActivity());
 
-        /*otherList = new ArrayList<>();
-        Cursor data  = myDB.getOthersContents();
+        otherList = new ArrayList<>();
+        /*Cursor data  = myDB.getOthersContents();
         int numRows = data.getCount();
         if(numRows == 0){
             Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
@@ -72,8 +72,8 @@ public class OthersFragment extends Fragment {
             }
             OthersDataAdapter adapter = new OthersDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, otherList);
             listView.setAdapter(adapter);
-        }*/
-
+        }
+*/
         if(ApiHelper.isInternetAvailable(getContext())) {
             ApiHelper.getOthers("getOthers", null, new BaseJsonHttpResponseHandler<Object>() {
                 @Override

@@ -11,6 +11,10 @@ public class BreedingRecordData {
         this.date_bred = date_bred;
     }
 
+    public BreedingRecordData(){
+
+    }
+
     public String getSow_id() {
         return sow_id;
     }

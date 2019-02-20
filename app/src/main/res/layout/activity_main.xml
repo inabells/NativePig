@@ -82,7 +82,7 @@
                             android:layout_centerInParent="true">
 
                             <TextView
-                                android:id="@+id/imgView3"
+                                android:id="@+id/noOfSows"
                                 android:layout_width="80dp"
                                 android:layout_height="80dp"
                                 android:layout_centerHorizontal="true"
@@ -90,7 +90,7 @@
                                 android:gravity="center"
                                 android:padding="8dp"
                                 android:scaleType="centerInside"
-                                android:text="39"
+
                                 android:textColor="@color/colorWhite"
                                 android:textSize="40dp"
                                 android:tint="@color/colorWhite" />
@@ -98,7 +98,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@+id/imgView3"
+                                android:layout_below="@+id/noOfSows"
                                 android:layout_centerHorizontal="true"
                                 android:layout_marginTop="5dp"
                                 android:text="Sows"
@@ -124,7 +124,7 @@
                             android:layout_centerInParent="true">
 
                             <TextView
-                                android:id="@+id/imgView4"
+                                android:id="@+id/noOfFemaleGrowers"
                                 android:layout_width="80dp"
                                 android:layout_height="80dp"
                                 android:layout_centerHorizontal="true"
@@ -132,7 +132,7 @@
                                 android:gravity="center"
                                 android:padding="8dp"
                                 android:scaleType="centerInside"
-                                android:text="58"
+
                                 android:textColor="@color/colorWhite"
                                 android:textSize="40dp"
                                 android:tint="@color/colorWhite" />
@@ -140,7 +140,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@+id/imgView4"
+                                android:layout_below="@+id/noOfFemaleGrowers"
                                 android:layout_centerHorizontal="true"
                                 android:layout_marginTop="5dp"
                                 android:text="Female Growers"
@@ -173,7 +173,7 @@
                             android:layout_centerInParent="true">
 
                             <TextView
-                                android:id="@+id/imgView5"
+                                android:id="@+id/noOfBoars"
                                 android:layout_width="80dp"
                                 android:layout_height="80dp"
                                 android:layout_centerHorizontal="true"
@@ -181,7 +181,7 @@
                                 android:gravity="center"
                                 android:padding="8dp"
                                 android:scaleType="centerInside"
-                                android:text="14"
+
                                 android:textColor="@color/colorWhite"
                                 android:textSize="40dp"
                                 android:tint="@color/colorWhite" />
@@ -189,7 +189,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@+id/imgView5"
+                                android:layout_below="@+id/noOfBoars"
                                 android:layout_centerHorizontal="true"
                                 android:layout_marginTop="5dp"
                                 android:text="Boars"
@@ -215,7 +215,7 @@
                             android:layout_centerInParent="true">
 
                             <TextView
-                                android:id="@+id/imgView6"
+                                android:id="@+id/noOfMaleGrowers"
                                 android:layout_width="80dp"
                                 android:layout_height="80dp"
                                 android:layout_centerHorizontal="true"
@@ -223,7 +223,7 @@
                                 android:gravity="center"
                                 android:padding="8dp"
                                 android:scaleType="centerInside"
-                                android:text="72"
+
                                 android:textColor="@color/colorWhite"
                                 android:textSize="40dp"
                                 android:tint="@color/colorWhite" />
@@ -231,7 +231,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_below="@+id/imgView6"
+                                android:layout_below="@+id/noOfMaleGrowers"
                                 android:layout_centerHorizontal="true"
                                 android:layout_marginTop="5dp"
                                 android:text="Male Growers"
