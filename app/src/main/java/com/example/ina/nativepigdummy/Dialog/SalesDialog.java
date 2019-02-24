@@ -99,7 +99,7 @@ public class SalesDialog extends DialogFragment {
             public boolean handleMessage(Message msg) {
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(autoCompleteTextView.getText())) {
-                        makeApiCall(autoCompleteTextView.getText().toString());
+                        generateAutocompletePigList(autoCompleteTextView.getText().toString());
                     }
                 }
                 return false;
@@ -117,57 +117,81 @@ public class SalesDialog extends DialogFragment {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        RequestParams requestParams = new RequestParams();
-                        String editchoosepig = autoCompleteTextView.getText().toString();
-                        String editdatesold = datesold.getText().toString();
-                        String editweightsold= weightsold.getText().toString();
-                        String editage = "0 months, 0 days";
+                        RequestParams requestParams = buildRequest(autoCompleteTextView);
 
-                        if(editchoosepig.length() == 0 || editdatesold.length() == 0 || editweightsold.length() == 0){
-                            Toast.makeText(getActivity(),"Please fill out all the fields!",Toast.LENGTH_LONG).show();
+                        if(ApiHelper.isInternetAvailable(getContext())) {
+                            deleteAddedPigFromPigTable(requestParams);
+                            addMortalityRecord(requestParams);
                         }else{
-                            if(ApiHelper.isInternetAvailable(getContext())) {
-                                requestParams.add("pig_registration_id", editchoosepig);
-                                requestParams.add("date_removed_died", editdatesold);
-                                requestParams.add("weight_sold", editweightsold);
-                                requestParams.add("age", editage);
-
-                                ApiHelper.addPigMortalitySales("addPigMortalitySales", requestParams, new BaseJsonHttpResponseHandler<Object>() {
-                                    @Override
-                                    public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-            //                            Toast.makeText(getActivity(), "Pig added successfully", Toast.LENGTH_SHORT);
-                                        Log.d("addMortality", "Succesfully added");
-                                    }
-
-                                    @Override
-                                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                                        Toast.makeText(getActivity(), "Error in adding pig", Toast.LENGTH_SHORT);
-                                        Log.d("addMortality", "Error occurred");
-                                    }
-
-                                    @Override
-                                    protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                                        return null;
-                                    }
-                                });
-
-                            } else{
-                                Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
-                            }
-//                            addSalesData(editchoosepig,editdatesold, editweightsold,editage);
-//                            autoCompleteTextView.setText("");
-//                            datesold.setText("");
-//                            weightsold.setText("");
+                            Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
                         }
                     }
-
                 });
 
         return builder.create();
     }
 
-    private void makeApiCall(String text) {
-        ApiHelper.getAllPigs("getAllPigs", null, new BaseJsonHttpResponseHandler<Object>() {
+    private RequestParams buildRequest(AppCompatAutoCompleteTextView autoCompleteTextView) {
+        RequestParams requestParams = new RequestParams();
+        final String editchoosepig = autoCompleteTextView.getText().toString();
+        String editdatesold = datesold.getText().toString();
+        String editweightsold= weightsold.getText().toString();
+        String editage = "0 months, 0 days";
+
+        requestParams.add("pig_registration_id", editchoosepig);
+        requestParams.add("date_removed_died", editdatesold);
+        requestParams.add("weight_sold", editweightsold);
+
+        //getAgeMortality(requestParams);
+        requestParams.add("age", editage);
+
+        return requestParams;
+    }
+
+    private void deleteAddedPigFromPigTable(RequestParams requestParams) {
+        ApiHelper.deletePig("deletePig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                //Toast.makeText(getContext(), "Pig added successfully", Toast.LENGTH_SHORT);
+                Log.d("DeletePig", "Succesfully deleted from pig table");
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                //Toast.makeText(getActivity(), "Error in deleting pig", Toast.LENGTH_SHORT);
+                Log.d("DeletePig", "Error occurred");
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                return null;
+            }
+        });
+    }
+
+    private void addMortalityRecord(RequestParams requestParams) {
+        ApiHelper.addPigMortalitySales("addPigMortalitySales", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("addMortality", "Succesfully added");
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("addMortality", "Error occurred");
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                return null;
+            }
+        });
+    }
+
+    private void generateAutocompletePigList(String text) {
+        ApiHelper.searchPig("searchPig", null, new BaseJsonHttpResponseHandler<Object>() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
@@ -225,4 +249,10 @@ public class SalesDialog extends DialogFragment {
         }
     }
 }
+
+
+//                            addSalesData(editchoosepig,editdatesold, editweightsold,editage);
+//                            autoCompleteTextView.setText("");
+//                            datesold.setText("");
+//                            weightsold.setText("");
 
