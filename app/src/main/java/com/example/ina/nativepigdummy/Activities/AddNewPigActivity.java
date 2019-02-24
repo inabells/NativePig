@@ -243,12 +243,8 @@ public class AddNewPigActivity extends AppCompatActivity {
                 RadioButton radiobutton = findViewById(selectedId);
 
                 if(ApiHelper.isInternetAvailable(getApplicationContext())) {
-                    if (addAnimalEarnotch.getText().toString().equals("") && addBirthDate.getText().toString().equals("") && radiobutton == null)
-                        Toast.makeText(AddNewPigActivity.this, "Please fill out Classification, Animal Earnotch and Birth Date", Toast.LENGTH_SHORT).show();
-                    else if (addAnimalEarnotch.getText().toString().equals(""))
+                    if (addAnimalEarnotch.getText().toString().equals(""))
                         Toast.makeText(AddNewPigActivity.this, "Please fill out Animal Earnotch", Toast.LENGTH_SHORT).show();
-                    else if (addBirthDate.getText().toString().equals(""))
-                        Toast.makeText(AddNewPigActivity.this, "Please fill out Birth Date", Toast.LENGTH_SHORT).show();
                     else if (radiobutton == null)
                         Toast.makeText(AddNewPigActivity.this, "Please fill out Classification", Toast.LENGTH_SHORT).show();
                     else {
@@ -290,7 +286,7 @@ public class AddNewPigActivity extends AppCompatActivity {
     }
 
     private String generateRegistrationId() {
-        return "MARMSC"+"Marinduke"+"-"+"2019"+ addSex.getSelectedItem().toString() + addAnimalEarnotch.getText().toString();
+        return "MARMSC"+"Marinduke"+"-"+ getYear(addBirthDate.getText().toString()) + addSex.getSelectedItem().toString() + addAnimalEarnotch.getText().toString();
     }
 
     @Override
@@ -326,10 +322,13 @@ public class AddNewPigActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-
-
+    private String getYear(String dateText){
+        String[] textArray = dateText.split("-");
+        return textArray[0];
+    }
 
     public AddNewPigActivity() {
+
     }
 }
 
