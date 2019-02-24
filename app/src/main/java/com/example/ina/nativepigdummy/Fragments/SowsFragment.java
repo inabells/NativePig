@@ -86,9 +86,9 @@ public class SowsFragment extends Fragment {
         nListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String listview = sowList.get(i).getSow_reg_id();
+                String sow_id = sowList.get(i).getSow_reg_id();
                 Intent intent = new Intent(getActivity(), ViewBreederActivity.class);
-                intent.putExtra("ListClickValue", listview);
+                intent.putExtra("ListClickValue", sow_id);
                 startActivity(intent);
             }
         });

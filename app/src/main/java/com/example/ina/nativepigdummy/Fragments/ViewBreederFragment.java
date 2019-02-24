@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +23,18 @@ import android.support.v4.app.DialogFragment;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Dialog.ViewBreederDialog;
 import com.example.ina.nativepigdummy.Dialog.ViewProfileDialog;
 import com.example.ina.nativepigdummy.R;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+
+import cz.msebera.android.httpclient.Header;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -36,17 +44,13 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
     public ViewBreederFragment() {
         // Required empty public constructor
     }
-    private TextView TextViewbirthday;
-    private TextView TextViewsex;
-    private TextView TextViewbirthweight;
-    private TextView TextViewweaningweight;
-    private TextView TextViewlittersizebornweight;
-    private TextView TextViewageatfirstmating;
-    private TextView TextViewageatweaning;
-    private TextView TextViewpedigreemother;
-    private TextView TextViewpedigreefather;
+    private TextView TextViewbirthday, TextViewsex, TextViewbirthweight, TextViewweaningweight, TextViewlittersizebornweight,
+            TextViewageatfirstmating, TextViewageatweaning, TextViewpedigreemother, TextViewpedigreefather;
     private ImageView edit_profile;
     private TextView registration_id;
+    private String pigRegIdHolder;
+    private String birthday, sex, birthweight, weaningweight, littersizebornweight,
+            ageatfirstmating, ageatweaning, pedigreemother, pedigreefather;
 
     private ImageView imageView;
     private Bitmap bitmap_foto;
@@ -76,14 +80,17 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
         TextViewpedigreefather = (TextView) view.findViewById(R.id.textViewFatherPedigree);
         registration_id = view.findViewById(R.id.registration_id);
 
-        String tempholder = getActivity().getIntent().getStringExtra("ListClickValue");
-        registration_id.setText(tempholder);
+        pigRegIdHolder = getActivity().getIntent().getStringExtra("ListClickValue");
+        registration_id.setText(pigRegIdHolder);
+        RequestParams params = buildParams();
+        getSinglePig(params);
+
 
 
         edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openViewBreederDialog();
+                openViewBreederDialog(pigRegIdHolder);
             }
         });
 
@@ -106,29 +113,94 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
         return view;
     }
 
-    public void openViewBreederDialog(){
-        ViewBreederDialog dialog = new ViewBreederDialog();
+    private RequestParams buildParams() {
+        RequestParams params = new RequestParams();
+        params.add("pig_registration_id", pigRegIdHolder);
+        return params;
+    }
+
+    private void getSinglePig(RequestParams params) {
+//        pigRegIdHolder <- pig_registration_id
+        ApiHelper.getSinglePig("getSinglePig", params, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                TextViewbirthday.setText(birthday);
+                TextViewsex.setText(sex);
+                TextViewbirthweight.setText(birthweight);
+                TextViewweaningweight.setText(weaningweight);
+                TextViewlittersizebornweight.setText(littersizebornweight);
+                TextViewageatfirstmating.setText(ageatfirstmating);
+                TextViewageatweaning.setText(ageatweaning);
+                TextViewpedigreemother.setText(pedigreemother);
+                TextViewpedigreefather.setText(pedigreefather);
+                Log.d("ViewBreeder", "Succesfully fetched count");
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("ViewBreeder", "Error: " + String.valueOf(statusCode));
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONObject jsonObject = new JSONObject(rawJsonData);
+                birthday = jsonObject.get("pig_birthdate").toString();
+                sex = jsonObject.get("sex_ratio").toString();
+                birthweight = jsonObject.get("pig_birthweight").toString();
+                weaningweight = jsonObject.get("pig_weaningweight").toString();
+                littersizebornweight = jsonObject.get("litter_size_born_alive").toString();
+                ageatfirstmating = jsonObject.get("age_first_mating").toString();
+                ageatweaning = jsonObject.get("age_at_weaning").toString();
+                pedigreemother = jsonObject.get("pig_mother_earnotch").toString();
+                pedigreefather = jsonObject.get("pig_father_earnotch").toString();
+                return null;
+            }
+        });
+    }
+
+    public void openViewBreederDialog(String pigRegId){
+        ViewBreederDialog dialog = new ViewBreederDialog(pigRegId);
         dialog.setTargetFragment(ViewBreederFragment.this, 1);
         dialog.show(getFragmentManager(),"ViewBreederDialog");
     }
 
-    @Override public void applyBirthdayText(String birthday){ TextViewbirthday.setText(birthday); }
+    @Override public void applyBirthdayText(String birthday){
+        TextViewbirthday.setText(birthday);
+    }
 
-    @Override public void applySexText(String sex){ TextViewsex.setText(sex); }
+    @Override public void applySexText(String sex){
+        TextViewsex.setText(sex);
+    }
 
-    @Override public void applyBirthWeightText(String birthweight){ TextViewbirthweight.setText(birthweight); }
+    @Override public void applyBirthWeightText(String birthweight){
+        TextViewbirthweight.setText(birthweight);
+    }
 
-    @Override public void applyWeaningWeight(String weaningweight){ TextViewweaningweight.setText(weaningweight); }
+    @Override public void applyWeaningWeight(String weaningweight){
+        TextViewweaningweight.setText(weaningweight);
+    }
 
-    @Override public void applyLitterSize(String littersizebornweight){ TextViewlittersizebornweight.setText(littersizebornweight); }
+    @Override public void applyLitterSize(String littersizebornweight){
+        TextViewlittersizebornweight.setText(littersizebornweight);
+    }
 
-    @Override public void applyAgeMating(String ageatfirstmating){ TextViewageatfirstmating.setText(ageatfirstmating); }
+    @Override public void applyAgeMating(String ageatfirstmating){
+        TextViewageatfirstmating.setText(ageatfirstmating);
+    }
 
-    @Override public void applyAgeWeaning(String ageatweaning){ TextViewageatweaning.setText(ageatweaning); }
+    @Override public void applyAgeWeaning(String ageatweaning){
+        TextViewageatweaning.setText(ageatweaning);
+    }
 
-    @Override public void applyMother(String pedigreemother){ TextViewpedigreemother.setText(pedigreemother); }
+    @Override public void applyMother(String pedigreemother){
+        TextViewpedigreemother.setText(pedigreemother);
+    }
 
-    @Override public void applyFather(String pedigreefather){ TextViewpedigreefather.setText(pedigreefather); }
+    @Override public void applyFather(String pedigreefather){
+        TextViewpedigreefather.setText(pedigreefather);
+    }
+
 
     private byte[] imageToByte(ImageView image) {
         Bitmap bitmapFoto = ((BitmapDrawable)image.getDrawable()).getBitmap();

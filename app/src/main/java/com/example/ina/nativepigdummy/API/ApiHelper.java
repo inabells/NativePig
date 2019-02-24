@@ -66,7 +66,7 @@ public class ApiHelper {
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
-    //POST/ADD FUNCTIONS
+    //POST/ADD FUNCTIONS------------------------------------------------------------------
     public static void addPig(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.post(getAbsoluteUrl(url), request, responseHandler);
     }
@@ -79,11 +79,17 @@ public class ApiHelper {
         client.post(getAbsoluteUrl(url), request, responseHandler);
     }
 
-    //DELETE FUNCTION
+    //DELETE FUNCTION--------------------------------------------------------------------
     public static void deletePig(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.delete(getAbsoluteUrl(url), request, responseHandler);
     }
 
+    //UPDATE FUNCTION====================================================================
+    public static void updateBreederPigProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.post(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    //URL================================================================================
     private static String getAbsoluteUrl(String url) {
         return BASE_URL + url;
     }
