@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.R;
@@ -66,18 +67,12 @@ public class ViewBreederDialog extends DialogFragment {
                 .setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        RequestParams requestParams = buildParams(pig_reg_id);
-                        updateBreederPigProfile(requestParams);
-
-//                        if(!editbirthday.equals("")) onViewBreederListener.applyBirthdayText(editbirthday);
-//                        if(!editsex.equals("")) onViewBreederListener.applySexText(editsex);
-//                        if(!editbirthweight.equals("")) onViewBreederListener.applyBirthWeightText(editbirthweight);
-//                        if(!editweaningweight.equals("")) onViewBreederListener.applyWeaningWeight(editweaningweight);
-//                        if(!editlittersizebornweight.equals("")) onViewBreederListener.applyLitterSize(editlittersizebornweight);
-//                        if(!editageatfirstmating.equals("")) onViewBreederListener.applyAgeMating(editageatfirstmating);
-//                        if(!editageatweaning.equals("")) onViewBreederListener.applyAgeWeaning(editageatweaning);
-//                        if(!editpedigreemother.equals("")) onViewBreederListener.applyMother(editpedigreemother);
-//                        if(!editpedigreefather.equals("")) onViewBreederListener.applyFather(editpedigreefather);
+                        if(ApiHelper.isInternetAvailable(getContext())){
+                            RequestParams requestParams = buildParams(pig_reg_id);
+                            updateBreederPigProfile(requestParams);
+                        }else{
+                            Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                 });
@@ -103,7 +98,6 @@ public class ViewBreederDialog extends DialogFragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-//                Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
                 Log.d("API HANDLER FAIL", errorResponse.toString());
             }
 
@@ -174,15 +168,7 @@ public class ViewBreederDialog extends DialogFragment {
     }
 
     public interface ViewBreederListener{
-        void applyBirthdayText(String birthday);
-        void applySexText(String sex);
-        void applyBirthWeightText(String birthweight);
-        void applyWeaningWeight(String weaningweight);
-        void applyLitterSize(String littersizebornweight);
-        void applyAgeMating(String ageatfirstmating);
-        void applyAgeWeaning(String ageatweaning);
-        void applyMother(String pedigreemother);
-        void applyFather(String pedigreefather);
+
     }
 
     @Override
