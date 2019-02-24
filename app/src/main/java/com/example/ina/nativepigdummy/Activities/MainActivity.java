@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Adapters.BoarDataAdapter;
 import com.example.ina.nativepigdummy.Data.BoarData;
+import com.example.ina.nativepigdummy.Data.SowData;
 import com.example.ina.nativepigdummy.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -28,6 +30,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -44,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle toggle_drawer;
     private Toolbar tool_bar;
     private NavigationView navigation_view;
+    TextView noOfBoars;
+    TextView noOfFemaleGrowers;
+    TextView noOfMaleGrowers;
+    TextView noOfSows;
+    String sowNum, boarNum, femaleGrowerNum, maleGrowerNum = "-";
     RelativeLayout rellay_sows, rellay_boars, rellay_female_growers, rellay_male_growers;
 
 
@@ -52,11 +60,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView noOfSows = findViewById(R.id.noOfSows);
-        TextView noOfBoars = findViewById(R.id.noOfBoars);
-        TextView noOfFemaleGrowers = findViewById(R.id.noOfFemaleGrowers);
-        TextView noOfMaleGrowers = findViewById(R.id.noOfMaleGrowers);
+        noOfSows = findViewById(R.id.noOfSows);
+        noOfBoars = findViewById(R.id.noOfBoars);
+        noOfFemaleGrowers = findViewById(R.id.noOfFemaleGrowers);
+        noOfMaleGrowers = findViewById(R.id.noOfMaleGrowers);
 
+        getAllCount();
         Calendar calendar = Calendar.getInstance();
         String currentDate =  DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
         TextView textViewDate = findViewById(R.id.textView_dateToday);
@@ -66,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         rellay_boars = findViewById(R.id.rellay_boars);
         rellay_female_growers = findViewById(R.id.rellay_female);
         rellay_male_growers = findViewById(R.id.rellay_male);
+
 
         rellay_sows.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,11 +190,41 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void getAllCount() {
+        ApiHelper.getAllCount("getAllCount", null, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                noOfSows.setText(sowNum);
+                noOfBoars.setText(boarNum);
+                noOfFemaleGrowers.setText(femaleGrowerNum);
+                noOfMaleGrowers.setText(maleGrowerNum);
+                Log.d("getAllCount", "Succesfully fetched count");
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("getAllCount", "Error: " + String.valueOf(statusCode));
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONObject jsonObject = new JSONObject(rawJsonData);
+                sowNum = jsonObject.get("sowCount").toString();
+                boarNum = jsonObject.get("boarCount").toString();
+                femaleGrowerNum = jsonObject.get("femaleGrowerCount").toString();
+                maleGrowerNum = jsonObject.get("maleGrowerCount").toString();
+                return null;
+            }
+        });
+    }
+
     private void setFragment(Fragment fragment){
         FragmentTransaction fragment_transaction = getSupportFragmentManager().beginTransaction();
         fragment_transaction.replace(R.id.main_frame, fragment);
         fragment_transaction.commit();
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

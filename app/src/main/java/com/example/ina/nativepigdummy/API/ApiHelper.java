@@ -62,22 +62,9 @@ public class ApiHelper {
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
-    public static void getSowCount(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+    public static void getAllCount(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
-
-    public static void getBoarCount(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void getFemaleGrowerCount(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void getMaleGrowerCount(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
 
     //POST/ADD FUNCTIONS
     public static void addPig(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
