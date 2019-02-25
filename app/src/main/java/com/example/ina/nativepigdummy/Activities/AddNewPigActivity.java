@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -240,7 +241,7 @@ public class AddNewPigActivity extends AppCompatActivity {
                 RequestParams requestParams = new RequestParams();
                 RadioGroup group = findViewById(R.id.newpig_classification);
                 int selectedId = group.getCheckedRadioButtonId();
-                RadioButton radiobutton = findViewById(selectedId);
+                final RadioButton radiobutton = findViewById(selectedId);
 
                 if(ApiHelper.isInternetAvailable(getApplicationContext())) {
                     if (addAnimalEarnotch.getText().toString().equals(""))
@@ -262,6 +263,9 @@ public class AddNewPigActivity extends AppCompatActivity {
                         ApiHelper.addPig("addPig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                                if(radiobutton.getText().toString().equals("Breeder")){
+                                    addRegId();
+                                }
                                 Toast.makeText(AddNewPigActivity.this, "Pig added successfully", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(AddNewPigActivity.this, AddNewPigActivity.class);
                                 startActivity(intent);
@@ -285,12 +289,34 @@ public class AddNewPigActivity extends AppCompatActivity {
         });
     }
 
+    private void addRegId(){
+        RequestParams requestParams = new RequestParams();
+        requestParams.add("registration_id", generateRegistrationId());
+
+        ApiHelper.addRegId("addRegId", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("Reg ID", "Added reg ID to database");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("Reg ID", "Error occurred");
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                return null;
+            }
+        });
+    }
+
     private String generateRegistrationId() {
         return "MARMSC"+"Marinduke"+"-"+ getYear(addBirthDate.getText().toString()) + addSex.getSelectedItem().toString() + addAnimalEarnotch.getText().toString();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item){
 
         if(toggle_drawer.onOptionsItemSelected(item)){
             return true;

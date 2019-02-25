@@ -3,14 +3,22 @@ package com.example.ina.nativepigdummy.Fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Dialog.GrossMorphologyDialog;
 import com.example.ina.nativepigdummy.R;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class GrossMorphologyFragment extends Fragment implements GrossMorphologyDialog.ViewGrossMorphListener{
@@ -19,38 +27,99 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
         // Required empty public constructor
     }
 
-    private TextView TextViewDateCollected;
-    private TextView TextViewOtherMarks;
+    private String pigRegIdHolder;
+    private TextView TextViewDateCollected, TextViewOtherMarks;
     private TextView registration_id;
     private ImageView edit_profile;
-
+    private TextView hairType, hairLength, coatColor, colorPattern, headShape, skinType, earType, tailType, backLine;
+    private String date_collected, hair_type, hair_length, coat_color, color_pattern, head_shape, skin_type, ear_type, tail_type, back_line, other_marks;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @ Nullable Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @ Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_gross_morphology, container, false);
         edit_profile = view.findViewById(R.id.edit_gross_morphology);
 
-        registration_id = view.findViewById(R.id.registration_id);
-
-        String tempholder = getActivity().getIntent().getStringExtra("ListClickValue");
-        registration_id.setText(tempholder);
-
         TextViewDateCollected = (TextView) view.findViewById(R.id.textView_dateCollected);
         TextViewOtherMarks = (TextView) view.findViewById(R.id.textView_otherMarks);
+        hairType  = (TextView) view.findViewById(R.id.textView_hairType);
+        hairLength  = (TextView) view.findViewById(R.id.textView_hairLength);
+        coatColor  = (TextView) view.findViewById(R.id.textView_coatColor);
+        colorPattern  = (TextView) view.findViewById(R.id.textView_colorPattern);
+        headShape  = (TextView) view.findViewById(R.id.textView_headShape);
+        skinType  = (TextView) view.findViewById(R.id.textView_skinType);
+        earType  = (TextView) view.findViewById(R.id.textView_earType);
+        tailType  = (TextView) view.findViewById(R.id.textView_tailType);
+        backLine  = (TextView) view.findViewById(R.id.textView_backLine);
+        registration_id = view.findViewById(R.id.registration_id);
+
+        pigRegIdHolder = getActivity().getIntent().getStringExtra("ListClickValue");
+        registration_id.setText(pigRegIdHolder);
+        RequestParams params = buildParams();
+        getSinglePigProfile(params);
 
         edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GrossMorphologyDialog dialog = new GrossMorphologyDialog();
-                dialog.setTargetFragment(GrossMorphologyFragment.this, 1);
-                dialog.show(getFragmentManager(),"GrossMorphologyDialog");
+                openGrossMorphologyDialog(pigRegIdHolder);
             }
         });
 
         return view;
+    }
+
+    private RequestParams buildParams() {
+        RequestParams params = new RequestParams();
+        params.add("registration_id", pigRegIdHolder);
+        return params;
+    }
+
+    private void getSinglePigProfile(RequestParams params) {
+        ApiHelper.getSinglePigProfile("getSinglePigProfile", params, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                TextViewDateCollected.setText(date_collected);
+                TextViewOtherMarks.setText(other_marks);
+                hairType.setText(hair_type);
+                hairLength.setText(hair_length);
+                coatColor.setText(coat_color);
+                colorPattern.setText(color_pattern);
+                headShape.setText(head_shape);
+                skinType.setText(skin_type);
+                earType.setText(ear_type);
+                tailType.setText(tail_type);
+                backLine.setText(back_line);
+                Log.d("GrossMorphology", "Succesfully fetched count");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("GrossMorphology", "Error: " + String.valueOf(statusCode));
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONObject jsonObject = new JSONObject(rawJsonData);
+                date_collected = jsonObject.get("date_collected").toString();
+                hair_type = jsonObject.get("hair_type").toString();
+                hair_length = jsonObject.get("hair_length").toString();
+                coat_color = jsonObject.get("coat_color").toString();
+                color_pattern = jsonObject.get("color_pattern").toString();
+                head_shape = jsonObject.get("head_shape").toString();
+                skin_type = jsonObject.get("skin_type").toString();
+                ear_type = jsonObject.get("ear_type").toString();
+                tail_type = jsonObject.get("tail_type").toString();
+                back_line = jsonObject.get("backline").toString();
+                other_marks = jsonObject.get("other_marks").toString();
+                return null;
+            }
+        });
+    }
+
+    public void openGrossMorphologyDialog(String regId){
+        GrossMorphologyDialog dialog = new GrossMorphologyDialog(regId);
+        dialog.setTargetFragment(GrossMorphologyFragment.this, 1);
+        dialog.show(getFragmentManager(),"GrossMorphologyDialog");
     }
 
     @Override public void applyDateCollected(String datecollected){ TextViewDateCollected.setText(datecollected); }

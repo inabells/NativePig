@@ -18,34 +18,29 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.R;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 public class GrossMorphologyDialog extends DialogFragment {
     private static final String TAG = "GrossMorphologyDialog";
     private EditText datecollected;
-    private RadioButton hairtypecurly;
-    private RadioButton hairtypestraight;
-    private RadioButton hairlengthshort;
-    private RadioButton hairlengthlong;
-    private RadioButton coatcolorblack;
-    private RadioButton coatcolorothers;
-    private RadioButton colorpatternplain;
-    private RadioButton colorpatternsocks;
-    private RadioButton headshapeconcave;
-    private RadioButton headshapestraight;
-    private RadioButton skintypesmooth;
-    private RadioButton skintypewrinkled;
-    private RadioButton eartypedrooping;
-    private RadioButton eartypesemilop;
-    private RadioButton eartypeerect;
-    private RadioButton tailtypecurly;
-    private RadioButton tailtypestraight;
-    private RadioButton backlineswayback;
-    private RadioButton backlinestraight;
+    private RadioGroup hairType, hairLength, coatColor, colorPattern, headShape, skinType, earType, tailType, backLine;
     private EditText othermarks;
     public ViewGrossMorphListener onViewGrossMorphListener;
+    private String reg_id;
+
+    public GrossMorphologyDialog(String reg_id){
+        this.reg_id = reg_id;
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
@@ -55,27 +50,16 @@ public class GrossMorphologyDialog extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_gross_morphology,null);
 
         datecollected = view.findViewById(R.id.date_collected_gross);
-        hairtypecurly = view.findViewById(R.id.hair_type_curly);
-        hairtypestraight = view.findViewById(R.id.hair_type_straight);
-        hairlengthshort = view.findViewById(R.id.hair_length_short);
-        hairlengthlong = view.findViewById(R.id.hair_length_long);
-        coatcolorblack = view.findViewById(R.id.coat_color_black);
-        coatcolorothers = view.findViewById(R.id.coat_color_others);
-        colorpatternplain = view.findViewById(R.id.color_pattern_plain);
-        colorpatternsocks = view.findViewById(R.id.color_pattern_socks);
-        headshapeconcave = view.findViewById(R.id.head_shape_concave);
-        headshapestraight = view.findViewById(R.id.head_shape_straight);
-        skintypesmooth = view.findViewById(R.id.skin_type_smooth);
-        skintypewrinkled = view.findViewById(R.id.skin_type_wrinkled);
-        eartypedrooping = view.findViewById(R.id.ear_type_drooping);
-        eartypesemilop = view.findViewById(R.id.ear_type_semi_lop);
-        eartypeerect = view.findViewById(R.id.ear_type_erect);
-        tailtypecurly = view.findViewById(R.id.tail_type_curly);
-        tailtypestraight = view.findViewById(R.id.tail_type_straight);
-        backlineswayback = view.findViewById(R.id.backline_swayback);
-        backlinestraight = view.findViewById(R.id.backline_straight);
+        hairType = view.findViewById(R.id.radioGroup_HairType);
+        hairLength = view.findViewById(R.id.radioGroup_HairLength);
+        coatColor = view.findViewById(R.id.radioGroup_CoatColor);
+        colorPattern = view.findViewById(R.id.radioGroup_ColorPattern);
+        headShape = view.findViewById(R.id.radioGroup_HeadShape);
+        skinType = view.findViewById(R.id.radioGroup_SkinType);
+        earType = view.findViewById(R.id.radioGroup_EarType);
+        tailType = view.findViewById(R.id.radioGroup_TailType);
+        backLine = view.findViewById(R.id.radioGroup_BackLine);
         othermarks = view.findViewById(R.id.other_marks);
-;
 
         builder.setView(view)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
@@ -84,15 +68,15 @@ public class GrossMorphologyDialog extends DialogFragment {
 
                     }
                 })
-                .setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String editdatecollected = datecollected.getText().toString();
-                        String editdothermarks = othermarks.getText().toString();
-
-                        if(!editdatecollected.equals("")) onViewGrossMorphListener.applyDateCollected(editdatecollected);
-                        if(!editdothermarks.equals("")) onViewGrossMorphListener.applyOtherMarks(editdothermarks);
-
+                        if(ApiHelper.isInternetAvailable(getContext())){
+                            RequestParams requestParams = buildParams(reg_id);
+                            updateGrossMorphology(requestParams);
+                        }else{
+                            Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                 });
@@ -100,12 +84,60 @@ public class GrossMorphologyDialog extends DialogFragment {
         return builder.create();
     }
 
+    private void updateGrossMorphology(RequestParams params) {
+        ApiHelper.updateGrossMorphology("updateGrossMorphology", params, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("API HANDLER Success", rawJsonResponse);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("API HANDLER FAIL", errorResponse.toString());
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                return null;
+            }
+        });
+    }
+
+    private RequestParams buildParams(String reg_id) {
+        RequestParams requestParams = new RequestParams();
+        int editHairType = hairType.getCheckedRadioButtonId();
+        int editHairLength = hairLength.getCheckedRadioButtonId();
+        int editCoatColor = coatColor.getCheckedRadioButtonId();
+        int editColorPattern = colorPattern.getCheckedRadioButtonId();
+        int editHeadShape = headShape.getCheckedRadioButtonId();
+        int editSkinType = skinType.getCheckedRadioButtonId();
+        int editEarType = earType.getCheckedRadioButtonId();
+        int editTailType = tailType.getCheckedRadioButtonId();
+        int editBackLine = backLine.getCheckedRadioButtonId();
+        String editDateCollected = datecollected.getText().toString();
+        String editOtherMarks= othermarks.getText().toString();
+
+        requestParams.add("registration_id", reg_id);
+        requestParams.add("date_collected", editDateCollected);
+        requestParams.add("hair_type", (String) ((RadioButton) hairType.findViewById(editHairType)).getText());
+        requestParams.add("hair_length", (String) ((RadioButton) hairLength.findViewById(editHairLength)).getText());
+        requestParams.add("coat_color", (String) ((RadioButton) coatColor.findViewById(editCoatColor)).getText());
+        requestParams.add("color_pattern", (String) ((RadioButton) colorPattern.findViewById(editColorPattern)).getText());
+        requestParams.add("head_shape", (String) ((RadioButton) headShape.findViewById(editHeadShape)).getText());
+        requestParams.add("skin_type", (String) ((RadioButton) skinType.findViewById(editSkinType)).getText());
+        requestParams.add("ear_type", (String) ((RadioButton) earType.findViewById(editEarType)).getText());
+        requestParams.add("tail_type", (String) ((RadioButton) tailType.findViewById(editTailType)).getText());
+        requestParams.add("backline", (String) ((RadioButton) backLine.findViewById(editBackLine)).getText());
+        requestParams.add("other_marks", editOtherMarks);
+
+        return requestParams;
+    }
+
     private void requestFocus (View view){
         if(view.requestFocus()){
             getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
     }
-
 
     public void onStart(){
         super.onStart();
@@ -124,9 +156,7 @@ public class GrossMorphologyDialog extends DialogFragment {
     public interface ViewGrossMorphListener{
         void applyDateCollected(String datecollected);
         void applyOtherMarks(String othermarks);
-
     }
-
 
     @Override
     public  void onAttach(Context context){

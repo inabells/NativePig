@@ -6,8 +6,6 @@ import android.net.NetworkInfo;
 
 import com.loopj.android.http.*;
 
-import java.net.InetAddress;
-
 
 public class ApiHelper {
 
@@ -62,6 +60,14 @@ public class ApiHelper {
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
+    public static void getSinglePigProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void getSinglePigProfileMorph(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
     public static void getAllCount(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
@@ -79,6 +85,10 @@ public class ApiHelper {
         client.post(getAbsoluteUrl(url), request, responseHandler);
     }
 
+    public static void addRegId(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.post(getAbsoluteUrl(url), request, responseHandler);
+    }
+
     //DELETE FUNCTION--------------------------------------------------------------------
     public static void deletePig(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.delete(getAbsoluteUrl(url), request, responseHandler);
@@ -86,6 +96,14 @@ public class ApiHelper {
 
     //UPDATE FUNCTION====================================================================
     public static void updateBreederPigProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.post(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void updateGrossMorphology(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.post(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void updateMorphChar(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.post(getAbsoluteUrl(url), request, responseHandler);
     }
 

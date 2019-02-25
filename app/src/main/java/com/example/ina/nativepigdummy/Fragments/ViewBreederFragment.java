@@ -6,26 +6,18 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.ImageButton;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.DialogFragment;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Dialog.ViewBreederDialog;
-import com.example.ina.nativepigdummy.Dialog.ViewProfileDialog;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -44,13 +36,11 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
     public ViewBreederFragment() {
         // Required empty public constructor
     }
-    private TextView TextViewbirthday, TextViewsex, TextViewbirthweight, TextViewweaningweight, TextViewlittersizebornweight,
-            TextViewageatfirstmating, TextViewageatweaning, TextViewpedigreemother, TextViewpedigreefather;
+    private TextView TextViewbirthday, TextViewsex, TextViewbirthweight, TextViewweaningweight, TextViewlittersizebornweight, TextViewageatfirstmating, TextViewageatweaning, TextViewpedigreemother, TextViewpedigreefather;
     private ImageView edit_profile;
     private TextView registration_id;
     private String pigRegIdHolder;
-    private String birthday, sex, birthweight, weaningweight, littersizebornweight,
-            ageatfirstmating, ageatweaning, pedigreemother, pedigreefather;
+    private String birthday, sex, birthweight, weaningweight, littersizebornweight, ageatfirstmating, ageatweaning, pedigreemother, pedigreefather;
 
     private ImageView imageView;
     private Bitmap bitmap_foto;
@@ -61,7 +51,6 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
     public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_view_breeder, container, false);
-
 
         imageView = view.findViewById(R.id.user_image);
         bitmap_foto = BitmapFactory.decodeResource(getResources(),R.drawable.image);
@@ -84,8 +73,6 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
         registration_id.setText(pigRegIdHolder);
         RequestParams params = buildParams();
         getSinglePig(params);
-
-
 
         edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,7 +120,7 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
                 TextViewageatweaning.setText(ageatweaning);
                 TextViewpedigreemother.setText(pedigreemother);
                 TextViewpedigreefather.setText(pedigreefather);
-                Log.d("ViewBreeder", "Succesfully fetched count");
+                Log.d("ViewBreeder", "Successfully added data");
 
             }
 
@@ -164,43 +151,6 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
         dialog.setTargetFragment(ViewBreederFragment.this, 1);
         dialog.show(getFragmentManager(),"ViewBreederDialog");
     }
-
-    @Override public void applyBirthdayText(String birthday){
-        TextViewbirthday.setText(birthday);
-    }
-
-    @Override public void applySexText(String sex){
-        TextViewsex.setText(sex);
-    }
-
-    @Override public void applyBirthWeightText(String birthweight){
-        TextViewbirthweight.setText(birthweight);
-    }
-
-    @Override public void applyWeaningWeight(String weaningweight){
-        TextViewweaningweight.setText(weaningweight);
-    }
-
-    @Override public void applyLitterSize(String littersizebornweight){
-        TextViewlittersizebornweight.setText(littersizebornweight);
-    }
-
-    @Override public void applyAgeMating(String ageatfirstmating){
-        TextViewageatfirstmating.setText(ageatfirstmating);
-    }
-
-    @Override public void applyAgeWeaning(String ageatweaning){
-        TextViewageatweaning.setText(ageatweaning);
-    }
-
-    @Override public void applyMother(String pedigreemother){
-        TextViewpedigreemother.setText(pedigreemother);
-    }
-
-    @Override public void applyFather(String pedigreefather){
-        TextViewpedigreefather.setText(pedigreefather);
-    }
-
 
     private byte[] imageToByte(ImageView image) {
         Bitmap bitmapFoto = ((BitmapDrawable)image.getDrawable()).getBitmap();
