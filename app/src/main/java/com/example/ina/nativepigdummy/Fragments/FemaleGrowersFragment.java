@@ -67,7 +67,7 @@ public class FemaleGrowersFragment extends Fragment {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
                     Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                    Log.d("API HANDLER FAIL", errorResponse.toString());
+                    Log.d("API HANDLER FAIL", "Error occurred");
                 }
 
                 @Override

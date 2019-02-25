@@ -37,7 +37,7 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/hair_type"
+                    android:id="@+id/sowId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
@@ -51,6 +51,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/textViewSowId"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -67,7 +68,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/hair_length"
+                    android:id="@+id/boarId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
@@ -81,6 +82,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/textViewBoarId"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -97,7 +99,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/coat_color"
+                    android:id="@+id/dateBred"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
@@ -111,6 +113,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/textViewDateBred"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -127,7 +130,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/color_pattern"
+                    android:id="@+id/dateFarrow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
@@ -177,7 +180,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/head_shape"
+                    android:id="@+id/sowStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
@@ -227,7 +230,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/skin_type"
+                    android:id="@+id/sowLitterRecord"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"

@@ -63,22 +63,6 @@ public class SowBoarIDDateBredFragment extends Fragment {
         myDB = new DatabaseHelper(getActivity());
 
         breedingRecordList = new ArrayList<>();
-      /*  Cursor data  = myDB.getBreedingRecordsContents();
-        int numRows = data.getCount();
-        if(numRows == 0){
-            Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
-        }else{
-            int i=0;
-            while(data.moveToNext()){
-                breedingRecordData = new BreedingRecordData(data.getString(1), data.getString(2),data.getString(3));
-                breedingRecordList.add(i, breedingRecordData);
-                System.out.println(data.getString(1)+" "+data.getString(2)+" "+data.getString(3));
-                System.out.println(breedingRecordList.get(i).getSow_id());
-                i++;
-            }
-            BreedingRecordDataAdapter adapter = new BreedingRecordDataAdapter(getActivity(), R.layout.listview_breeding_record, breedingRecordList);
-            listView.setAdapter(adapter);
-        }*/
 
         if(ApiHelper.isInternetAvailable(getContext())) {
             ApiHelper.getBreedingRecord("getBreedingRecord", null, new BaseJsonHttpResponseHandler<Object>() {
@@ -92,7 +76,7 @@ public class SowBoarIDDateBredFragment extends Fragment {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
                     Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                    Log.d("API HANDLER FAIL", errorResponse.toString());
+                    Log.d("API HANDLER FAIL", "Error occurred");
                 }
 
                 @Override
@@ -128,6 +112,8 @@ public class SowBoarIDDateBredFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent_view_breeding = new Intent(getActivity(), ViewBreedingActivity.class);
+                intent_view_breeding.putExtra("sow_id", breedingRecordList.get(i).getSow_id());
+                intent_view_breeding.putExtra("boar_id", breedingRecordList.get(i).getBoar_id());
                 startActivity(intent_view_breeding);
             }
         });
