@@ -107,19 +107,18 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
     }
 
     private void getSinglePig(RequestParams params) {
-//        pigRegIdHolder <- pig_registration_id
         ApiHelper.getSinglePig("getSinglePig", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                TextViewbirthday.setText(birthday);
-                TextViewsex.setText(sex);
-                TextViewbirthweight.setText(birthweight);
-                TextViewweaningweight.setText(weaningweight);
-                TextViewlittersizebornweight.setText(littersizebornweight);
-                TextViewageatfirstmating.setText(ageatfirstmating);
-                TextViewageatweaning.setText(ageatweaning);
-                TextViewpedigreemother.setText(pedigreemother);
-                TextViewpedigreefather.setText(pedigreefather);
+                TextViewbirthday.setText(setDefaultTextIfNull(birthday));
+                TextViewsex.setText(setDefaultTextIfNull(sex));
+                TextViewbirthweight.setText(setDefaultTextIfNull(birthweight));
+                TextViewweaningweight.setText(setDefaultTextIfNull(weaningweight));
+                TextViewlittersizebornweight.setText(setDefaultTextIfNull(littersizebornweight));
+                TextViewageatfirstmating.setText(setDefaultTextIfNull(ageatfirstmating));
+                TextViewageatweaning.setText(setDefaultTextIfNull(ageatweaning));
+                TextViewpedigreemother.setText(setDefaultTextIfNull(pedigreemother));
+                TextViewpedigreefather.setText(setDefaultTextIfNull(pedigreefather));
                 Log.d("ViewBreeder", "Successfully added data");
 
             }
@@ -144,6 +143,10 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
                 return null;
             }
         });
+    }
+
+    private String setDefaultTextIfNull(String text) {
+        return ((text=="null" || text.isEmpty()) ? "Not specified" : text);
     }
 
     public void openViewBreederDialog(String pigRegId){

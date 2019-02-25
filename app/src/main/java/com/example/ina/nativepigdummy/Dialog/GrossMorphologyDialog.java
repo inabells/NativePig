@@ -1,5 +1,6 @@
 package com.example.ina.nativepigdummy.Dialog;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -30,13 +31,13 @@ import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
 
+@SuppressLint("ValidFragment")
 public class GrossMorphologyDialog extends DialogFragment {
     private static final String TAG = "GrossMorphologyDialog";
-    private EditText datecollected;
+    private EditText datecollected, othermarks;
     private RadioGroup hairType, hairLength, coatColor, colorPattern, headShape, skinType, earType, tailType, backLine;
-    private EditText othermarks;
+    private String reg_id, date_collected, hair_type, hair_length, coat_color, color_pattern, head_shape, skin_type, ear_type, tail_type, back_line, other_marks;
     public ViewGrossMorphListener onViewGrossMorphListener;
-    private String reg_id;
 
     public GrossMorphologyDialog(String reg_id){
         this.reg_id = reg_id;
@@ -49,6 +50,7 @@ public class GrossMorphologyDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_gross_morphology,null);
 
+        //Radio Group
         datecollected = view.findViewById(R.id.date_collected_gross);
         hairType = view.findViewById(R.id.radioGroup_HairType);
         hairLength = view.findViewById(R.id.radioGroup_HairLength);
@@ -60,6 +62,9 @@ public class GrossMorphologyDialog extends DialogFragment {
         tailType = view.findViewById(R.id.radioGroup_TailType);
         backLine = view.findViewById(R.id.radioGroup_BackLine);
         othermarks = view.findViewById(R.id.other_marks);
+        //Radio Buttons
+
+        getGrossMorphProfile(reg_id, view);
 
         builder.setView(view)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
@@ -131,6 +136,89 @@ public class GrossMorphologyDialog extends DialogFragment {
         requestParams.add("other_marks", editOtherMarks);
 
         return requestParams;
+    }
+
+    private void getGrossMorphProfile(String id, final View view) {
+        RequestParams params = new RequestParams();
+        params.add("registration_id", id);
+
+        ApiHelper.getGrossMorphProfile("getGrossMorphProfile", params, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                datecollected.setText(setBlankIfNull(date_collected));
+                othermarks.setText(setBlankIfNull(other_marks));
+                setCheckedRadioButtons(view);
+                Log.d("GrossMorphology", "Succesfully fetched count");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("GrossMorphology", "Error: " + String.valueOf(statusCode));
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONObject jsonObject = new JSONObject(rawJsonData);
+                date_collected = jsonObject.get("date_collected").toString();
+                hair_type = jsonObject.get("hair_type").toString();
+                hair_length = jsonObject.get("hair_length").toString();
+                coat_color = jsonObject.get("coat_color").toString();
+                color_pattern = jsonObject.get("color_pattern").toString();
+                head_shape = jsonObject.get("head_shape").toString();
+                skin_type = jsonObject.get("skin_type").toString();
+                ear_type = jsonObject.get("ear_type").toString();
+                tail_type = jsonObject.get("tail_type").toString();
+                back_line = jsonObject.get("backline").toString();
+                other_marks = jsonObject.get("other_marks").toString();
+                return null;
+            }
+        });
+    }
+
+    private void setCheckedRadioButtons(View view) {
+        RadioButton hairtypecurly = view.findViewById(R.id.hair_type_curly);
+        RadioButton hairtypestraight = view.findViewById(R.id.hair_type_straight);
+        RadioButton hairlengthshort = view.findViewById(R.id.hair_length_short);
+        RadioButton hairlengthlong = view.findViewById(R.id.hair_length_long);
+        RadioButton coatcolorblack = view.findViewById(R.id.coat_color_black);
+        RadioButton coatcolorothers = view.findViewById(R.id.coat_color_others);
+        RadioButton colorpatternplain = view.findViewById(R.id.color_pattern_plain);
+        RadioButton colorpatternsocks = view.findViewById(R.id.color_pattern_socks);
+        RadioButton headshapeconcave = view.findViewById(R.id.head_shape_concave);
+        RadioButton headshapestraight = view.findViewById(R.id.head_shape_straight);
+        RadioButton skintypesmooth = view.findViewById(R.id.skin_type_smooth);
+        RadioButton skintypewrinkled = view.findViewById(R.id.skin_type_wrinkled);
+        RadioButton eartypedrooping = view.findViewById(R.id.ear_type_drooping);
+        RadioButton eartypesemilop = view.findViewById(R.id.ear_type_semi_lop);
+        RadioButton eartypeerect = view.findViewById(R.id.ear_type_erect);
+        RadioButton tailtypecurly = view.findViewById(R.id.tail_type_curly);
+        RadioButton tailtypestraight = view.findViewById(R.id.tail_type_straight);
+        RadioButton backlineswayback = view.findViewById(R.id.backline_swayback);
+        RadioButton backlinestraight = view.findViewById(R.id.backline_straight);
+
+        if(hair_type.equals("Curly")) hairtypecurly.setChecked(true);
+        else hairtypestraight.setChecked(true);
+        if(hair_length.equals("Short")) hairlengthshort.setChecked(true);
+        else hairlengthlong.setChecked(true);
+        if(coat_color.equals("Black")) coatcolorblack.setChecked(true);
+        else coatcolorothers.setChecked(true);
+        if(color_pattern.equals("Plain")) colorpatternplain.setChecked(true);
+        else colorpatternsocks.setChecked(true);
+        if(head_shape.equals("Concave")) headshapeconcave.setChecked(true);
+        else headshapestraight.setChecked(true);
+        if(skin_type.equals("Smooth")) skintypesmooth.setChecked(true);
+        else skintypewrinkled.setChecked(true);
+        if(ear_type.equals("Drooping")) eartypedrooping.setChecked(true);
+        else if (ear_type.equals("Semi-lop")) eartypesemilop.setChecked(true);
+        else eartypeerect.setChecked(true);
+        if(tail_type.equals("Curly")) tailtypecurly.setChecked(true);
+        else tailtypestraight.setChecked(true);
+        if(back_line.equals("Swayback")) backlineswayback.setChecked(true);
+        else backlinestraight.setChecked(true);
+    }
+
+    private String setBlankIfNull(String text) {
+        return ((text=="null" || text.isEmpty()) ? "" : text);
     }
 
     private void requestFocus (View view){

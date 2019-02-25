@@ -60,11 +60,15 @@ public class ApiHelper {
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
-    public static void getSinglePigProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+    public static void getGrossMorphProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
-    public static void getSinglePigProfileMorph(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+    public static void getMorphCharProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void getWeightProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
@@ -89,6 +93,10 @@ public class ApiHelper {
         client.post(getAbsoluteUrl(url), request, responseHandler);
     }
 
+    public static void addRegIdWeightRecords(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.post(getAbsoluteUrl(url), request, responseHandler);
+    }
+
     //DELETE FUNCTION--------------------------------------------------------------------
     public static void deletePig(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.delete(getAbsoluteUrl(url), request, responseHandler);
@@ -104,6 +112,10 @@ public class ApiHelper {
     }
 
     public static void updateMorphChar(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.post(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void updateWeightRecords(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.post(getAbsoluteUrl(url), request, responseHandler);
     }
 

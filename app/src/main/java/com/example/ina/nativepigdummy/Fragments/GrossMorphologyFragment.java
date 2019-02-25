@@ -56,7 +56,7 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
         pigRegIdHolder = getActivity().getIntent().getStringExtra("ListClickValue");
         registration_id.setText(pigRegIdHolder);
         RequestParams params = buildParams();
-        getSinglePigProfile(params);
+        getGrossMorphProfile(params);
 
         edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,21 +74,21 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
         return params;
     }
 
-    private void getSinglePigProfile(RequestParams params) {
-        ApiHelper.getSinglePigProfile("getSinglePigProfile", params, new BaseJsonHttpResponseHandler<Object>() {
+    private void getGrossMorphProfile(RequestParams params) {
+        ApiHelper.getGrossMorphProfile("getGrossMorphProfile", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                TextViewDateCollected.setText(date_collected);
-                TextViewOtherMarks.setText(other_marks);
-                hairType.setText(hair_type);
-                hairLength.setText(hair_length);
-                coatColor.setText(coat_color);
-                colorPattern.setText(color_pattern);
-                headShape.setText(head_shape);
-                skinType.setText(skin_type);
-                earType.setText(ear_type);
-                tailType.setText(tail_type);
-                backLine.setText(back_line);
+                TextViewDateCollected.setText(setDefaultTextIfNull(date_collected));
+                TextViewOtherMarks.setText(setDefaultTextIfNull(other_marks));
+                hairType.setText(setDefaultTextIfNull(hair_type));
+                hairLength.setText(setDefaultTextIfNull(hair_length));
+                coatColor.setText(setDefaultTextIfNull(coat_color));
+                colorPattern.setText(setDefaultTextIfNull(color_pattern));
+                headShape.setText(setDefaultTextIfNull(head_shape));
+                skinType.setText(setDefaultTextIfNull(skin_type));
+                earType.setText(setDefaultTextIfNull(ear_type));
+                tailType.setText(setDefaultTextIfNull(tail_type));
+                backLine.setText(setDefaultTextIfNull(back_line));
                 Log.d("GrossMorphology", "Succesfully fetched count");
             }
 
@@ -120,6 +120,10 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
         GrossMorphologyDialog dialog = new GrossMorphologyDialog(regId);
         dialog.setTargetFragment(GrossMorphologyFragment.this, 1);
         dialog.show(getFragmentManager(),"GrossMorphologyDialog");
+    }
+
+    private String setDefaultTextIfNull(String text) {
+        return ((text=="null" || text.isEmpty()) ? "Not specified" : text);
     }
 
     @Override public void applyDateCollected(String datecollected){ TextViewDateCollected.setText(datecollected); }

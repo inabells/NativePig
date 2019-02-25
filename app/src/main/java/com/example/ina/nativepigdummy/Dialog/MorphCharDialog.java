@@ -1,5 +1,6 @@
 package com.example.ina.nativepigdummy.Dialog;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -21,13 +22,18 @@ import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONObject;
+
 import cz.msebera.android.httpclient.Header;
 
+@SuppressLint("ValidFragment")
 public class MorphCharDialog extends DialogFragment {
 
     private static final String TAG = "MorphometricCharacteristicsDialog";
     private EditText datecollected, earlength, headlength, snoutlength, bodylength, heartgirth;
     private EditText pelvicwidth, taillength, heightatwithers;
+    private String editDateCollected, editEarLength, editHeadLength, editSnoutLength, editBodyLength,
+            editHeartGirth, editPelvicWidth, editTailLength, editHeightWithers, editNormalTeats;
     private SeekBar numberofnormalteats;
     private TextView progressText;
     public ViewMorphCharListener onViewMorphCharListener;
@@ -74,6 +80,8 @@ public class MorphCharDialog extends DialogFragment {
             }
         });
 
+        getMorphCharProfile(reg_id);
+
         builder.setView(view)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
                     @Override
@@ -91,7 +99,6 @@ public class MorphCharDialog extends DialogFragment {
                             Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
                         }
                     }
-
                 });
 
         return builder.create();
@@ -134,7 +141,7 @@ public class MorphCharDialog extends DialogFragment {
         requestParams.add("ear_length", editEarLength);
         requestParams.add("head_length", editHeadLength);
         requestParams.add("snout_length", editSnoutLength);
-        requestParams.add("body_girth", editBodyLength);
+        requestParams.add("body_length", editBodyLength);
         requestParams.add("heart_girth", editHeartGirth);
         requestParams.add("pelvic_width", editPelvicWidth);
         requestParams.add("tail_length", editTailLength);
@@ -142,6 +149,53 @@ public class MorphCharDialog extends DialogFragment {
         requestParams.add("normal_teats", editNormalTeats);
 
         return requestParams;
+    }
+
+    private void getMorphCharProfile(String id) {
+        RequestParams params = new RequestParams();
+        params.add("registration_id", id);
+
+        ApiHelper.getMorphCharProfile("getMorphCharProfile", params, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                datecollected.setText(setBlankIfNull(editDateCollected));
+                earlength.setText(setBlankIfNull(editEarLength));
+                headlength.setText(setBlankIfNull(editHeadLength));
+                snoutlength.setText(setBlankIfNull(editSnoutLength));
+                bodylength.setText(setBlankIfNull(editBodyLength));
+                heartgirth.setText(setBlankIfNull(editHeartGirth));
+                pelvicwidth.setText(setBlankIfNull(editPelvicWidth));
+                taillength.setText(setBlankIfNull(editTailLength));
+                heightatwithers.setText(setBlankIfNull(editHeightWithers));
+                progressText.setText(setBlankIfNull(editNormalTeats));
+                Log.d("MorphChar", "Succesfully fetched count");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("MorphChar", "Error: " + String.valueOf(statusCode));
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONObject jsonObject = new JSONObject(rawJsonData);
+                editDateCollected = jsonObject.get("date_collected").toString();
+                editEarLength = jsonObject.get("ear_length").toString();
+                editHeadLength = jsonObject.get("head_length").toString();
+                editSnoutLength = jsonObject.get("snout_length").toString();
+                editBodyLength = jsonObject.get("body_length").toString();
+                editHeartGirth = jsonObject.get("heart_girth").toString();
+                editPelvicWidth = jsonObject.get("pelvic_width").toString();
+                editTailLength = jsonObject.get("tail_length").toString();
+                editHeightWithers = jsonObject.get("height_at_withers").toString();
+                editNormalTeats = jsonObject.get("normal_teats").toString();
+                return null;
+            }
+        });
+    }
+
+    private String setBlankIfNull(String text) {
+        return ((text=="null" || text.isEmpty()) ? "" : text);
     }
 
     private void requestFocus (View view){

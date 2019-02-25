@@ -1,5 +1,6 @@
 package com.example.ina.nativepigdummy.Dialog;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -22,6 +23,7 @@ import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
 
+@SuppressLint("ValidFragment")
 public class ViewBreederDialog extends DialogFragment {
     private EditText birthday;
     private EditText sex;
@@ -35,6 +37,7 @@ public class ViewBreederDialog extends DialogFragment {
     public ViewBreederListener onViewBreederListener;
     private String pig_reg_id, pig_bday, pig_sex, pig_birthweight, pig_weaningweight, pig_littersize,
                 pig_ageatfirstmate, pig_ageatweaning, pig_pedigreemother, pig_pedigreefather;
+    private String editBirthday, editSex, editBirthWeight, editWeaningWeight, editLitterSize, editAgeMating, editAgeWean, editPedigreeMother, editPedigreeFather;
 
     public ViewBreederDialog(String pig_reg_id){
         this.pig_reg_id = pig_reg_id;
@@ -57,6 +60,8 @@ public class ViewBreederDialog extends DialogFragment {
         pedigreemother = view.findViewById(R.id.pedigree_mother);
         pedigreefather = view.findViewById(R.id.pedigree_father);
 
+        getSinglePig(pig_reg_id);
+
         builder.setView(view)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
                     @Override
@@ -64,7 +69,7 @@ public class ViewBreederDialog extends DialogFragment {
 
                     }
                 })
-                .setPositiveButton("UPDATE", new DialogInterface.OnClickListener() {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(ApiHelper.isInternetAvailable(getContext())){
@@ -144,6 +149,52 @@ public class ViewBreederDialog extends DialogFragment {
         requestParams.add("pig_father_earnotch", editpedigreefather);
 
         return requestParams;
+    }
+
+    private void getSinglePig(String id) {
+        RequestParams params = new RequestParams();
+        params.add("pig_registration_id", id);
+
+        ApiHelper.getSinglePig("getSinglePig", params, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                birthday.setText(setBlankIfNull(editBirthday));
+                sex.setText(setBlankIfNull(editSex));
+                birthweight.setText(setBlankIfNull(editBirthWeight));
+                weaningweight.setText(setBlankIfNull(editWeaningWeight));
+                littersizebornweight.setText(setBlankIfNull(editLitterSize));
+                ageatfirstmating.setText(setBlankIfNull(editAgeMating));
+                ageatweaning.setText(setBlankIfNull(editAgeWean));
+                pedigreemother.setText(setBlankIfNull(editPedigreeMother));
+                pedigreefather.setText(setBlankIfNull(editPedigreeFather));
+                Log.d("ViewBreeder", "Successfully added data");
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("ViewBreeder", "Error: " + String.valueOf(statusCode));
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONObject jsonObject = new JSONObject(rawJsonData);
+                editBirthday = jsonObject.get("pig_birthdate").toString();
+                editSex = jsonObject.get("sex_ratio").toString();
+                editBirthWeight = jsonObject.get("pig_birthweight").toString();
+                editWeaningWeight = jsonObject.get("pig_weaningweight").toString();
+                editLitterSize = jsonObject.get("litter_size_born_alive").toString();
+                editAgeMating = jsonObject.get("age_first_mating").toString();
+                editAgeWean = jsonObject.get("age_at_weaning").toString();
+                editPedigreeMother = jsonObject.get("pig_mother_earnotch").toString();
+                editPedigreeFather = jsonObject.get("pig_father_earnotch").toString();
+                return null;
+            }
+        });
+    }
+
+    private String setBlankIfNull(String text) {
+        return ((text=="null" || text.isEmpty()) ? "" : text);
     }
 
     private void requestFocus (View view){

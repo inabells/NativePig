@@ -55,7 +55,7 @@ public class MorphCharFragment extends Fragment implements MorphCharDialog.ViewM
         pigRegIdHolder = getActivity().getIntent().getStringExtra("ListClickValue");
         registration_id.setText(pigRegIdHolder);
         RequestParams params = buildParams();
-        getSinglePigProfileMorph(params);
+        getMorphCharProfile(params);
 
         edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,20 +73,20 @@ public class MorphCharFragment extends Fragment implements MorphCharDialog.ViewM
         return params;
     }
 
-    private void getSinglePigProfileMorph(RequestParams params) {
-        ApiHelper.getSinglePigProfileMorph("getSinglePigProfileMorph", params, new BaseJsonHttpResponseHandler<Object>() {
+    private void getMorphCharProfile(RequestParams params) {
+        ApiHelper.getMorphCharProfile("getMorphCharProfile", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                TextViewDateCollected.setText(editDateCollected);
-                TextViewEarLength.setText(editEarLength);
-                TextViewHeadLength.setText(editHeadLength);
-                TextViewSnoutLength.setText(editSnoutLength);
-                TextViewBodyLength.setText(editBodyLength);
-                TextViewHeartGirth.setText(editHeartGirth);
-                TextViewPelvicWidth.setText(editPelvicWidth);
-                TextViewTailLength.setText(editTailLength);
-                TextViewHeightAtWithers.setText(editHeightWithers);
-                TextViewNormalTeats.setText(editNormalTeats);
+                TextViewDateCollected.setText(setDefaultTextIfNull(editDateCollected));
+                TextViewEarLength.setText(setDefaultTextIfNull(editEarLength));
+                TextViewHeadLength.setText(setDefaultTextIfNull(editHeadLength));
+                TextViewSnoutLength.setText(setDefaultTextIfNull(editSnoutLength));
+                TextViewBodyLength.setText(setDefaultTextIfNull(editBodyLength));
+                TextViewHeartGirth.setText(setDefaultTextIfNull(editHeartGirth));
+                TextViewPelvicWidth.setText(setDefaultTextIfNull(editPelvicWidth));
+                TextViewTailLength.setText(setDefaultTextIfNull(editTailLength));
+                TextViewHeightAtWithers.setText(setDefaultTextIfNull(editHeightWithers));
+                TextViewNormalTeats.setText(setDefaultTextIfNull(editNormalTeats));
                 Log.d("MorphChar", "Succesfully fetched count");
             }
 
@@ -117,6 +117,10 @@ public class MorphCharFragment extends Fragment implements MorphCharDialog.ViewM
         MorphCharDialog dialog = new MorphCharDialog(regId);
         dialog.setTargetFragment(MorphCharFragment.this,1);
         dialog.show(getFragmentManager(),"MorphCharDialog");
+    }
+
+    private String setDefaultTextIfNull(String text) {
+        return ((text=="null" || text.isEmpty()) ? "Not specified" : text);
     }
 
     @Override public void applyDateCollected(String datecollected){ TextViewDateCollected.setText(datecollected); }

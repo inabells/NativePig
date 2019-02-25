@@ -266,6 +266,7 @@ public class AddNewPigActivity extends AppCompatActivity {
                                 if(radiobutton.getText().toString().equals("Breeder")){
                                     addRegId();
                                 }
+                                addRegIdWeightRecords();
                                 Toast.makeText(AddNewPigActivity.this, "Pig added successfully", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(AddNewPigActivity.this, AddNewPigActivity.class);
                                 startActivity(intent);
@@ -294,6 +295,28 @@ public class AddNewPigActivity extends AppCompatActivity {
         requestParams.add("registration_id", generateRegistrationId());
 
         ApiHelper.addRegId("addRegId", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("Reg ID", "Added reg ID to database");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("Reg ID", "Error occurred");
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                return null;
+            }
+        });
+    }
+
+    private void addRegIdWeightRecords(){
+        RequestParams requestParams = new RequestParams();
+        requestParams.add("registration_id", generateRegistrationId());
+
+        ApiHelper.addRegIdWeightRecords("addRegIdWeightRecords", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("Reg ID", "Added reg ID to database");

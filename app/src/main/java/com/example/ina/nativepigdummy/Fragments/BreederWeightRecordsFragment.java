@@ -3,15 +3,24 @@ package com.example.ina.nativepigdummy.Fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Dialog.BreederWeightRecordsDialog;
 import com.example.ina.nativepigdummy.Dialog.GrossMorphologyDialog;
+import com.example.ina.nativepigdummy.Dialog.MorphCharDialog;
 import com.example.ina.nativepigdummy.R;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class BreederWeightRecordsFragment extends Fragment implements BreederWeightRecordsDialog.ViewWeightRecordListener{
@@ -19,19 +28,14 @@ public class BreederWeightRecordsFragment extends Fragment implements BreederWei
     public BreederWeightRecordsFragment() {
         // Required empty public constructor
     }
-    private TextView TextViewWeight45;
-    private TextView TextViewWeight60;
-    private TextView TextViewWeight90;
-    private TextView TextViewWeight150;
-    private TextView TextViewWeight180;
-    private TextView TextViewDate45;
-    private TextView TextViewDate60;
-    private TextView TextViewDate90;
-    private TextView TextViewDate150;
-    private TextView TextViewDate180;
-    private ImageView edit_profile;
-    private TextView registration_id;
 
+    private String pigRegIdHolder;
+    private String editWeight45, editWeight60, editWeight90, editWeight150, editWeight180;
+    private String editDate45, editDate60, editDate90, editDate150, editDate180;
+    private TextView TextViewWeight45, TextViewWeight60, TextViewWeight90, TextViewWeight150, TextViewWeight180;
+    private TextView TextViewDate45, TextViewDate60, TextViewDate90, TextViewDate150, TextViewDate180;
+    private TextView registration_id;
+    private ImageView edit_profile;
 
     @Nullable
     @Override
@@ -40,10 +44,6 @@ public class BreederWeightRecordsFragment extends Fragment implements BreederWei
 
         View view = inflater.inflate(R.layout.fragment_breeder_weight_records, container, false);
         edit_profile = view.findViewById(R.id.edit_breeder_weight_records);
-        registration_id = view.findViewById(R.id.registration_id);
-
-        String tempholder = getActivity().getIntent().getStringExtra("ListClickValue");
-        registration_id.setText(tempholder);
 
         TextViewWeight45 = (TextView) view.findViewById(R.id.textView_45days);
         TextViewWeight60 = (TextView) view.findViewById(R.id.textView_60days);
@@ -56,17 +56,77 @@ public class BreederWeightRecordsFragment extends Fragment implements BreederWei
         TextViewDate150 = (TextView) view.findViewById(R.id.textView_150date);
         TextViewDate180 = (TextView) view.findViewById(R.id.textView_180date);
 
+        registration_id = view.findViewById(R.id.registration_id);
+
+        pigRegIdHolder = getActivity().getIntent().getStringExtra("ListClickValue");
+        registration_id.setText(pigRegIdHolder);
+        RequestParams params = buildParams();
+        getWeightProfile(params);
 
         edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BreederWeightRecordsDialog dialog = new BreederWeightRecordsDialog();
-                dialog.setTargetFragment(BreederWeightRecordsFragment.this, 1);
-                dialog.show(getFragmentManager(),"BreederWeightRecordsDialog");
+                openBreederWeightRecordsDialog(pigRegIdHolder);
             }
         });
 
         return view;
+    }
+
+    private RequestParams buildParams() {
+        RequestParams params = new RequestParams();
+        params.add("registration_id", pigRegIdHolder);
+        return params;
+    }
+
+    private void getWeightProfile(RequestParams params) {
+        ApiHelper.getWeightProfile("getWeightProfile", params, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                TextViewWeight45.setText(setDefaultTextIfNull(editWeight45));
+                TextViewWeight60.setText(setDefaultTextIfNull(editWeight60));
+                TextViewWeight90.setText(setDefaultTextIfNull(editWeight90));
+                TextViewWeight150.setText(setDefaultTextIfNull(editWeight150));
+                TextViewWeight180.setText(setDefaultTextIfNull(editWeight180));
+                TextViewDate45.setText(setDefaultTextIfNull(editDate45));
+                TextViewDate60.setText(setDefaultTextIfNull(editDate60));
+                TextViewDate90.setText(setDefaultTextIfNull(editDate90));
+                TextViewDate150.setText(setDefaultTextIfNull(editDate150));
+                TextViewDate180.setText(setDefaultTextIfNull(editDate180));
+                Log.d("BreederWeightRecords", "Succesfully fetched");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("BreederWeightRecords", "Error: " + String.valueOf(statusCode));
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONObject jsonObject = new JSONObject(rawJsonData);
+                editWeight45 = jsonObject.get("weight_at_45").toString();
+                editWeight60 = jsonObject.get("weight_at_60").toString();
+                editWeight90 = jsonObject.get("weight_at_90").toString();
+                editWeight150 = jsonObject.get("weight_at_150").toString();
+                editWeight180 = jsonObject.get("weight_at_180").toString();
+                editDate45 = jsonObject.get("date_collected_at_45").toString();
+                editDate60 = jsonObject.get("date_collected_at_60").toString();
+                editDate90 = jsonObject.get("date_collected_at_90").toString();
+                editDate150 = jsonObject.get("date_collected_at_150").toString();
+                editDate180 = jsonObject.get("date_collected_at_180").toString();
+                return null;
+            }
+        });
+    }
+
+    private String setDefaultTextIfNull(String text) {
+        return ((text=="null" || text.isEmpty()) ? "Not specified" : text);
+    }
+
+    public void openBreederWeightRecordsDialog(String regId){
+        BreederWeightRecordsDialog dialog = new BreederWeightRecordsDialog(regId);
+        dialog.setTargetFragment(BreederWeightRecordsFragment.this, 1);
+        dialog.show(getFragmentManager(),"BreederWeightRecordsDialog");
     }
 
     @Override public void applyWeight45(String weightat45){ TextViewWeight45.setText(weightat45); }
