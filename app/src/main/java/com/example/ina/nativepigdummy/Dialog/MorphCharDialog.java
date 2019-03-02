@@ -12,12 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -30,10 +30,11 @@ import cz.msebera.android.httpclient.Header;
 public class MorphCharDialog extends DialogFragment {
 
     private static final String TAG = "MorphometricCharacteristicsDialog";
+
+    private DatabaseHelper dbHelper;
     private EditText datecollected, earlength, headlength, snoutlength, bodylength, heartgirth;
     private EditText pelvicwidth, taillength, heightatwithers;
-    private String editDateCollected, editEarLength, editHeadLength, editSnoutLength, editBodyLength,
-            editHeartGirth, editPelvicWidth, editTailLength, editHeightWithers, editNormalTeats;
+    private String editDateCollected, editEarLength, editHeadLength, editSnoutLength, editBodyLength, editHeartGirth, editPelvicWidth, editTailLength, editHeightWithers, editNormalTeats;
     private SeekBar numberofnormalteats;
     private TextView progressText;
     public ViewMorphCharListener onViewMorphCharListener;
@@ -50,6 +51,7 @@ public class MorphCharDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_morph_char,null);
 
+        dbHelper = new DatabaseHelper(getContext());
         datecollected = view.findViewById(R.id.date_collected);
         earlength = view.findViewById(R.id.ear_length);
         headlength = view.findViewById(R.id.head_length);
@@ -94,9 +96,9 @@ public class MorphCharDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         if(ApiHelper.isInternetAvailable(getContext())){
                             RequestParams requestParams = buildParams(reg_id);
-                            updateMorphChar(requestParams);
+                            api_updateMorphChar(requestParams);
                         }else{
-                            Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
+                            local_updateMorphChar();
                         }
                     }
                 });
@@ -104,7 +106,27 @@ public class MorphCharDialog extends DialogFragment {
         return builder.create();
     }
 
-    private void updateMorphChar(RequestParams params) {
+    private void local_updateMorphChar() {
+        String editDateCollected = datecollected.getText().toString();
+        String editEarLength = earlength.getText().toString();
+        String editHeadLength = headlength.getText().toString();
+        String editSnoutLength = snoutlength.getText().toString();
+        String editBodyLength = bodylength.getText().toString();
+        String editHeartGirth = heartgirth.getText().toString();
+        String editPelvicWidth = pelvicwidth.getText().toString();
+        String editTailLength = taillength.getText().toString();
+        String editHeightWithers = heightatwithers.getText().toString();
+        String editNormalTeats = progressText.getText().toString();
+
+        boolean insertData = dbHelper.addMorphCharData(reg_id,
+                editDateCollected, editEarLength, editHeadLength, editSnoutLength, editBodyLength,
+                editHeartGirth, editPelvicWidth, editTailLength, editHeightWithers, editNormalTeats, "false");
+
+        if(insertData) Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
+        else Toast.makeText(getContext(), "Local insert error", Toast.LENGTH_SHORT).show();
+    }
+
+    private void api_updateMorphChar(RequestParams params) {
         ApiHelper.updateMorphChar("updateMorphChar", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {

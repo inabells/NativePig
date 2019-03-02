@@ -268,17 +268,17 @@ public class AddNewPigActivity extends AppCompatActivity {
 
     private void local_addPig(RadioButton radiobutton) {
         boolean insertData = dbHelper.addNewPigData(
-                    radiobutton.getText().toString(),
-                    addAnimalEarnotch.getText().toString(),
-                    addSex.getSelectedItem().toString(),
-                    addBirthDate.getText().toString(),
-                    addWeanDate.getText().toString(),
-                    addBirthWeight.getText().toString(),
-                    addWeanWeight.getText().toString(),
-                    addMotherEarnotch.getText().toString(),
-                    addFatherEarnotch.getText().toString(),
-                    null, null, null, null,
-                    generateRegistrationId(), "false");
+            radiobutton.getText().toString(),
+            addAnimalEarnotch.getText().toString(),
+            addSex.getSelectedItem().toString(),
+            addBirthDate.getText().toString(),
+            addWeanDate.getText().toString(),
+            addBirthWeight.getText().toString(),
+            addWeanWeight.getText().toString(),
+            addMotherEarnotch.getText().toString(),
+            addFatherEarnotch.getText().toString(),
+            null, null, null, null,
+            generateRegistrationId(), "false");
 
         if(insertData)
             Toast.makeText(AddNewPigActivity.this, "Data successfully inserted locally", Toast.LENGTH_SHORT).show();

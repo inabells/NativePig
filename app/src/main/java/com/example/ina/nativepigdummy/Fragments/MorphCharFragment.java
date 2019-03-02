@@ -1,5 +1,6 @@
 package com.example.ina.nativepigdummy.Fragments;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
-import com.example.ina.nativepigdummy.Dialog.GrossMorphologyDialog;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.MorphCharDialog;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
@@ -27,6 +28,7 @@ public class MorphCharFragment extends Fragment implements MorphCharDialog.ViewM
         // Required empty public constructor
     }
 
+    private DatabaseHelper dbHelper;
     private String pigRegIdHolder, editDateCollected, editEarLength, editHeadLength, editSnoutLength, editBodyLength,
             editHeartGirth, editPelvicWidth, editTailLength, editHeightWithers, editNormalTeats;
     private TextView TextViewDateCollected, TextViewEarLength, TextViewHeadLength, TextViewSnoutLength, TextViewBodyLength;
@@ -39,6 +41,7 @@ public class MorphCharFragment extends Fragment implements MorphCharDialog.ViewM
         View view = inflater.inflate(R.layout.fragment_morph_char, container, false);
         edit_profile = view.findViewById(R.id.edit_morph_char);
 
+        dbHelper = new DatabaseHelper(getContext());
         TextViewDateCollected = (TextView) view.findViewById(R.id.textView_dateCollected);
         TextViewEarLength = (TextView) view.findViewById(R.id.textView_earLength);
         TextViewHeadLength = (TextView) view.findViewById(R.id.textView_headLength);
@@ -51,11 +54,15 @@ public class MorphCharFragment extends Fragment implements MorphCharDialog.ViewM
         TextViewNormalTeats = (TextView) view.findViewById(R.id.textView_normalTeats);
 
         registration_id = view.findViewById(R.id.registration_id);
-
         pigRegIdHolder = getActivity().getIntent().getStringExtra("ListClickValue");
         registration_id.setText(pigRegIdHolder);
         RequestParams params = buildParams();
-        getMorphCharProfile(params);
+
+        if(ApiHelper.isInternetAvailable(getContext())){
+            api_getMorphCharProfile(params);
+        } else{
+            local_getMorphCharProfile(pigRegIdHolder);
+        }
 
         edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +80,24 @@ public class MorphCharFragment extends Fragment implements MorphCharDialog.ViewM
         return params;
     }
 
-    private void getMorphCharProfile(RequestParams params) {
+    private void local_getMorphCharProfile(String reg_id) {
+        Cursor data = dbHelper.getMorphCharProfile(reg_id);
+
+        if (data.moveToFirst()) {
+            TextViewDateCollected.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected"))));
+            TextViewEarLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("ear_length"))));
+            TextViewHeadLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("head_length"))));
+            TextViewSnoutLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("snout_length"))));
+            TextViewBodyLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("body_length"))));
+            TextViewHeartGirth.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("heart_girth"))));
+            TextViewPelvicWidth.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pelvic_width"))));
+            TextViewTailLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("tail_length"))));
+            TextViewHeightAtWithers.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("height_at_withers"))));
+            TextViewNormalTeats.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("normal_teats"))));
+        }
+    }
+
+    private void api_getMorphCharProfile(RequestParams params) {
         ApiHelper.getMorphCharProfile("getMorphCharProfile", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {

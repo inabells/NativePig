@@ -6,23 +6,18 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -34,6 +29,8 @@ import cz.msebera.android.httpclient.Header;
 @SuppressLint("ValidFragment")
 public class GrossMorphologyDialog extends DialogFragment {
     private static final String TAG = "GrossMorphologyDialog";
+
+    private DatabaseHelper dbHelper;
     private EditText datecollected, othermarks;
     private RadioGroup hairType, hairLength, coatColor, colorPattern, headShape, skinType, earType, tailType, backLine;
     private String reg_id, date_collected, hair_type, hair_length, coat_color, color_pattern, head_shape, skin_type, ear_type, tail_type, back_line, other_marks;
@@ -50,6 +47,7 @@ public class GrossMorphologyDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_gross_morphology,null);
 
+        dbHelper = new DatabaseHelper(getContext());
         //Radio Group
         datecollected = view.findViewById(R.id.date_collected_gross);
         hairType = view.findViewById(R.id.radioGroup_HairType);
@@ -62,34 +60,62 @@ public class GrossMorphologyDialog extends DialogFragment {
         tailType = view.findViewById(R.id.radioGroup_TailType);
         backLine = view.findViewById(R.id.radioGroup_BackLine);
         othermarks = view.findViewById(R.id.other_marks);
-        //Radio Buttons
 
         getGrossMorphProfile(reg_id, view);
 
         builder.setView(view)
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i){
+            .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i){
 
+                }
+            })
+            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if(ApiHelper.isInternetAvailable(getContext())){
+                        RequestParams requestParams = buildParams(reg_id);
+                        api_updateGrossMorphology(requestParams);
+                    }else{
+                        local_updateGrossMorphology();
                     }
-                })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if(ApiHelper.isInternetAvailable(getContext())){
-                            RequestParams requestParams = buildParams(reg_id);
-                            updateGrossMorphology(requestParams);
-                        }else{
-                            Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
-                        }
-                    }
+                }
 
-                });
+            });
 
         return builder.create();
     }
 
-    private void updateGrossMorphology(RequestParams params) {
+    private void local_updateGrossMorphology() {
+        int editHairType = hairType.getCheckedRadioButtonId();
+        int editHairLength = hairLength.getCheckedRadioButtonId();
+        int editCoatColor = coatColor.getCheckedRadioButtonId();
+        int editColorPattern = colorPattern.getCheckedRadioButtonId();
+        int editHeadShape = headShape.getCheckedRadioButtonId();
+        int editSkinType = skinType.getCheckedRadioButtonId();
+        int editEarType = earType.getCheckedRadioButtonId();
+        int editTailType = tailType.getCheckedRadioButtonId();
+        int editBackLine = backLine.getCheckedRadioButtonId();
+        String editDateCollected = datecollected.getText().toString();
+        String editOtherMarks= othermarks.getText().toString();
+
+        boolean insertData = dbHelper.addGrossMorphologyData(reg_id,
+                editDateCollected, (String) ((RadioButton) hairType.findViewById(editHairType)).getText(),
+                (String) ((RadioButton) hairLength.findViewById(editHairLength)).getText(),
+                (String) ((RadioButton) coatColor.findViewById(editCoatColor)).getText(),
+                (String) ((RadioButton) colorPattern.findViewById(editColorPattern)).getText(),
+                (String) ((RadioButton) headShape.findViewById(editHeadShape)).getText(),
+                (String) ((RadioButton) skinType.findViewById(editSkinType)).getText(),
+                (String) ((RadioButton) earType.findViewById(editEarType)).getText(),
+                (String) ((RadioButton) tailType.findViewById(editTailType)).getText(),
+                (String) ((RadioButton) backLine.findViewById(editBackLine)).getText(),
+                editOtherMarks, "false");
+
+        if(insertData) Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
+        else Toast.makeText(getContext(), "Local insert error", Toast.LENGTH_SHORT).show();
+    }
+
+    private void api_updateGrossMorphology(RequestParams params) {
         ApiHelper.updateGrossMorphology("updateGrossMorphology", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
@@ -98,7 +124,7 @@ public class GrossMorphologyDialog extends DialogFragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Log.d("API HANDLER FAIL", errorResponse.toString());
+                Log.d("API HANDLER FAIL", "Error occurred");
             }
 
             @Override
@@ -249,7 +275,6 @@ public class GrossMorphologyDialog extends DialogFragment {
     @Override
     public  void onAttach(Context context){
         super.onAttach(context);
-
         try{
             onViewGrossMorphListener = (ViewGrossMorphListener) getTargetFragment();
         } catch(ClassCastException e) {

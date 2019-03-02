@@ -19,14 +19,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
-import com.example.ina.nativepigdummy.Activities.AddNewPigActivity;
 import com.example.ina.nativepigdummy.Activities.ViewBreederActivity;
 import com.example.ina.nativepigdummy.Adapters.BoarDataAdapter;
 import com.example.ina.nativepigdummy.Data.BoarData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

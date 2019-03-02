@@ -68,6 +68,14 @@ public class ApiHelper {
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
+    public static void getAllGrossMorphProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void getAllMorphCharProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
     public static void getWeightProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }

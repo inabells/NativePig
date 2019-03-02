@@ -1,5 +1,6 @@
 package com.example.ina.nativepigdummy.Fragments;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.GrossMorphologyDialog;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
@@ -27,6 +29,7 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
         // Required empty public constructor
     }
 
+    private DatabaseHelper dbHelper;
     private String pigRegIdHolder;
     private TextView TextViewDateCollected, TextViewOtherMarks;
     private TextView registration_id;
@@ -40,6 +43,7 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
         View view = inflater.inflate(R.layout.fragment_gross_morphology, container, false);
         edit_profile = view.findViewById(R.id.edit_gross_morphology);
 
+        dbHelper = new DatabaseHelper(getContext());
         TextViewDateCollected = (TextView) view.findViewById(R.id.textView_dateCollected);
         TextViewOtherMarks = (TextView) view.findViewById(R.id.textView_otherMarks);
         hairType  = (TextView) view.findViewById(R.id.textView_hairType);
@@ -56,7 +60,12 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
         pigRegIdHolder = getActivity().getIntent().getStringExtra("ListClickValue");
         registration_id.setText(pigRegIdHolder);
         RequestParams params = buildParams();
-        getGrossMorphProfile(params);
+
+        if(ApiHelper.isInternetAvailable(getContext())) {
+            api_getGrossMorphProfile(params);
+        } else {
+            local_getGrossMorphProfile(pigRegIdHolder);
+        }
 
         edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,7 +83,25 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
         return params;
     }
 
-    private void getGrossMorphProfile(RequestParams params) {
+    private void local_getGrossMorphProfile(String reg_id) {
+        Cursor data = dbHelper.getGrossMorphProfile(reg_id);
+
+        if (data.moveToFirst()) {
+            TextViewDateCollected.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected"))));
+            TextViewOtherMarks.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("other_marks"))));
+            hairType.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("hair_type"))));
+            hairLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("hair_length"))));
+            coatColor.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("coat_color"))));
+            colorPattern.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("color_pattern"))));
+            headShape.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("head_shape"))));
+            skinType.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("skin_type"))));
+            earType.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("ear_type"))));
+            tailType.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("tail_type"))));
+            backLine.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("backline"))));
+        }
+    }
+
+    private void api_getGrossMorphProfile(RequestParams params) {
         ApiHelper.getGrossMorphProfile("getGrossMorphProfile", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
@@ -116,14 +143,14 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
         });
     }
 
+    private String setDefaultTextIfNull(String text) {
+        return ((text=="null" || text.isEmpty()) ? "Not specified" : text);
+    }
+
     public void openGrossMorphologyDialog(String regId){
         GrossMorphologyDialog dialog = new GrossMorphologyDialog(regId);
         dialog.setTargetFragment(GrossMorphologyFragment.this, 1);
         dialog.show(getFragmentManager(),"GrossMorphologyDialog");
-    }
-
-    private String setDefaultTextIfNull(String text) {
-        return ((text=="null" || text.isEmpty()) ? "Not specified" : text);
     }
 
     @Override public void applyDateCollected(String datecollected){ TextViewDateCollected.setText(datecollected); }
