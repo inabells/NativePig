@@ -68,14 +68,14 @@ public class GroupWeighingDialog extends DialogFragment {
                         String editbirthweight= litterbirthweight.getText().toString();
                         String editweaningweight = "No data available";
 
-                        if(editoffspringearnotch.length() != 0 && editsex.length() != 0 && editbirthweight.length() != 0){
-                            addOffspringRecordsData(editoffspringearnotch,editsex, editbirthweight,editweaningweight);
-                            offspringearnotch.setText("");
-                            sex.setSelected(true);
-                            litterbirthweight.setText("");
-                        }else{
-                            Toast.makeText(getActivity(),"Please fill out all the fields!",Toast.LENGTH_LONG).show();
-                        }
+//                        if(editoffspringearnotch.length() != 0 && editsex.length() != 0 && editbirthweight.length() != 0){
+//                            addOffspringRecordsData(editoffspringearnotch,editsex, editbirthweight,editweaningweight);
+//                            offspringearnotch.setText("");
+//                            sex.setSelected(true);
+//                            litterbirthweight.setText("");
+//                        }else{
+//                            Toast.makeText(getActivity(),"Please fill out all the fields!",Toast.LENGTH_LONG).show();
+//                        }
 
                     }
 
@@ -105,12 +105,12 @@ public class GroupWeighingDialog extends DialogFragment {
 
     }
 
-    public void addOffspringRecordsData(String offspringid, String sex, String birthweight, String weaningweight){
-        boolean insertData = myDB.addOffspringRecordsData(offspringid,sex,birthweight,weaningweight);
-        if(insertData==true){
-            Toast.makeText(getActivity(),"Data successfully inserted!",Toast.LENGTH_LONG).show();
-        }else{
-            Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_LONG).show();
-        }
-    }
+//    public void addOffspringRecordsData(String offspringid, String sex, String birthweight, String weaningweight){
+//        boolean insertData = myDB.addOffspringRecordsData(offspringid,sex,birthweight,weaningweight);
+//        if(insertData==true){
+//            Toast.makeText(getActivity(),"Data successfully inserted!",Toast.LENGTH_LONG).show();
+//        }else{
+//            Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_LONG).show();
+//        }
+//    }
 }

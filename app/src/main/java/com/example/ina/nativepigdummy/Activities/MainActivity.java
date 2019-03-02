@@ -58,7 +58,9 @@ public class MainActivity extends AppCompatActivity {
         noOfFemaleGrowers = findViewById(R.id.noOfFemaleGrowers);
         noOfMaleGrowers = findViewById(R.id.noOfMaleGrowers);
 
-        getAllCount();
+        if(ApiHelper.isInternetAvailable(getApplicationContext())) {
+            getAllCount();
+        }
         Calendar calendar = Calendar.getInstance();
         String currentDate =  DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
         TextView textViewDate = findViewById(R.id.textView_dateToday);

@@ -244,15 +244,15 @@ public class OthersDialog extends DialogFragment {
 
     }
 
-    public void addOthersData(String choosepig,String dateremoved, String reason, String age){
-        boolean insertData = myDB.addOthersData(choosepig,dateremoved,reason,age);
-
-        if(insertData==true){
-            Toast.makeText(getActivity(),"Data successfully inserted!",Toast.LENGTH_LONG).show();
-        }else{
-            Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_LONG).show();
-        }
-    }
+//    public void addOthersData(String choosepig,String dateremoved, String reason, String age){
+//        boolean insertData = myDB.addOthersData(choosepig,dateremoved,reason,age);
+//
+//        if(insertData==true){
+//            Toast.makeText(getActivity(),"Data successfully inserted!",Toast.LENGTH_LONG).show();
+//        }else{
+//            Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_LONG).show();
+//        }
+//    }
 }
 
 

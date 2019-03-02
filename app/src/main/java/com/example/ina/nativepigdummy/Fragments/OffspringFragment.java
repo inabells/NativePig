@@ -50,23 +50,23 @@ public class OffspringFragment extends Fragment {
         myDB = new DatabaseHelper(getActivity());
 
         offspringList = new ArrayList<>();
-        Cursor data  = myDB.getOffspringRecordsContent();
-        int numRows = data.getCount();
-        if(numRows == 0){
-            Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
-        }else{
-            int i=0;
-            while(data.moveToNext()){
-                offspringData = new OffspringData(data.getString(1), data.getString(2),data.getString(3), data.getString(4));
-                offspringList.add(i, offspringData);
-                System.out.println(data.getString(1)+" "+data.getString(2)+" "+data.getString(3)+" "+data.getString(4));
-                System.out.println(offspringList.get(i).getOffspring_id());
-                i++;
-            }
-
-            OffspringDataAdapter adapter = new OffspringDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, offspringList);
-            listView.setAdapter(adapter);
-        }
+        //Cursor data  = myDB.getOffspringRecordsContent();
+        //int numRows = data.getCount();
+//        if(numRows == 0){
+//            Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
+//        }else{
+//            int i=0;
+////            while(data.moveToNext()){
+////                offspringData = new OffspringData(data.getString(1), data.getString(2),data.getString(3), data.getString(4));
+////                offspringList.add(i, offspringData);
+////                System.out.println(data.getString(1)+" "+data.getString(2)+" "+data.getString(3)+" "+data.getString(4));
+////                System.out.println(offspringList.get(i).getOffspring_id());
+////                i++;
+////            }
+//
+//            OffspringDataAdapter adapter = new OffspringDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, offspringList);
+//            listView.setAdapter(adapter);
+//        }
 
         group.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,13 +87,13 @@ public class OffspringFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return true;
-    }
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        return true;
+//    }
 }

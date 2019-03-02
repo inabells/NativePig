@@ -57,7 +57,7 @@ public class ViewProfileDialog extends AppCompatDialogFragment {
                         String edittown = town.getText().toString();
                         String editbarangay = barangay.getText().toString();
 
-                        addProfileRecordData(editfarmname,editcontactno, editregion,editprovince,edittown,editbarangay);
+                        //addProfileRecordData(editfarmname,editcontactno, editregion,editprovince,edittown,editbarangay);
 
                         if(!editfarmname.equals("")) listener.applyFarmName(editfarmname);
                         if(!editcontactno.equals("")) listener.applyContactNo(editcontactno);
@@ -95,14 +95,14 @@ public class ViewProfileDialog extends AppCompatDialogFragment {
 
 
 
-    public void addProfileRecordData(String farmname, String contactno, String region, String province, String town, String barangay){
-        boolean insertData = myDB.addProfileRecordData(farmname,contactno,region,province,town,barangay);
-
-        if(insertData==true){
-            Toast.makeText(getActivity(),"Data successfully inserted!",Toast.LENGTH_LONG).show();
-        }else{
-            Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_LONG).show();
-        }
-    }
+//    public void addProfileRecordData(String farmname, String contactno, String region, String province, String town, String barangay){
+//        boolean insertData = myDB.addProfileRecordData(farmname,contactno,region,province,town,barangay);
+//
+//        if(insertData==true){
+//            Toast.makeText(getActivity(),"Data successfully inserted!",Toast.LENGTH_LONG).show();
+//        }else{
+//            Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_LONG).show();
+//        }
+//    }
 
 }

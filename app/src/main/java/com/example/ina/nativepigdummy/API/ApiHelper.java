@@ -101,6 +101,10 @@ public class ApiHelper {
         client.post(getAbsoluteUrl(url), request, responseHandler);
     }
 
+    public static void addAsBreeder(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.post(getAbsoluteUrl(url), request, responseHandler);
+    }
+
     //DELETE FUNCTION--------------------------------------------------------------------
     public static void deletePig(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.delete(getAbsoluteUrl(url), request, responseHandler);

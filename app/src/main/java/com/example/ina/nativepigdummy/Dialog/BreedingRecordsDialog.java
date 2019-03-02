@@ -280,13 +280,13 @@ public class BreedingRecordsDialog extends DialogFragment {
 
     }
 
-    public void addBreedingRecordsData(String sowid, String boarid, String datebred){
-        boolean insertData = myDB.addBreedingRecordsData(sowid, boarid, datebred);
-        if(insertData==true){
-            Toast.makeText(getActivity(),"Data successfully inserted!",Toast.LENGTH_LONG).show();
-        }else{
-            Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_LONG).show();
-        }
-    }
+//    public void addBreedingRecordsData(String sowid, String boarid, String datebred){
+//        boolean insertData = myDB.addBreedingRecordsData(sowid, boarid, datebred);
+//        if(insertData==true){
+//            Toast.makeText(getActivity(),"Data successfully inserted!",Toast.LENGTH_LONG).show();
+//        }else{
+//            Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_LONG).show();
+//        }
+//    }
 
 }

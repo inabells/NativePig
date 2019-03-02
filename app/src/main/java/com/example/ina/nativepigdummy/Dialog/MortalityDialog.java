@@ -287,15 +287,15 @@ public class MortalityDialog extends DialogFragment {
         });
     }
 
-    public void addMortalityData(String choosepig,String datedied, String causeofdeath, String age){
-        boolean insertData = myDB.addMortalityData(choosepig,datedied,causeofdeath,age);
-
-        if(insertData){
-            Toast.makeText(getActivity(),"Data successfully inserted",Toast.LENGTH_LONG).show();
-        }else{
-            Toast.makeText(getActivity(),"Something went wrong",Toast.LENGTH_LONG).show();
-        }
-    }
+//    public void addMortalityData(String choosepig,String datedied, String causeofdeath, String age){
+//        boolean insertData = myDB.addMortalityData(choosepig,datedied,causeofdeath,age);
+//
+//        if(insertData){
+//            Toast.makeText(getActivity(),"Data successfully inserted",Toast.LENGTH_LONG).show();
+//        }else{
+//            Toast.makeText(getActivity(),"Something went wrong",Toast.LENGTH_LONG).show();
+//        }
+//    }
 
     public String computeAge(String birthDate) {
         try {

@@ -1,10 +1,6 @@
 package com.example.ina.nativepigdummy.Fragments;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -15,24 +11,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
-import com.example.ina.nativepigdummy.Activities.ViewBreederActivity;
 import com.example.ina.nativepigdummy.Activities.ViewBreedingActivity;
 import com.example.ina.nativepigdummy.Adapters.BreedingRecordDataAdapter;
-import com.example.ina.nativepigdummy.Adapters.MortalityDataAdapter;
-import com.example.ina.nativepigdummy.Data.BoarData;
 import com.example.ina.nativepigdummy.Data.BreedingRecordData;
-import com.example.ina.nativepigdummy.Data.MortalityData;
-import com.example.ina.nativepigdummy.Data.OthersData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.BreedingRecordsDialog;
-import com.example.ina.nativepigdummy.Dialog.MortalityDialog;
 import com.example.ina.nativepigdummy.R;
 import com.github.clans.fab.FloatingActionButton;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;

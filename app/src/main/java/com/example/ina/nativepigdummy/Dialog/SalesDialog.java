@@ -240,14 +240,14 @@ public class SalesDialog extends DialogFragment {
 
     }
 
-    public void addSalesData(String choosepig, String datesold, String weightsold, String age){
-        boolean insertData = myDB.addSalesData(choosepig,datesold,weightsold,age);
-        if(insertData==true){
-            Toast.makeText(getActivity(),"Data successfully inserted!",Toast.LENGTH_LONG).show();
-        }else{
-            Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_LONG).show();
-        }
-    }
+//    public void addSalesData(String choosepig, String datesold, String weightsold, String age){
+//        boolean insertData = myDB.addSalesData(choosepig,datesold,weightsold,age);
+//        if(insertData==true){
+//            Toast.makeText(getActivity(),"Data successfully inserted!",Toast.LENGTH_LONG).show();
+//        }else{
+//            Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_LONG).show();
+//        }
+//    }
 }
 
 

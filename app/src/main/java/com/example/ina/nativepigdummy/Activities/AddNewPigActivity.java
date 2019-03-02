@@ -5,16 +5,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -36,7 +34,6 @@ import com.example.ina.nativepigdummy.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,7 +46,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class AddNewPigActivity extends AppCompatActivity {
 
-    DatabaseHelper addnewpigDB;
+    private DatabaseHelper dbHelper;
     private DrawerLayout drawer_layout;
     private ImageView imageView;
     private ActionBarDrawerToggle toggle_drawer;
@@ -67,7 +64,7 @@ public class AddNewPigActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_pig);
 
-        addnewpigDB = new DatabaseHelper(this);
+        dbHelper = new DatabaseHelper(this);
 
         navigation_view = findViewById(R.id.nav_view);
         imageView = findViewById(R.id.user_image);
@@ -243,49 +240,74 @@ public class AddNewPigActivity extends AppCompatActivity {
                 int selectedId = group.getCheckedRadioButtonId();
                 final RadioButton radiobutton = findViewById(selectedId);
 
-                if(ApiHelper.isInternetAvailable(getApplicationContext())) {
-                    if (addAnimalEarnotch.getText().toString().equals(""))
-                        Toast.makeText(AddNewPigActivity.this, "Please fill out Animal Earnotch", Toast.LENGTH_SHORT).show();
-                    else if (radiobutton == null)
-                        Toast.makeText(AddNewPigActivity.this, "Please fill out Classification", Toast.LENGTH_SHORT).show();
-                    else {
-                        requestParams.add("pig_classification", radiobutton.getText().toString());
-                        requestParams.add("pig_earnotch", addAnimalEarnotch.getText().toString());
-                        requestParams.add("pig_sex", addSex.getSelectedItem().toString());
-                        requestParams.add("pig_birthdate", addBirthDate.getText().toString());
-                        requestParams.add("pig_weaningdate", addWeanDate.getText().toString());
-                        requestParams.add("pig_birthweight", addBirthWeight.getText().toString());
-                        requestParams.add("pig_weaningweight", addWeanWeight.getText().toString());
-                        requestParams.add("pig_mother_earnotch", addMotherEarnotch.getText().toString());
-                        requestParams.add("pig_father_earnotch", addFatherEarnotch.getText().toString());
-                        requestParams.add("pig_registration_id", generateRegistrationId());
+                if (addAnimalEarnotch.getText().toString().equals(""))
+                    Toast.makeText(AddNewPigActivity.this, "Please fill out Animal Earnotch", Toast.LENGTH_SHORT).show();
+                else if (radiobutton == null)
+                    Toast.makeText(AddNewPigActivity.this, "Please fill out Classification", Toast.LENGTH_SHORT).show();
+                else {
+                    requestParams.add("pig_classification", radiobutton.getText().toString());
+                    requestParams.add("pig_earnotch", addAnimalEarnotch.getText().toString());
+                    requestParams.add("pig_sex", addSex.getSelectedItem().toString());
+                    requestParams.add("pig_birthdate", addBirthDate.getText().toString());
+                    requestParams.add("pig_weaningdate", addWeanDate.getText().toString());
+                    requestParams.add("pig_birthweight", addBirthWeight.getText().toString());
+                    requestParams.add("pig_weaningweight", addWeanWeight.getText().toString());
+                    requestParams.add("pig_mother_earnotch", addMotherEarnotch.getText().toString());
+                    requestParams.add("pig_father_earnotch", addFatherEarnotch.getText().toString());
+                    requestParams.add("pig_registration_id", generateRegistrationId());
 
-                        ApiHelper.addPig("addPig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                                if(radiobutton.getText().toString().equals("Breeder")){
-                                    addRegId();
-                                }
-                                addRegIdWeightRecords();
-                                Toast.makeText(AddNewPigActivity.this, "Pig added successfully", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(AddNewPigActivity.this, AddNewPigActivity.class);
-                                startActivity(intent);
-                            }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                                Toast.makeText(AddNewPigActivity.this, "Error in adding pig", Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                                return null;
-                            }
-                        });
+                    if(ApiHelper.isInternetAvailable(getApplicationContext())) {
+                        api_addPig(requestParams, radiobutton);
+                    } else {
+                        local_addPig(radiobutton);
                     }
-                } else{
-                    Toast.makeText(AddNewPigActivity.this,"No internet connection", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+    }
+
+    private void local_addPig(RadioButton radiobutton) {
+        boolean insertData = dbHelper.addNewPigData(
+                    radiobutton.getText().toString(),
+                    addAnimalEarnotch.getText().toString(),
+                    addSex.getSelectedItem().toString(),
+                    addBirthDate.getText().toString(),
+                    addWeanDate.getText().toString(),
+                    addBirthWeight.getText().toString(),
+                    addWeanWeight.getText().toString(),
+                    addMotherEarnotch.getText().toString(),
+                    addFatherEarnotch.getText().toString(),
+                    null, null, null, null,
+                    generateRegistrationId());
+
+        if(insertData)
+            Toast.makeText(AddNewPigActivity.this, "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(AddNewPigActivity.this, "Local insert error", Toast.LENGTH_SHORT).show();
+    }
+
+    private void api_addPig(RequestParams requestParams, final RadioButton radiobutton) {
+
+        ApiHelper.addPig("addPig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                if(radiobutton.getText().toString().equals("Breeder")){
+                    addRegId();
+                }
+                addRegIdWeightRecords();
+                Toast.makeText(AddNewPigActivity.this, "Pig added successfully", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(AddNewPigActivity.this, AddNewPigActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Toast.makeText(AddNewPigActivity.this, "Error in adding pig", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                return null;
             }
         });
     }
