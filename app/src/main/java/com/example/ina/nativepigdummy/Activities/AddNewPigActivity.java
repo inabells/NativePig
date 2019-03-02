@@ -278,7 +278,7 @@ public class AddNewPigActivity extends AppCompatActivity {
                     addMotherEarnotch.getText().toString(),
                     addFatherEarnotch.getText().toString(),
                     null, null, null, null,
-                    generateRegistrationId());
+                    generateRegistrationId(), "false");
 
         if(insertData)
             Toast.makeText(AddNewPigActivity.this, "Data successfully inserted locally", Toast.LENGTH_SHORT).show();

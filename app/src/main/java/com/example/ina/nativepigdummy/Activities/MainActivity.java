@@ -59,6 +59,12 @@ public class MainActivity extends AppCompatActivity {
         noOfMaleGrowers = findViewById(R.id.noOfMaleGrowers);
 
         if(ApiHelper.isInternetAvailable(getApplicationContext())) {
+            //addAllUnsyncedFromLocalToServer <-boolean
+                //check kung may is_synced = false
+                    //sync tables one by one
+            //clearLocalDatabase
+            //getAllDataFromServer <- boolean
+
             getAllCount();
         }
         Calendar calendar = Calendar.getInstance();

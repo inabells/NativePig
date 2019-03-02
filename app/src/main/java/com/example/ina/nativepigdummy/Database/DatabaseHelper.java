@@ -5,12 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.ContactsContract;
-
-import com.example.ina.nativepigdummy.Dialog.DateDialog;
-import com.loopj.android.http.RequestParams;
-
-import static android.os.Build.ID;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -34,6 +28,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String litter_size_born_alive = "litter_size_born_alive";
     private static final String age_first_mating  = "age_first_mating";
     private static final String age_at_weaning  = "age_at_weaning";
+    private static final String is_synced  = "is_synced";
     private static final String pig_mortality_and_sales = "pig_mortality_and_sales";
     private static final String date_removed_died = "date_removed_died";
     private static final String cause_of_death = "cause_of_death";
@@ -93,11 +88,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String farm_barangay = "farm_barangay";
 
     public DatabaseHelper(Context context){
-        super(context, DATABASE_NAME, null, 13);
+        super(context, DATABASE_NAME, null, 16);
     }
 
     private static final String CREATE_TABLE_ADD_NEW_PIG = "CREATE TABLE " + pig_table + "("
-            + pig_id + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + pig_id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + pig_registration_id + " TEXT,"
             + pig_classification + " TEXT,"
             + pig_earnotch + " TEXT,"
@@ -111,7 +106,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + sex_ratio + " TEXT,"
             + litter_size_born_alive + " TEXT,"
             + age_first_mating + " TEXT,"
-            + age_at_weaning + " TEXT)";
+            + age_at_weaning + " TEXT,"
+            + is_synced + " TEXT)";
 
 
     private static final String CREATE_TABLE_MORTALITY = "CREATE TABLE " + pig_mortality_and_sales + "("
@@ -213,7 +209,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean addNewPigData(String classification, String animalearnotch, String sex, String birthdate, String weaningdate,
                                  String birthweight, String weaningweight, String motherpedigree, String fatherpedigree, String sexratio,
-                                 String littersizebornalive, String agefirstmating, String ageweaning, String regId){
+                                 String littersizebornalive, String agefirstmating, String ageweaning, String regId, String isSynced){
         SQLiteDatabase db =  this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(pig_classification, classification);
@@ -230,6 +226,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(age_first_mating, agefirstmating);
         contentValues.put(age_at_weaning, ageweaning);
         contentValues.put(pig_registration_id, regId);
+        contentValues.put(is_synced, isSynced);
 
         long result = db.insert(pig_table, null, contentValues);
 
@@ -237,15 +234,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else return true;
     }
 
+    public boolean addUnsyncedLocalDataToServerDatabase(){
+
+        return false;
+    }
+
 
     public Cursor getBoarContents(){
         SQLiteDatabase db = this.getWritableDatabase();
-        String columns[] = { "pig_registration_id" };
+        String columns[] = { "*" };
         String whereClause = "pig_classification = ? AND pig_sex = ?";
         String[] whereArgs = new String[]{"Breeder", "M"};
         Cursor data = db.query(DatabaseHelper.pig_table, columns, whereClause , whereArgs, null, null, null);
         return data;
     }
+
+    public Cursor getAllUnsyncedData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String columns[] = { "*" };
+        String whereClause = "is_synced = ?";
+        String[] whereArgs = new String[]{"false"};
+        Cursor data = db.query(DatabaseHelper.pig_table, columns, whereClause, whereArgs, null, null, null);
+        return data;
+    }
+
+    public int setIsSyncedTrue(String reg_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("is_synced", "true");
+        String whereClause = "pig_registration_id = ?";
+        String[] whereArgs = new String[]{reg_id};
+
+        return db.update(DatabaseHelper.pig_table, contentValues, whereClause, whereArgs);
+    }
+
+
 
     /*
     public Cursor getNumOfSow(){

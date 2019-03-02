@@ -19,15 +19,16 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.AddNewPigActivity;
 import com.example.ina.nativepigdummy.Activities.ViewBreederActivity;
 import com.example.ina.nativepigdummy.Adapters.BoarDataAdapter;
 import com.example.ina.nativepigdummy.Data.BoarData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -51,8 +52,14 @@ public class BoarsFragment extends Fragment {
         dbHelper = new DatabaseHelper(getActivity());
         boarList = new ArrayList<>();
 
+        Cursor unSyncedData = null;
         if(ApiHelper.isInternetAvailable(getContext())) {
+            unSyncedData = dbHelper.getAllUnsyncedData();
+            if(unSyncedData.getCount() >= 1)
+                syncDataUsingApi(unSyncedData);
             api_getBoars();
+
+
         } else{
             local_getBoars();
         }
@@ -70,6 +77,51 @@ public class BoarsFragment extends Fragment {
         return view;
     }
 
+    private void syncDataUsingApi(Cursor data) {
+        if (data.moveToFirst()) {
+            RequestParams params = new RequestParams();
+            final String reg_id =  data.getString(data.getColumnIndex("pig_registration_id"));
+
+            params.add("pig_registration_id", reg_id);
+            params.add("pig_classification", data.getString(data.getColumnIndex("pig_classification")));
+            params.add("pig_earnotch", data.getString(data.getColumnIndex("pig_earnotch")));
+            params.add("pig_sex", data.getString(data.getColumnIndex("pig_sex")));
+            params.add("pig_birthdate", data.getString(data.getColumnIndex("pig_birthdate")));
+            params.add("pig_weaningdate", data.getString(data.getColumnIndex("pig_weaningdate")));
+            params.add("pig_birthweight", data.getString(data.getColumnIndex("pig_birthweight")));
+            params.add("pig_weaningweight", data.getString(data.getColumnIndex("pig_weaningweight")));
+            params.add("pig_mother_earnotch", data.getString(data.getColumnIndex("pig_mother_earnotch")));
+            params.add("pig_father_earnotch", data.getString(data.getColumnIndex("pig_father_earnotch")));
+            params.add("sex_ratio", data.getString(data.getColumnIndex("sex_ratio")));
+            params.add("litter_size_born_alive", data.getString(data.getColumnIndex("litter_size_born_alive")));
+            params.add("age_first_mating", data.getString(data.getColumnIndex("age_first_mating")));
+
+            addLocalDataToServerDatabase(params, reg_id);
+        }
+    }
+
+    private void addLocalDataToServerDatabase(RequestParams params, final String reg_id) {
+        ApiHelper.addPig("addPig", params, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+//                    addRegId();
+//                    addRegIdWeightRecords();
+
+                dbHelper.setIsSyncedTrue(reg_id);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                //Toast.makeText(AddNewPigActivity.this, "Error in adding pig", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                return null;
+            }
+        });
+    }
+
     private void local_getBoars() {
         Cursor data = dbHelper.getBoarContents();
         int numRows = data.getCount();
@@ -77,7 +129,7 @@ public class BoarsFragment extends Fragment {
             Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
         }else {
             while (data.moveToNext()) {
-                boarData = new BoarData(data.getString(0));
+                boarData = new BoarData(data.getString(1));
                 boarList.add(boarData);
             }
 
@@ -113,6 +165,50 @@ public class BoarsFragment extends Fragment {
             }
         });
     }
+
+//    private void addRegId(){
+//        RequestParams requestParams = new RequestParams();
+//        requestParams.add("registration_id", generateRegistrationId());
+//
+//        ApiHelper.addRegId("addRegId", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+//                Log.d("Reg ID", "Added reg ID to database");
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+//                Log.d("Reg ID", "Error occurred");
+//            }
+//
+//            @Override
+//            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+//                return null;
+//            }
+//        });
+//    }
+//
+//    private void addRegIdWeightRecords(){
+//        RequestParams requestParams = new RequestParams();
+//        requestParams.add("registration_id", generateRegistrationId());
+//
+//        ApiHelper.addRegIdWeightRecords("addRegIdWeightRecords", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+//                Log.d("Reg ID", "Added reg ID to database");
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+//                Log.d("Reg ID", "Error occurred");
+//            }
+//
+//            @Override
+//            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+//                return null;
+//            }
+//        });
+//    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
