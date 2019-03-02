@@ -2,9 +2,25 @@ package com.example.ina.nativepigdummy.Database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.AddNewPigActivity;
+import com.example.ina.nativepigdummy.Adapters.BoarDataAdapter;
+import com.example.ina.nativepigdummy.Data.BoarData;
+import com.example.ina.nativepigdummy.R;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -249,12 +265,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return data;
     }
 
-    public Cursor getAllUnsyncedData() {
+    public Cursor getAllUnsyncedData(String table_name) {
         SQLiteDatabase db = this.getWritableDatabase();
         String columns[] = { "*" };
         String whereClause = "is_synced = ?";
         String[] whereArgs = new String[]{"false"};
-        Cursor data = db.query(DatabaseHelper.pig_table, columns, whereClause, whereArgs, null, null, null);
+        Cursor data = db.query(table_name, columns, whereClause, whereArgs, null, null, null);
         return data;
     }
 
@@ -266,6 +282,110 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] whereArgs = new String[]{reg_id};
 
         return db.update(DatabaseHelper.pig_table, contentValues, whereClause, whereArgs);
+    }
+
+    public boolean addAllUnsyncedFromLocalToServer() {
+        Cursor unsyncedData = getAllUnsyncedData("pig_table");
+        RequestParams params;
+
+        while(unsyncedData.moveToNext()){
+            params = buildParams(unsyncedData);
+            addPigToServer(params);
+        }
+
+        return true;
+    }
+
+    private RequestParams buildParams(Cursor data) {
+        RequestParams params = new RequestParams();
+
+//        if(data.moveToFirst()) {
+            final String reg_id = data.getString(data.getColumnIndex("pig_registration_id"));
+
+            params.add("pig_registration_id", reg_id);
+            params.add("pig_classification", data.getString(data.getColumnIndex("pig_classification")));
+            params.add("pig_earnotch", data.getString(data.getColumnIndex("pig_earnotch")));
+            params.add("pig_sex", data.getString(data.getColumnIndex("pig_sex")));
+            params.add("pig_birthdate", data.getString(data.getColumnIndex("pig_birthdate")));
+            params.add("pig_weaningdate", data.getString(data.getColumnIndex("pig_weaningdate")));
+            params.add("pig_birthweight", data.getString(data.getColumnIndex("pig_birthweight")));
+            params.add("pig_weaningweight", data.getString(data.getColumnIndex("pig_weaningweight")));
+            params.add("pig_mother_earnotch", data.getString(data.getColumnIndex("pig_mother_earnotch")));
+            params.add("pig_father_earnotch", data.getString(data.getColumnIndex("pig_father_earnotch")));
+            params.add("sex_ratio", data.getString(data.getColumnIndex("sex_ratio")));
+            params.add("litter_size_born_alive", data.getString(data.getColumnIndex("litter_size_born_alive")));
+            params.add("age_first_mating", data.getString(data.getColumnIndex("age_first_mating")));
+//        }
+
+        return params;
+    }
+
+    private void addPigToServer(RequestParams params) {
+        ApiHelper.addPig("addPig", params, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("pigTableLocalToServer", "Successfully added pigs from local to server");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+//                Toast.makeText(AddNewPigActivity.this, "Error in adding pig", Toast.LENGTH_SHORT).show();
+                Log.d("pigTableLocalToServer", "Error in adding");
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+
+                return null;
+            }
+        });
+    }
+
+    public void clearLocalDatabases() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM " + pig_table);
+    }
+
+    public void getAllDataFromServer() {
+        ApiHelper.getAllPigs("getAllPigs", null, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("getAllDataFromServer", "Successfully added data to local from server pigs");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("getAllDataFromServer", "Error occurred");
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONArray jsonArray = new JSONArray(rawJsonData);
+                JSONObject jsonObject;
+                for(int i = jsonArray.length()-1; i>=0; i--){
+                    jsonObject = (JSONObject) jsonArray.get(i);
+                    addNewPigData(
+                            jsonObject.getString("pig_classification"),
+                            jsonObject.getString("pig_earnotch"),
+                            jsonObject.getString("pig_sex"),
+                            jsonObject.getString("pig_birthdate"),
+                            jsonObject.getString("pig_weaningdate"),
+                            jsonObject.getString("pig_birthweight"),
+                            jsonObject.getString("pig_weaningweight"),
+                            jsonObject.getString("pig_mother_earnotch"),
+                            jsonObject.getString("pig_father_earnotch"),
+                            jsonObject.getString("sex_ratio"),
+                            jsonObject.getString("litter_size_born_alive"),
+                            jsonObject.getString("age_first_mating"),
+                            jsonObject.getString("age_at_weaning"),
+                            jsonObject.getString("pig_registration_id"),
+                            "true"
+                    );
+                }
+                return null;
+            }
+        });
+
     }
 
 

@@ -15,8 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -36,6 +38,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
 
+    private DatabaseHelper dbHelper;
     private DrawerLayout drawer_layout;
     private ActionBarDrawerToggle toggle_drawer;
     private Toolbar tool_bar;
@@ -52,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dbHelper = new DatabaseHelper(this);
 
         noOfSows = findViewById(R.id.noOfSows);
         noOfBoars = findViewById(R.id.noOfBoars);
@@ -59,10 +63,17 @@ public class MainActivity extends AppCompatActivity {
         noOfMaleGrowers = findViewById(R.id.noOfMaleGrowers);
 
         if(ApiHelper.isInternetAvailable(getApplicationContext())) {
-            //addAllUnsyncedFromLocalToServer <-boolean
-                //check kung may is_synced = false
-                    //sync tables one by one
-            //clearLocalDatabase
+            boolean isSuccess = dbHelper.addAllUnsyncedFromLocalToServer();
+            if(isSuccess)
+                Toast.makeText(MainActivity.this, "Local Data Added to Server", Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(MainActivity.this, "Error in adding local data to server", Toast.LENGTH_SHORT).show();
+
+            dbHelper.clearLocalDatabases();
+            dbHelper.getAllDataFromServer();
+
+            //addAllUnsyncedFromLocalToServer <-boolean <-DONE
+            //clearLocalDatabase <- DONE
             //getAllDataFromServer <- boolean
 
             getAllCount();

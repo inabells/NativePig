@@ -52,11 +52,11 @@ public class BoarsFragment extends Fragment {
         dbHelper = new DatabaseHelper(getActivity());
         boarList = new ArrayList<>();
 
-        Cursor unSyncedData = null;
+//        Cursor unSyncedData = null;
         if(ApiHelper.isInternetAvailable(getContext())) {
-            unSyncedData = dbHelper.getAllUnsyncedData();
-            if(unSyncedData.getCount() >= 1)
-                syncDataUsingApi(unSyncedData);
+//            unSyncedData = dbHelper.getAllUnsyncedData();
+//            if(unSyncedData.getCount() >= 1)
+//                syncDataUsingApi(unSyncedData);
             api_getBoars();
 
 
