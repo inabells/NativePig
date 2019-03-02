@@ -1,6 +1,8 @@
 package com.example.ina.nativepigdummy.Fragments;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -17,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.ViewBreederDialog;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
@@ -36,6 +39,7 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
     public ViewBreederFragment() {
         // Required empty public constructor
     }
+    private DatabaseHelper dbHelper;
     private TextView TextViewbirthday, TextViewsex, TextViewbirthweight, TextViewweaningweight, TextViewlittersizebornweight, TextViewageatfirstmating, TextViewageatweaning, TextViewpedigreemother, TextViewpedigreefather;
     private ImageView edit_profile;
     private TextView registration_id;
@@ -69,10 +73,17 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
         TextViewpedigreefather = (TextView) view.findViewById(R.id.textViewFatherPedigree);
         registration_id = view.findViewById(R.id.registration_id);
 
+        dbHelper = new DatabaseHelper(getContext());
         pigRegIdHolder = getActivity().getIntent().getStringExtra("ListClickValue");
         registration_id.setText(pigRegIdHolder);
         RequestParams params = buildParams();
-        getSinglePig(params);
+
+
+        if(ApiHelper.isInternetAvailable(getContext()))
+            api_getSinglePig(params);
+        else
+            local_getSinglePig(pigRegIdHolder);
+
 
         edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,7 +117,22 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
         return params;
     }
 
-    private void getSinglePig(RequestParams params) {
+    private void local_getSinglePig(String reg_id) {
+        Cursor data = dbHelper.getSinglePig(reg_id);
+        if (data.moveToFirst()) {
+            TextViewbirthday.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_birthdate"))));
+            TextViewsex.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_weaningdate"))));
+            TextViewbirthweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_birthweight"))));
+            TextViewweaningweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_weaningweight"))));
+            TextViewlittersizebornweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("litter_size_born_alive"))));
+            TextViewageatfirstmating.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("age_first_mating"))));
+            TextViewageatweaning.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("age_at_weaning"))));
+            TextViewpedigreemother.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_mother_earnotch"))));
+            TextViewpedigreefather.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_father_earnotch"))));
+        }
+    }
+
+    private void api_getSinglePig(RequestParams params) {
         ApiHelper.getSinglePig("getSinglePig", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
@@ -120,7 +146,6 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
                 TextViewpedigreemother.setText(setDefaultTextIfNull(pedigreemother));
                 TextViewpedigreefather.setText(setDefaultTextIfNull(pedigreefather));
                 Log.d("ViewBreeder", "Successfully added data");
-
             }
 
             @Override
@@ -146,7 +171,7 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
     }
 
     private String setDefaultTextIfNull(String text) {
-        return ((text=="null" || text.isEmpty()) ? "Not specified" : text);
+        return ((text==null || text.equals("null") || text.equals("") || text.isEmpty()) ? "Not specified" : text);
     }
 
     public void openViewBreederDialog(String pigRegId){

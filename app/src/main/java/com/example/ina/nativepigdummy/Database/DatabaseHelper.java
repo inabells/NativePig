@@ -298,24 +298,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private RequestParams buildParams(Cursor data) {
         RequestParams params = new RequestParams();
+        final String reg_id = data.getString(data.getColumnIndex("pig_registration_id"));
 
-//        if(data.moveToFirst()) {
-            final String reg_id = data.getString(data.getColumnIndex("pig_registration_id"));
-
-            params.add("pig_registration_id", reg_id);
-            params.add("pig_classification", data.getString(data.getColumnIndex("pig_classification")));
-            params.add("pig_earnotch", data.getString(data.getColumnIndex("pig_earnotch")));
-            params.add("pig_sex", data.getString(data.getColumnIndex("pig_sex")));
-            params.add("pig_birthdate", data.getString(data.getColumnIndex("pig_birthdate")));
-            params.add("pig_weaningdate", data.getString(data.getColumnIndex("pig_weaningdate")));
-            params.add("pig_birthweight", data.getString(data.getColumnIndex("pig_birthweight")));
-            params.add("pig_weaningweight", data.getString(data.getColumnIndex("pig_weaningweight")));
-            params.add("pig_mother_earnotch", data.getString(data.getColumnIndex("pig_mother_earnotch")));
-            params.add("pig_father_earnotch", data.getString(data.getColumnIndex("pig_father_earnotch")));
-            params.add("sex_ratio", data.getString(data.getColumnIndex("sex_ratio")));
-            params.add("litter_size_born_alive", data.getString(data.getColumnIndex("litter_size_born_alive")));
-            params.add("age_first_mating", data.getString(data.getColumnIndex("age_first_mating")));
-//        }
+        params.add("pig_registration_id", reg_id);
+        params.add("pig_classification", data.getString(data.getColumnIndex("pig_classification")));
+        params.add("pig_earnotch", data.getString(data.getColumnIndex("pig_earnotch")));
+        params.add("pig_sex", data.getString(data.getColumnIndex("pig_sex")));
+        params.add("pig_birthdate", data.getString(data.getColumnIndex("pig_birthdate")));
+        params.add("pig_weaningdate", data.getString(data.getColumnIndex("pig_weaningdate")));
+        params.add("pig_birthweight", data.getString(data.getColumnIndex("pig_birthweight")));
+        params.add("pig_weaningweight", data.getString(data.getColumnIndex("pig_weaningweight")));
+        params.add("pig_mother_earnotch", data.getString(data.getColumnIndex("pig_mother_earnotch")));
+        params.add("pig_father_earnotch", data.getString(data.getColumnIndex("pig_father_earnotch")));
+        params.add("sex_ratio", data.getString(data.getColumnIndex("sex_ratio")));
+        params.add("litter_size_born_alive", data.getString(data.getColumnIndex("litter_size_born_alive")));
+        params.add("age_first_mating", data.getString(data.getColumnIndex("age_first_mating")));
+        params.add("age_at_weaning", data.getString(data.getColumnIndex("age_at_weaning")));
 
         return params;
     }
@@ -386,6 +384,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         });
 
+    }
+
+    public Cursor getSinglePig(String reg_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String columns[] = { "*" };
+        String whereClause = "pig_registration_id = ?";
+        String[] whereArgs = new String[]{reg_id};
+        Cursor data = db.query("pig_table", columns, whereClause , whereArgs, null, null, null);
+        return data;
     }
 
 
