@@ -66,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
             boolean isSuccess = dbHelper.addAllUnsyncedFromLocalPigTableToServer();
             boolean isSuccess1 = dbHelper.addAllUnsyncedFromLocalGrossMorphologyTableToServer();
             boolean isSuccess2 = dbHelper.addAllUnsyncedFromLocalMorphCharTableToServer();
-            if(isSuccess && isSuccess1 && isSuccess2)
+            boolean isSuccess3 = dbHelper.addAllUnsyncedFromLocalWeightRecordsTableToServer();
+            if(isSuccess && isSuccess1 && isSuccess2 && isSuccess3)
                 Toast.makeText(MainActivity.this, "Local Data Added to Server", Toast.LENGTH_SHORT).show();
             else
                 Toast.makeText(MainActivity.this, "Error in adding local data to server", Toast.LENGTH_SHORT).show();

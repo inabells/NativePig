@@ -1,5 +1,6 @@
 package com.example.ina.nativepigdummy.Fragments;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.BreederWeightRecordsDialog;
 import com.example.ina.nativepigdummy.Dialog.GrossMorphologyDialog;
 import com.example.ina.nativepigdummy.Dialog.MorphCharDialog;
@@ -29,6 +31,7 @@ public class BreederWeightRecordsFragment extends Fragment implements BreederWei
         // Required empty public constructor
     }
 
+    private DatabaseHelper dbHelper;
     private String pigRegIdHolder;
     private String editWeight45, editWeight60, editWeight90, editWeight150, editWeight180;
     private String editDate45, editDate60, editDate90, editDate150, editDate180;
@@ -45,6 +48,7 @@ public class BreederWeightRecordsFragment extends Fragment implements BreederWei
         View view = inflater.inflate(R.layout.fragment_breeder_weight_records, container, false);
         edit_profile = view.findViewById(R.id.edit_breeder_weight_records);
 
+        dbHelper = new DatabaseHelper(getContext());
         TextViewWeight45 = (TextView) view.findViewById(R.id.textView_45days);
         TextViewWeight60 = (TextView) view.findViewById(R.id.textView_60days);
         TextViewWeight90 = (TextView) view.findViewById(R.id.textView_90days);
@@ -61,7 +65,12 @@ public class BreederWeightRecordsFragment extends Fragment implements BreederWei
         pigRegIdHolder = getActivity().getIntent().getStringExtra("ListClickValue");
         registration_id.setText(pigRegIdHolder);
         RequestParams params = buildParams();
-        getWeightProfile(params);
+
+        if(ApiHelper.isInternetAvailable(getContext())){
+            api_getWeightProfile(params);
+        } else{
+            local_getWeightProfile(pigRegIdHolder);
+        }
 
         edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +88,24 @@ public class BreederWeightRecordsFragment extends Fragment implements BreederWei
         return params;
     }
 
-    private void getWeightProfile(RequestParams params) {
+    private void local_getWeightProfile(String reg_id) {
+        Cursor data = dbHelper.getWeightRecords(reg_id);
+
+        if (data.moveToFirst()) {
+            TextViewWeight45.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("weight_at_45"))));
+            TextViewWeight60.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("weight_at_60"))));
+            TextViewWeight90.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("weight_at_90"))));
+            TextViewWeight150.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("weight_at_150"))));
+            TextViewWeight180.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("weight_at_180"))));
+            TextViewDate45.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected_at_45"))));
+            TextViewDate60.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected_at_60"))));
+            TextViewDate90.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected_at_90"))));
+            TextViewDate150.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected_at_150"))));
+            TextViewDate180.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected_at_180"))));
+        }
+    }
+
+    private void api_getWeightProfile(RequestParams params) {
         ApiHelper.getWeightProfile("getWeightProfile", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {

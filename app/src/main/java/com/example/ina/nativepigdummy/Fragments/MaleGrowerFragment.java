@@ -37,7 +37,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class MaleGrowerFragment extends Fragment {
 
-    DatabaseHelper myDB;
+    DatabaseHelper dbHelper;
     ArrayList<MaleGrowerData> maleList;
     MaleGrowerData maleData;
     ListView nListView;
@@ -47,51 +47,70 @@ public class MaleGrowerFragment extends Fragment {
         setHasOptionsMenu(true);
         View view =  inflater.inflate(R.layout.fragment_male_grower, container, false);
         nListView = view.findViewById(R.id.listview_male_grower);
-        myDB = new DatabaseHelper(getActivity());
+        dbHelper = new DatabaseHelper(getActivity());
         maleList = new ArrayList<>();
 
         if(ApiHelper.isInternetAvailable(getContext())) {
-            ApiHelper.getAllMaleGrowers("getAllMaleGrowers", null, new BaseJsonHttpResponseHandler<Object>() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                    Log.d("API HANDLER Success", rawJsonResponse);
-                    MaleGrowerDataAdapter adapter = new MaleGrowerDataAdapter(getActivity(), R.layout.listview_breeder_grower, maleList);
-                    nListView.setAdapter(adapter);
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                    Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                    Log.d("API HANDLER FAIL", "Error occurred");
-                }
-
-                @Override
-                protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                    JSONArray jsonArray = new JSONArray(rawJsonData);
-                    JSONObject jsonObject;
-                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
-                        jsonObject = (JSONObject) jsonArray.get(i);
-                        maleList.add(new MaleGrowerData(jsonObject.getString("pig_registration_id")));
-                    }
-                    return null;
-                }
-            });
+            api_getMaleGrowers();
         } else{
-                Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_SHORT).show();
-            }
+            local_getMaleGrowers();
+        }
 
-            nListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String listview = maleList.get(i).getMale_grower_reg_id();
-                Intent intent = new Intent(getActivity(), ViewGrowerActivity.class);
-                intent.putExtra("ListClickValue", listview);
-                startActivity(intent);
-            }
+        nListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            String listview = maleList.get(i).getMale_grower_reg_id();
+            Intent intent = new Intent(getActivity(), ViewGrowerActivity.class);
+            intent.putExtra("ListClickValue", listview);
+            startActivity(intent);
+        }
 
         });
 
         return view;
+    }
+
+    private void local_getMaleGrowers(){
+        Cursor data = dbHelper.getMaleGrowerContents();
+        int numRows = data.getCount();
+        if(numRows == 0){
+            Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
+        }else {
+            while (data.moveToNext()) {
+                maleData = new MaleGrowerData(data.getString(1));
+                maleList.add(maleData);
+            }
+            MaleGrowerDataAdapter adapter = new MaleGrowerDataAdapter(getActivity(), R.layout.listview_breeder_grower, maleList);
+            nListView.setAdapter(adapter);
+        }
+    }
+
+    private void api_getMaleGrowers(){
+        ApiHelper.getAllMaleGrowers("getAllMaleGrowers", null, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("API HANDLER Success", rawJsonResponse);
+                MaleGrowerDataAdapter adapter = new MaleGrowerDataAdapter(getActivity(), R.layout.listview_breeder_grower, maleList);
+                nListView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                Log.d("API HANDLER FAIL", "Error occurred");
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONArray jsonArray = new JSONArray(rawJsonData);
+                JSONObject jsonObject;
+                for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                    jsonObject = (JSONObject) jsonArray.get(i);
+                    maleList.add(new MaleGrowerData(jsonObject.getString("pig_registration_id")));
+                }
+                return null;
+            }
+        });
     }
 
     @Override

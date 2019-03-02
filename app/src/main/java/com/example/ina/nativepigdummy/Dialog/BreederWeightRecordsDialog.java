@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -27,6 +28,8 @@ import cz.msebera.android.httpclient.Header;
 @SuppressLint("ValidFragment")
 public class BreederWeightRecordsDialog extends DialogFragment {
     private static final String TAG = "BreederWeightRecordsDialog";
+
+    private DatabaseHelper dbHelper;
     private String reg_id;
     private EditText weightat45, weightat60, weightat90, weightat150, weightat180;
     private EditText datecollected45, datecollected60, datecollected90, datecollected150, datecollected180;
@@ -45,6 +48,7 @@ public class BreederWeightRecordsDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_breeder_weight_records,null);
 
+        dbHelper = new DatabaseHelper(getContext());
         weightat45 = view.findViewById(R.id.weight_45_days);
         weightat60 = view.findViewById(R.id.weight_60_days);
         weightat90 = view.findViewById(R.id.weight_90_days);
@@ -70,9 +74,9 @@ public class BreederWeightRecordsDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         if(ApiHelper.isInternetAvailable(getContext())){
                             RequestParams requestParams = buildParams(reg_id);
-                            updateWeightRecords(requestParams);
+                            api_updateWeightRecords(requestParams);
                         }else{
-                            Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
+                            local_updateWeightRecords();
                         }
                     }
 
@@ -81,7 +85,26 @@ public class BreederWeightRecordsDialog extends DialogFragment {
         return builder.create();
     }
 
-    private void updateWeightRecords(RequestParams params) {
+    private void local_updateWeightRecords() {
+        String editweight45 = weightat45.getText().toString();
+        String editweight60 = weightat60.getText().toString();
+        String editweight90 = weightat90.getText().toString();
+        String editweight150 = weightat150.getText().toString();
+        String editweight180 = weightat180.getText().toString();
+        String editdate45 = datecollected45.getText().toString();
+        String editdate60 = datecollected60.getText().toString();
+        String editdate90 = datecollected90.getText().toString();
+        String editdate150 = datecollected150.getText().toString();
+        String editdate180 = datecollected180.getText().toString();
+
+        boolean insertData = dbHelper.addWeightRecords(reg_id, editdate45, editdate60, editdate90, editdate150, editdate180,
+                editweight45, editweight60, editweight90, editweight150, editweight180, "false");
+
+        if(insertData) Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
+        else Toast.makeText(getContext(), "Local insert error", Toast.LENGTH_SHORT).show();
+    }
+
+    private void api_updateWeightRecords(RequestParams params) {
         ApiHelper.updateWeightRecords("updateWeightRecords", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {

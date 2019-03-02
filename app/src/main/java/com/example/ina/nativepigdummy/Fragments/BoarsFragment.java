@@ -79,7 +79,6 @@ public class BoarsFragment extends Fragment {
                 boarData = new BoarData(data.getString(1));
                 boarList.add(boarData);
             }
-
             BoarDataAdapter adapter = new BoarDataAdapter(getActivity(), R.layout.listview_breeder_grower, boarList);
             nListView.setAdapter(adapter);
         }

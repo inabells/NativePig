@@ -51,7 +51,7 @@ public class MortalityDialog extends DialogFragment {
 
     ArrayList<GetAllPigsData> pigList;
     List<String> stringList = new ArrayList<>();
-    DatabaseHelper myDB;
+    DatabaseHelper dbHelper;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
@@ -63,7 +63,7 @@ public class MortalityDialog extends DialogFragment {
         final AppCompatAutoCompleteTextView autoCompleteTextView = view.findViewById(R.id.choose_pig);
         dateofdeath = view.findViewById(R.id.date_of_death);
         causeofdeath = view.findViewById(R.id.cause_of_death);
-        myDB = new DatabaseHelper(getActivity());
+        dbHelper = new DatabaseHelper(getActivity());
         pigList = new ArrayList<>();
 
         //Setting up the adapter for AutoSuggest
@@ -120,19 +120,12 @@ public class MortalityDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         RequestParams requestParams = buildRequest(autoCompleteTextView);
-
                         if(ApiHelper.isInternetAvailable(getContext())) {
                             deleteAddedPigFromPigTable(requestParams);
                             addMortalityRecord(requestParams);
                         }else{
                             Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
                         }
-//                        Intent intent = new Intent(getContext(), MortalityFragment.class);
-//                        getContext().startActivity(intent)
-//                                addMortalityData(editchoosepig, editdateofdeath, editcauseofdeath,editage);
-//                                autoCompleteTextView.setText("");
-//                                dateofdeath.setText("");
-//                                causeofdeath.setText("");
                     }
                 });
 
@@ -195,20 +188,11 @@ public class MortalityDialog extends DialogFragment {
 
             @Override
             protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-//                JSONArray jsonArray = new JSONArray(rawJsonData);
-//                JSONObject jsonObject = (JSONObject) jsonArray.get(0);
-//                pigDateOfBirth = jsonObject.getString("pig_birthdate");
-//
-//                return null;
-
-
                 JSONArray jsonArray = new JSONArray(rawJsonData);
                 JSONObject jsonObject;
                 for (int i = 0; i < jsonArray.length(); i++) {
                     jsonObject = (JSONObject) jsonArray.get(i);
-//                    if(!jsonObject.getString("pig_birthdate").isEmpty() && jsonObject.getString("pig_birthdate") != null){
                     pigDateOfBirth = jsonObject.getString("pig_birthdate");
-//                    }
                     jsonObject = (JSONObject) jsonArray.get(i);
                     stringList.add(jsonObject.getString("pig_birthdate"));
                 }
@@ -222,7 +206,6 @@ public class MortalityDialog extends DialogFragment {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("addMortality", "Succesfully added");
-
             }
 
             @Override
