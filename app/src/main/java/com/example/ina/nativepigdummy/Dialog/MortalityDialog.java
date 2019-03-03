@@ -3,6 +3,8 @@ package com.example.ina.nativepigdummy.Dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
@@ -20,8 +22,12 @@ import android.text.TextWatcher;
 import android.widget.AdapterView;
 import android.widget.Toast;
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.MortalityAndSalesActivity;
+import com.example.ina.nativepigdummy.Activities.SowLitterActivity;
 import com.example.ina.nativepigdummy.Adapters.AutoAdapter;
+import com.example.ina.nativepigdummy.Adapters.SalesDataAdapter;
 import com.example.ina.nativepigdummy.Data.GetAllPigsData;
+import com.example.ina.nativepigdummy.Data.SalesData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
@@ -30,6 +36,7 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.security.AuthProvider;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,6 +55,7 @@ public class MortalityDialog extends DialogFragment {
     private EditText causeofdeath;
     private EditText dateofdeath;
     private String pigDateOfBirth;
+    GetAllPigsData pigData;
 
     ArrayList<GetAllPigsData> pigList;
     List<String> stringList = new ArrayList<>();
@@ -122,14 +130,30 @@ public class MortalityDialog extends DialogFragment {
                         RequestParams requestParams = buildRequest(autoCompleteTextView);
                         if(ApiHelper.isInternetAvailable(getContext())) {
                             deleteAddedPigFromPigTable(requestParams);
-                            addMortalityRecord(requestParams);
+                            api_addMortalityRecord(requestParams);
                         }else{
-                            Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
+                            local_addMortalityData(autoCompleteTextView);
                         }
                     }
                 });
 
         return builder.create();
+    }
+
+    private void local_addMortalityData(AppCompatAutoCompleteTextView autoCompleteTextView) {
+        final String editchoosepig = autoCompleteTextView.getText().toString();
+        final String editdateofdeath = dateofdeath.getText().toString();
+        final String editcauseofdeath = causeofdeath.getText().toString();
+        String editage = "0 months, 0 days";
+
+        boolean insertData = dbHelper.addMortalitySalesData(editchoosepig, editdateofdeath, editcauseofdeath, null, null, editage, "false");
+
+        if(insertData){
+            Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getActivity(), MortalityAndSalesActivity.class);
+            startActivity(intent);
+        }
+        else Toast.makeText(getContext(), "Local insert error", Toast.LENGTH_SHORT).show();
     }
 
     private RequestParams buildRequest(AppCompatAutoCompleteTextView autoCompleteTextView) {
@@ -174,15 +198,12 @@ public class MortalityDialog extends DialogFragment {
         ApiHelper.getSinglePig("getSinglePig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-
-                //Toast.makeText(getContext(), "Pig added successfully", Toast.LENGTH_SHORT);
                 Log.d("getPigAge", "Succesfully added");
 
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Toast.makeText(getActivity(), "Error in adding pig", Toast.LENGTH_SHORT);
                 Log.d("getPigAge", "Error occurred");
             }
 
@@ -201,7 +222,7 @@ public class MortalityDialog extends DialogFragment {
         });
     }
 
-    private void addMortalityRecord(RequestParams requestParams) {
+    private void api_addMortalityRecord(RequestParams requestParams) {
         ApiHelper.addPigMortalitySales("addPigMortalitySales", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
@@ -221,33 +242,46 @@ public class MortalityDialog extends DialogFragment {
     }
 
     private void generateAutocompletePigList(String text) {
-        ApiHelper.searchPig("searchPig", null, new BaseJsonHttpResponseHandler<Object>() {
+        if(ApiHelper.isInternetAvailable(getContext())) {
+            ApiHelper.searchPig("searchPig", null, new BaseJsonHttpResponseHandler<Object>() {
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("API HANDLER Success", rawJsonResponse);
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                    Log.d("API HANDLER Success", rawJsonResponse);
+                    autoAdapter.setData(stringList);
+                    autoAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                    Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                    Log.d("API HANDLER FAIL", errorResponse.toString());
+                }
+
+                @Override
+                protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                    JSONArray jsonArray = new JSONArray(rawJsonData);
+                    JSONObject jsonObject;
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        jsonObject = (JSONObject) jsonArray.get(i);
+                        stringList.add(jsonObject.getString("pig_registration_id"));
+                    }
+                    return null;
+                }
+            });
+        } else{
+            Cursor data = dbHelper.generatePigList(text);
+            int numRows = data.getCount();
+            if(numRows == 0){
+                Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
+            }else {
+                while (data.moveToNext()) {
+                    stringList.add(data.getString(0));
+                }
                 autoAdapter.setData(stringList);
                 autoAdapter.notifyDataSetChanged();
             }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                Log.d("API HANDLER FAIL", errorResponse.toString());
-            }
-
-            @Override
-            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                JSONArray jsonArray = new JSONArray(rawJsonData);
-                JSONObject jsonObject;
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    jsonObject = (JSONObject) jsonArray.get(i);
-                    stringList.add(jsonObject.getString("pig_registration_id"));
-                }
-                return null;
-            }
-        });
-
+        }
     }
 
     private void requestFocus (View view){
@@ -269,16 +303,6 @@ public class MortalityDialog extends DialogFragment {
             }
         });
     }
-
-//    public void addMortalityData(String choosepig,String datedied, String causeofdeath, String age){
-//        boolean insertData = myDB.addMortalityData(choosepig,datedied,causeofdeath,age);
-//
-//        if(insertData){
-//            Toast.makeText(getActivity(),"Data successfully inserted",Toast.LENGTH_LONG).show();
-//        }else{
-//            Toast.makeText(getActivity(),"Something went wrong",Toast.LENGTH_LONG).show();
-//        }
-//    }
 
     public String computeAge(String birthDate) {
         try {

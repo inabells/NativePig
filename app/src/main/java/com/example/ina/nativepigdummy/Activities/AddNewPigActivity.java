@@ -280,10 +280,12 @@ public class AddNewPigActivity extends AppCompatActivity {
             null, null, null, null,
             generateRegistrationId(), "false");
 
-        if(insertData)
+        if(insertData){
             Toast.makeText(AddNewPigActivity.this, "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
-        else
-            Toast.makeText(AddNewPigActivity.this, "Local insert error", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(AddNewPigActivity.this, AddNewPigActivity.class);
+            startActivity(intent);
+        }
+        else Toast.makeText(AddNewPigActivity.this, "Local insert error", Toast.LENGTH_SHORT).show();
     }
 
     private void api_addPig(RequestParams requestParams, final RadioButton radiobutton) {

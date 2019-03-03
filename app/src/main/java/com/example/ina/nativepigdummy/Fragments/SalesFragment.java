@@ -45,10 +45,9 @@ public class SalesFragment extends Fragment {
 
     ListView listView;
     private FloatingActionButton sales;
-    DatabaseHelper myDB;
-    ArrayList<SalesData> salesList;
     SalesData salesData;
-
+    DatabaseHelper dbHelper;
+    ArrayList<SalesData> salesList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -56,46 +55,13 @@ public class SalesFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_sales, container, false);
         listView = view.findViewById(R.id.listview_sales);
         sales = view.findViewById(R.id.floating_action_sales);
-
-        myDB = new DatabaseHelper(getActivity());
-
+        dbHelper = new DatabaseHelper(getActivity());
         salesList = new ArrayList<>();
 
         if(ApiHelper.isInternetAvailable(getContext())) {
-            ApiHelper.getSales("getSales", null, new BaseJsonHttpResponseHandler<Object>() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                    Log.d("API HANDLER Success", rawJsonResponse);
-                    SalesDataAdapter adapter = new SalesDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, salesList);
-                    listView.setAdapter(adapter);
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                    Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                    Log.d("API HANDLER FAIL", errorResponse.toString());
-                }
-
-                @Override
-                protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                    JSONArray jsonArray = new JSONArray(rawJsonData);
-                    JSONObject jsonObject;
-                    SalesData mData;
-                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
-                        jsonObject = (JSONObject) jsonArray.get(i);
-                        mData = new SalesData();
-                        mData.setSales_reg_id(jsonObject.getString("pig_registration_id"));
-                        mData.setDate_sold(jsonObject.getString("date_removed_died"));
-                        mData.setWeight(jsonObject.getString("weight_sold"));
-                        mData.setAge(jsonObject.getString("age"));
-                        salesList.add(mData);
-                    }
-                    return null;
-                }
-            });
-
+            api_getSalesData();
         } else{
-            Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_SHORT).show();
+            local_getSalesData();
         }
 
         sales.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +74,57 @@ public class SalesFragment extends Fragment {
 
         return view;
     }
+
+    private void local_getSalesData(){
+        Cursor data = dbHelper.getSalesContents();
+        int numRows = data.getCount();
+        if(numRows == 0){
+            Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
+        }else {
+            while (data.moveToNext()) {
+                salesData = new SalesData(data.getString(1), data.getString(2), data.getString(4), data.getString(6));
+                salesList.add(salesData);
+            }
+            SalesDataAdapter adapter = new SalesDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, salesList);
+            listView.setAdapter(adapter);
+        }
+    }
+
+    private void api_getSalesData(){
+        ApiHelper.getSales("getSales", null, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("API HANDLER Success", rawJsonResponse);
+                SalesDataAdapter adapter = new SalesDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, salesList);
+                listView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                Log.d("API HANDLER FAIL", errorResponse.toString());
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONArray jsonArray = new JSONArray(rawJsonData);
+                JSONObject jsonObject;
+                SalesData mData;
+                for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                    jsonObject = (JSONObject) jsonArray.get(i);
+                    mData = new SalesData();
+                    mData.setSales_reg_id(jsonObject.getString("pig_registration_id"));
+                    mData.setDate_sold(jsonObject.getString("date_removed_died"));
+                    mData.setWeight(jsonObject.getString("weight_sold"));
+                    mData.setAge(jsonObject.getString("age"));
+                    salesList.add(mData);
+                }
+                return null;
+            }
+        });
+    }
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

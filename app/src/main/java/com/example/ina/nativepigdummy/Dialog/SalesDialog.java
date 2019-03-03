@@ -3,6 +3,8 @@ package com.example.ina.nativepigdummy.Dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,6 +23,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.MortalityAndSalesActivity;
 import com.example.ina.nativepigdummy.Adapters.AutoAdapter;
 import com.example.ina.nativepigdummy.Data.GetAllPigsData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
@@ -49,7 +52,7 @@ public class SalesDialog extends DialogFragment {
     private AutoAdapter autoAdapter;
     ArrayList<GetAllPigsData> pigList;
     List<String> stringList = new ArrayList<>();
-    DatabaseHelper myDB;
+    DatabaseHelper dbHelper;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
@@ -62,7 +65,7 @@ public class SalesDialog extends DialogFragment {
         datesold = view.findViewById(R.id.date_sold);
         weightsold = view.findViewById(R.id.weight_sold);
         pigList = new ArrayList<>();
-        myDB = new DatabaseHelper(getActivity());
+        dbHelper = new DatabaseHelper(getActivity());
 
         //Setting up the adapter for AutoSuggest
         autoAdapter = new AutoAdapter(getActivity(), android.R.layout.simple_dropdown_item_1line);
@@ -121,14 +124,29 @@ public class SalesDialog extends DialogFragment {
 
                         if(ApiHelper.isInternetAvailable(getContext())) {
                             deleteAddedPigFromPigTable(requestParams);
-                            addMortalityRecord(requestParams);
+                            api_addMortalityRecord(requestParams);
                         }else{
-                            Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
+                            local_addSalesData(autoCompleteTextView);
                         }
                     }
                 });
 
         return builder.create();
+    }
+
+    private void local_addSalesData(AppCompatAutoCompleteTextView autoCompleteTextView) {
+        final String editchoosepig = autoCompleteTextView.getText().toString();
+        String editdatesold = datesold.getText().toString();
+        String editweightsold= weightsold.getText().toString();
+        String editage = "0 months, 0 days";
+
+        boolean insertData = dbHelper.addMortalitySalesData(editchoosepig, editdatesold, null, editweightsold, null, editage, "false");
+
+        if(insertData){
+            Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getActivity(), MortalityAndSalesActivity.class);
+            startActivity(intent);
+        } else Toast.makeText(getContext(), "Local insert error", Toast.LENGTH_SHORT).show();
     }
 
     private RequestParams buildRequest(AppCompatAutoCompleteTextView autoCompleteTextView) {
@@ -142,7 +160,6 @@ public class SalesDialog extends DialogFragment {
         requestParams.add("date_removed_died", editdatesold);
         requestParams.add("weight_sold", editweightsold);
 
-        //getAgeMortality(requestParams);
         requestParams.add("age", editage);
 
         return requestParams;
@@ -170,7 +187,7 @@ public class SalesDialog extends DialogFragment {
         });
     }
 
-    private void addMortalityRecord(RequestParams requestParams) {
+    private void api_addMortalityRecord(RequestParams requestParams) {
         ApiHelper.addPigMortalitySales("addPigMortalitySales", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
@@ -191,33 +208,46 @@ public class SalesDialog extends DialogFragment {
     }
 
     private void generateAutocompletePigList(String text) {
-        ApiHelper.searchPig("searchPig", null, new BaseJsonHttpResponseHandler<Object>() {
+        if(ApiHelper.isInternetAvailable(getContext())){
+            ApiHelper.searchPig("searchPig", null, new BaseJsonHttpResponseHandler<Object>() {
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("API HANDLER Success", rawJsonResponse);
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                    Log.d("API HANDLER Success", rawJsonResponse);
+                    autoAdapter.setData(stringList);
+                    autoAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                    Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                    Log.d("API HANDLER FAIL", "Error occurred");
+                }
+
+                @Override
+                protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                    JSONArray jsonArray = new JSONArray(rawJsonData);
+                    JSONObject jsonObject;
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        jsonObject = (JSONObject) jsonArray.get(i);
+                        stringList.add(jsonObject.getString("pig_registration_id"));
+                    }
+                    return null;
+                }
+            });
+        }else{
+            Cursor data = dbHelper.generatePigList(text);
+            int numRows = data.getCount();
+            if(numRows == 0){
+                Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
+            }else {
+                while (data.moveToNext()) {
+                    stringList.add(data.getString(0));
+                }
                 autoAdapter.setData(stringList);
                 autoAdapter.notifyDataSetChanged();
             }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                Log.d("API HANDLER FAIL", errorResponse.toString());
-            }
-
-            @Override
-            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                JSONArray jsonArray = new JSONArray(rawJsonData);
-                JSONObject jsonObject;
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    jsonObject = (JSONObject) jsonArray.get(i);
-                    stringList.add(jsonObject.getString("pig_registration_id"));
-                }
-                return null;
-            }
-        });
-
+        }
     }
 
     private void requestFocus (View view){
@@ -239,20 +269,4 @@ public class SalesDialog extends DialogFragment {
         });
 
     }
-
-//    public void addSalesData(String choosepig, String datesold, String weightsold, String age){
-//        boolean insertData = myDB.addSalesData(choosepig,datesold,weightsold,age);
-//        if(insertData==true){
-//            Toast.makeText(getActivity(),"Data successfully inserted!",Toast.LENGTH_LONG).show();
-//        }else{
-//            Toast.makeText(getActivity(),"Something went wrong.",Toast.LENGTH_LONG).show();
-//        }
-//    }
 }
-
-
-//                            addSalesData(editchoosepig,editdatesold, editweightsold,editage);
-//                            autoCompleteTextView.setText("");
-//                            datesold.setText("");
-//                            weightsold.setText("");
-
