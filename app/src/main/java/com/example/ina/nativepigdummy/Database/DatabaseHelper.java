@@ -14,6 +14,8 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 import cz.msebera.android.httpclient.Header;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -412,6 +414,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] whereArgs = new String[]{"Grower", "M", "delete"};
         Cursor data = db.query(DatabaseHelper.pig_table, columns, whereClause , whereArgs, null, null, null);
         return data;
+    }
+
+    public HashMap<String, Integer> local_getAllCount() {
+        HashMap<String, Integer> map = new HashMap<>();
+        map.put("sowCount", getSowContents().getCount());
+        map.put("boarCount", getBoarContents().getCount());
+        map.put("femaleGrowerCount", getFemaleGrowerContents().getCount());
+        map.put("maleGrowerCount", getMaleGrowerContents().getCount());
+        return map;
     }
 
     public Cursor getAllUnsyncedData(String table_name){

@@ -1,6 +1,7 @@
 package com.example.ina.nativepigdummy.Activities;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -32,6 +33,7 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -75,7 +77,9 @@ public class MainActivity extends AppCompatActivity {
 
             dbHelper.clearLocalDatabases();
             dbHelper.getAllDataFromServer();
-            getAllCount();
+            api_getAllCount();
+        } else{
+            setLocalCount(dbHelper.local_getAllCount());
         }
 
         Calendar calendar = Calendar.getInstance();
@@ -198,11 +202,21 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Dashboard");
-
-
     }
 
-    private void getAllCount() {
+    private void setLocalCount(HashMap<String, Integer> map) {
+        sowNum = Integer.toString(map.get("sowCount"));
+        boarNum = Integer.toString(map.get("boarCount"));
+        femaleGrowerNum = Integer.toString(map.get("femaleGrowerCount"));
+        maleGrowerNum = Integer.toString(map.get("maleGrowerCount"));
+
+        noOfSows.setText(sowNum);
+        noOfBoars.setText(boarNum);
+        noOfFemaleGrowers.setText(femaleGrowerNum);
+        noOfMaleGrowers.setText(maleGrowerNum);
+    }
+
+    private void api_getAllCount() {
         ApiHelper.getAllCount("getAllCount", null, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
