@@ -28,49 +28,49 @@
             android:gravity="center"
             android:text="@string/registration_id"
             android:textColor="@color/colorWhite"
-            android:textSize="16dp" />
+            android:textSize="14dp" />
 
         <TextView
-            android:layout_weight="25"
             android:layout_width="match_parent"
-            android:layout_gravity="center"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
             android:layout_marginTop="10dp"
+            android:layout_weight="25"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
             android:text="Date Removed"
             android:textColor="@color/colorWhite"
-            android:textSize="16dp" />
+            android:textSize="14dp" />
 
         <TextView
-            android:layout_weight="25"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_weight="25"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
-            android:layout_marginTop="10dp"
             android:text="Reason"
             android:textColor="@color/colorWhite"
-            android:textSize="16dp" />
+            android:textSize="14dp" />
 
         <TextView
-            android:layout_weight="25"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_gravity="center"
             android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:fontFamily="sans-serif-light"
+            android:layout_gravity="center"
             android:layout_marginTop="10dp"
+            android:layout_weight="25"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
             android:text="Age"
             android:textColor="@color/colorWhite"
-            android:textSize="16dp" />
+            android:textSize="14dp" />
 
     </LinearLayout>
 

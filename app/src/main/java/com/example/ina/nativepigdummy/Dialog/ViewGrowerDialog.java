@@ -29,6 +29,10 @@ public class ViewGrowerDialog extends DialogFragment {
     private Button editButton;
     private ImageView exit_profile;
 
+    public ViewGrowerDialog(){
+
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

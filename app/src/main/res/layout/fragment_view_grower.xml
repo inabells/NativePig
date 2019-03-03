@@ -74,7 +74,7 @@
                             android:fontFamily="sans-serif-light"
                             android:text="Edit Weight Records"
                             android:textColor="#000000"
-                            android:textSize="18sp"/>
+                            android:textSize="18sp" />
 
                         <ImageView
                             android:id="@+id/edit_view_grower"
@@ -82,8 +82,8 @@
                             android:layout_height="40dp"
                             android:layout_alignParentEnd="true"
                             android:layout_alignParentTop="true"
-                            android:adjustViewBounds="true"
                             android:layout_gravity="end"
+                            android:adjustViewBounds="true"
                             android:scaleType="centerInside"
                             android:src="@drawable/ic_edit_black" />
 
