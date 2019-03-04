@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -38,6 +39,7 @@ public class ViewBreederDialog extends DialogFragment {
     private String pig_reg_id, pig_bday, pig_sex, pig_birthweight, pig_weaningweight, pig_littersize,
                 pig_ageatfirstmate, pig_ageatweaning, pig_pedigreemother, pig_pedigreefather;
     private String editBirthday, editSex, editBirthWeight, editWeaningWeight, editLitterSize, editAgeMating, editAgeWean, editPedigreeMother, editPedigreeFather;
+    private DatabaseHelper dbHelper;
 
     public ViewBreederDialog(String pig_reg_id){
         this.pig_reg_id = pig_reg_id;
@@ -50,6 +52,7 @@ public class ViewBreederDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_view_breeder,null);
 
+        dbHelper = new DatabaseHelper(getContext());
         birthday = view.findViewById(R.id.birthday);
         sex = view.findViewById(R.id.sex);
         birthweight = view.findViewById(R.id.birth_weight);
@@ -74,9 +77,9 @@ public class ViewBreederDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         if(ApiHelper.isInternetAvailable(getContext())){
                             RequestParams requestParams = buildParams(pig_reg_id);
-                            updateBreederPigProfile(requestParams);
+                            api_updateBreederPigProfile(requestParams);
                         }else{
-                            Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
+                            local_updateBreederPigProfile();
                         }
                     }
 
@@ -85,7 +88,24 @@ public class ViewBreederDialog extends DialogFragment {
         return builder.create();
     }
 
-    private void updateBreederPigProfile(RequestParams params) {
+    private void local_updateBreederPigProfile() {
+       boolean insertData = dbHelper.addBreederDetails(pig_reg_id,
+                    birthday.getText().toString(),
+                    sex.getText().toString(),
+                    birthweight.getText().toString(),
+                    weaningweight.getText().toString(),
+                    littersizebornweight.getText().toString(),
+                    ageatfirstmating.getText().toString(),
+                    ageatweaning.getText().toString(),
+                    pedigreemother.getText().toString(),
+                    pedigreefather.getText().toString(),
+                    "false");
+
+        if(insertData) Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
+        else Toast.makeText(getContext(), "Local insert error", Toast.LENGTH_SHORT).show();
+    }
+
+    private void api_updateBreederPigProfile(RequestParams params) {
         ApiHelper.updateBreederPigProfile("updateBreederPigProfile", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {

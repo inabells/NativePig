@@ -100,7 +100,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String farm_barangay = "farm_barangay";
 
     public DatabaseHelper(Context context){
-        super(context, DATABASE_NAME, null, 21);
+        super(context, DATABASE_NAME, null, 22);
     }
 
     private static final String CREATE_TABLE_PIG = "CREATE TABLE " + pig_table + "("
@@ -273,6 +273,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        if(result == -1) return false;
 //        else return true;
 //    }
+
+    public boolean addBreederDetails(String reg_id, String birthdate, String sexRatio, String birthWeight, String weaningWeight,
+                                     String litterSize, String ageFirstMating, String ageWeaning, String motherEarnotch,
+                                     String fatherEarnotch, String isSynced){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+//        contentValues.put(pig_registration_id, reg_id);
+        contentValues.put(pig_birthdate, birthdate);
+        contentValues.put(sex_ratio, sexRatio);
+        contentValues.put(pig_birthweight, birthWeight);
+        contentValues.put(pig_weaningweight, weaningWeight);
+        contentValues.put(litter_size_born_alive, litterSize);
+        contentValues.put(age_first_mating, ageFirstMating);
+        contentValues.put(age_at_weaning, ageWeaning);
+        contentValues.put(pig_mother_earnotch, motherEarnotch);
+        contentValues.put(pig_father_earnotch, fatherEarnotch);
+        contentValues.put(is_synced, isSynced);
+        String whereClause = "pig_registration_id = ?";
+        String[] whereArgs = new String[]{reg_id};
+        
+        long result = db.update(pig_table, contentValues, whereClause, whereArgs);
+
+        if(result == -1) return false;
+        else return true;
+    }
 
     public boolean addGrossMorphologyData(String regId, String datecollected, String hairtype, String hairlength, String coatcolor, String colopattern,
                                           String headshape, String skintype, String eartype, String tailtype, String back_line, String othermarks, String isSynced){
