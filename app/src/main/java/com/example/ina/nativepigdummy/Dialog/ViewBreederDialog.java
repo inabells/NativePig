@@ -234,6 +234,7 @@ public class ViewBreederDialog extends DialogFragment {
     }
 
     private String setBlankIfNull(String text) {
+        if(text==null) return "";
         return ((text=="null" || text.isEmpty()) ? "" : text);
     }
 
