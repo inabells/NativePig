@@ -100,7 +100,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String farm_barangay = "farm_barangay";
 
     public DatabaseHelper(Context context){
-        super(context, DATABASE_NAME, null, 19);
+        super(context, DATABASE_NAME, null, 21);
     }
 
     private static final String CREATE_TABLE_PIG = "CREATE TABLE " + pig_table + "("
@@ -252,6 +252,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else return true;
     }
 
+//    public boolean updateBreederProfile(String regId, String birthday, String sexRatio, String birthWeight, String weaningWeight, String litterSize,
+//                                        String ageMating, String ageWeaning, String motherPedigree, String fatherPedigree, String isSynced){
+//        SQLiteDatabase db =  this.getWritableDatabase();
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(pig_registration_id, regId);
+//        contentValues.put(pig_birthdate, birthday);
+//        contentValues.put(pig_birthweight, birthWeight);
+//        contentValues.put(pig_weaningweight, weaningWeight);
+//        contentValues.put(pig_mother_earnotch, motherPedigree);
+//        contentValues.put(pig_father_earnotch, fatherPedigree);
+//        contentValues.put(sex_ratio, sexRatio);
+//        contentValues.put(litter_size_born_alive, litterSize);
+//        contentValues.put(age_first_mating, ageMating);
+//        contentValues.put(age_at_weaning, ageWeaning);
+//        contentValues.put(is_synced, isSynced);
+//
+//        long result = db.insert(pig_table, null, contentValues);
+//
+//        if(result == -1) return false;
+//        else return true;
+//    }
+
     public boolean addGrossMorphologyData(String regId, String datecollected, String hairtype, String hairlength, String coatcolor, String colopattern,
                                           String headshape, String skintype, String eartype, String tailtype, String back_line, String othermarks, String isSynced){
         SQLiteDatabase db =  this.getWritableDatabase();
@@ -349,6 +371,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean addBreedingRecord(String sowRegId, String boarRegId, String dateBred, String sowStatus, String dateFarrow, String isSynced){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(sow_registration_id, sowRegId);
+        contentValues.put(boar_registration_id, boarRegId);
+        contentValues.put(date_bred, dateBred);
+        contentValues.put(sow_status, sowStatus);
+        contentValues.put(expected_date_farrow, dateFarrow);
+        contentValues.put(is_synced, isSynced);
+
+        long result = db.insert(pig_breeding_table, null, contentValues);
+
+        if(result == -1) return false;
+        else return true;
+    }
+
     public boolean setIsSyncedFromPigTableToDelete(String regId){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -360,6 +398,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if(success==1) return true;
         else return  false;
+    }
+
+    public boolean addAsBreeder(String regId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(pig_classification, "Breeder");
+        String whereClause = "pig_registration_id = ?";
+        String[] whereArgs = new String[]{regId};
+
+        int success = db.update("pig_table", contentValues, whereClause, whereArgs);
+
+        if(success==1) return true;
+        else return  false;
+    }
+
+    public Cursor getBreedingContents(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String columns[] = {"*"};
+        Cursor data = db.query(DatabaseHelper.pig_breeding_table, columns, null, null, null, null, null);
+        return data;
     }
 
     public Cursor getMortalityContents(){
@@ -932,6 +990,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String columns[] = {"pig_registration_id"};
         String whereClause = "lower(pig_registration_id) LIKE ? AND is_synced != ?";
         String[] whereArgs = new String[]{"%" + reg_id.toLowerCase() +"%", "delete"};
+        Cursor data = db.query("pig_table", columns, whereClause , whereArgs, null, null, null);
+        return data;
+    }
+
+    public Cursor generateSowList(String reg_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String columns[] = {"pig_registration_id"};
+        String whereClause = "lower(pig_registration_id) LIKE ? AND pig_classification = ? AND pig_sex = ?";
+        String[] whereArgs = new String[]{"%" + reg_id.toLowerCase() +"%", "Breeder", "F"};
+        Cursor data = db.query("pig_table", columns, whereClause , whereArgs, null, null, null);
+        return data;
+    }
+
+    public Cursor generateBoarList(String reg_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String columns[] = {"pig_registration_id"};
+        String whereClause = "lower(pig_registration_id) LIKE ? AND pig_classification = ? AND pig_sex = ?";
+        String[] whereArgs = new String[]{"%" + reg_id.toLowerCase() +"%", "Breeder", "M"};
         Cursor data = db.query("pig_table", columns, whereClause , whereArgs, null, null, null);
         return data;
     }
