@@ -1,9 +1,6 @@
 package com.example.ina.nativepigdummy.Fragments;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -13,24 +10,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
-import com.example.ina.nativepigdummy.Adapters.FemaleGrowerDataAdapter;
 import com.example.ina.nativepigdummy.Adapters.MortalityDataAdapter;
-import com.example.ina.nativepigdummy.Adapters.SowDataAdapter;
-import com.example.ina.nativepigdummy.Data.BoarData;
-import com.example.ina.nativepigdummy.Data.FemaleGrowerData;
 import com.example.ina.nativepigdummy.Data.MortalityData;
-import com.example.ina.nativepigdummy.Data.SowData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
-import com.example.ina.nativepigdummy.Dialog.DateDialog;
-import com.example.ina.nativepigdummy.Dialog.GroupWeighingDialog;
 import com.example.ina.nativepigdummy.Dialog.MortalityDialog;
 import com.example.ina.nativepigdummy.R;
 import com.github.clans.fab.FloatingActionButton;

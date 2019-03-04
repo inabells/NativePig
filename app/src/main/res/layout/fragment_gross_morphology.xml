@@ -25,11 +25,12 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/imgUser"
                 android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
                 android:layout_marginTop="15sp"
                 android:fontFamily="sans-serif-light"
                 android:text="Registration ID"
                 android:textColor="@color/colorWhite"
-                android:textSize="32sp" />
+                android:textSize="25sp" />
 
             <ImageView
                 android:id="@+id/edit_gross_morphology"

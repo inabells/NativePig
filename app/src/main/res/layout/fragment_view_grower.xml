@@ -15,7 +15,7 @@
         <RelativeLayout
             android:id="@+id/rellay1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="83dp"
             android:background="@drawable/gradientbackground"
             android:paddingBottom="20dp">
 
@@ -23,13 +23,11 @@
                 android:id="@+id/registration_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/image_user"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="15sp"
+                android:layout_centerInParent="true"
                 android:fontFamily="sans-serif-light"
                 android:text="@string/registration_id"
                 android:textColor="@color/colorWhite"
-                android:textSize="32sp" />
+                android:textSize="25sp" />
 
         </RelativeLayout>
 
@@ -69,7 +67,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:layout_width="286dp"
+                            android:layout_width="257dp"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-light"
                             android:text="Edit Weight Records"
@@ -78,12 +76,12 @@
 
                         <ImageView
                             android:id="@+id/edit_view_grower"
-                            android:layout_width="40dp"
+                            android:layout_width="44dp"
                             android:layout_height="40dp"
                             android:layout_alignParentEnd="true"
                             android:layout_alignParentTop="true"
                             android:layout_gravity="end"
-                            android:adjustViewBounds="true"
+                            android:adjustViewBounds="false"
                             android:scaleType="centerInside"
                             android:src="@drawable/ic_edit_black" />
 

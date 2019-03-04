@@ -197,7 +197,6 @@ public class AddNewPigActivity extends AppCompatActivity {
         }
     }
 
-
     private void requestFocus (View view){
         if(view.requestFocus()){
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);

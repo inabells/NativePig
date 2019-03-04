@@ -28,7 +28,7 @@
             android:gravity="center"
             android:text="@string/registration_id"
             android:textColor="@color/colorWhite"
-            android:textSize="14dp" />
+            android:textSize="12dp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -42,7 +42,7 @@
             android:gravity="center"
             android:text="Date Removed"
             android:textColor="@color/colorWhite"
-            android:textSize="14dp" />
+            android:textSize="12dp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -56,7 +56,7 @@
             android:gravity="center"
             android:text="Reason"
             android:textColor="@color/colorWhite"
-            android:textSize="14dp" />
+            android:textSize="12dp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -70,7 +70,7 @@
             android:gravity="center"
             android:text="Age"
             android:textColor="@color/colorWhite"
-            android:textSize="14dp" />
+            android:textSize="12dp" />
 
     </LinearLayout>
 

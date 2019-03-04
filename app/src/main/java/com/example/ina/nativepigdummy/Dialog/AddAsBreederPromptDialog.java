@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.GrowerRecordsActivity;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -24,6 +25,7 @@ public class AddAsBreederPromptDialog extends DialogFragment{
     private static final String TAG = "AddAsBreederPromptDialog";
 
     private String reg_id;
+    DatabaseHelper dbHelper;
 
     @SuppressLint("ValidFragment")
     public AddAsBreederPromptDialog(String reg_id){
@@ -36,6 +38,9 @@ public class AddAsBreederPromptDialog extends DialogFragment{
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_add_as_breeder_prompt,null);
+
+        dbHelper = new DatabaseHelper(getActivity());
+
         builder.setView(view)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
                     @Override
@@ -48,7 +53,13 @@ public class AddAsBreederPromptDialog extends DialogFragment{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         RequestParams params = buildParams();
-                        addAsBreeder(params);
+
+                        if(ApiHelper.isInternetAvailable(getContext())){
+                            api_addAsBreeder(params);
+                        } else{
+                            dbHelper.addAsBreeder(reg_id);
+                        }
+
                         Intent intent = new Intent(getActivity(), GrowerRecordsActivity.class);
                         startActivity(intent);
                     }
@@ -63,7 +74,7 @@ public class AddAsBreederPromptDialog extends DialogFragment{
         return params;
     }
 
-    private void addAsBreeder(RequestParams params){
+    private void api_addAsBreeder(RequestParams params){
         ApiHelper.addAsBreeder("addAsBreeder", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {

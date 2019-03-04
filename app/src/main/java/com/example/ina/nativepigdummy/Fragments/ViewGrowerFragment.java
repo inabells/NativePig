@@ -51,7 +51,6 @@ public class ViewGrowerFragment extends Fragment {
             }
         });
 
-
         edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

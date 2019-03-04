@@ -48,13 +48,13 @@
                                 android:id="@+id/textView_dateToday"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:paddingRight="15dp"
-                                android:paddingBottom="15dp"
-                                android:text="July 17, 2018"
+                                android:background="@drawable/pigfarm"
                                 android:gravity="bottom|end"
+                                android:paddingBottom="15dp"
+                                android:paddingRight="15dp"
+                                android:text="July 17, 2018"
                                 android:textColor="@color/colorWhite"
-                                android:textSize="40dp"
-                                android:background="@drawable/pigfarm"/>
+                                android:textSize="30dp" />
 
                         </RelativeLayout>
 

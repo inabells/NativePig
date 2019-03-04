@@ -3,6 +3,8 @@ package com.example.ina.nativepigdummy.Dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,6 +22,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.BreedingRecordsActivity;
+import com.example.ina.nativepigdummy.Activities.MortalityAndSalesActivity;
 import com.example.ina.nativepigdummy.Adapters.AutoAdapter;
 import com.example.ina.nativepigdummy.Adapters.BoarDataAdapter;
 import com.example.ina.nativepigdummy.Adapters.SowDataAdapter;
@@ -54,7 +58,7 @@ public class BreedingRecordsDialog extends DialogFragment {
     ArrayList<BoarData> boarDataList;
     List<String> sowStringList = new ArrayList<>();
     List<String> boarStringList = new ArrayList<>();
-    DatabaseHelper myDB;
+    DatabaseHelper dbHelper;
 
 
     @Override
@@ -67,7 +71,7 @@ public class BreedingRecordsDialog extends DialogFragment {
         final AppCompatAutoCompleteTextView sowid = view.findViewById(R.id.sow_id);
         final AppCompatAutoCompleteTextView boarid = view.findViewById(R.id.boar_id);
         datebred = view.findViewById(R.id.date_bred);
-        myDB = new DatabaseHelper(getActivity());
+        dbHelper = new DatabaseHelper(getActivity());
         sowDataList = new ArrayList<>();
         boarDataList = new ArrayList<>();
 
@@ -160,10 +164,6 @@ public class BreedingRecordsDialog extends DialogFragment {
                         String editdatebred = datebred.getText().toString();
 
                         if(editsowid.length() == 0 || editboarid.length() == 0 || editdatebred.length() == 0){
-//                            addBreedingRecordsData(editsowid, editboarid, editdatebred);
-//                            sowid.setText("");
-//                            boarid.setText("");
-//                            datebred.setText("");
                             Toast.makeText(getActivity(),"Please fill out all the fields!",Toast.LENGTH_LONG).show();
                         }else{
                             if(ApiHelper.isInternetAvailable(getContext())) {
@@ -191,7 +191,15 @@ public class BreedingRecordsDialog extends DialogFragment {
                                 });
 
                             } else{
-                                Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
+                                boolean insertData = dbHelper.addBreedingRecord(editsowid, editboarid, editdatebred, null, null, "false");
+
+                                if(insertData){
+                                    Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(getActivity(), BreedingRecordsActivity.class);
+                                    startActivity(intent);
+                                }else{
+                                    Toast.makeText(getContext(), "Local insert error", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }
                     }
@@ -202,61 +210,87 @@ public class BreedingRecordsDialog extends DialogFragment {
     }
 
     private void makeApiCallSow(String text) {
-        ApiHelper.getSows("getAllSows", null, new BaseJsonHttpResponseHandler<Object>() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("API HANDLER Success", rawJsonResponse);
+        if(ApiHelper.isInternetAvailable(getContext())){
+            ApiHelper.getSows("getAllSows", null, new BaseJsonHttpResponseHandler<Object>() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                    Log.d("API HANDLER Success", rawJsonResponse);
+                    autoAdapter.setData(sowStringList);
+                    autoAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                    Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                    Log.d("API HANDLER FAIL", errorResponse.toString());
+                }
+
+                @Override
+                protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                    JSONArray jsonArray = new JSONArray(rawJsonData);
+                    JSONObject jsonObject;
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        jsonObject = (JSONObject) jsonArray.get(i);
+                        sowStringList.add(jsonObject.getString("pig_registration_id"));
+                    }
+                    return null;
+                }
+            });
+        } else{
+            Cursor data = dbHelper.generateSowList(text);
+            int numRows = data.getCount();
+            if(numRows == 0){
+                Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
+            }else {
+                while (data.moveToNext()) {
+                    sowStringList.add(data.getString(0));
+                }
                 autoAdapter.setData(sowStringList);
                 autoAdapter.notifyDataSetChanged();
             }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                Log.d("API HANDLER FAIL", errorResponse.toString());
-            }
-
-            @Override
-            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                JSONArray jsonArray = new JSONArray(rawJsonData);
-                JSONObject jsonObject;
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    jsonObject = (JSONObject) jsonArray.get(i);
-                    sowStringList.add(jsonObject.getString("pig_registration_id"));
-                }
-                return null;
-            }
-        });
-
+        }
     }
 
     private void makeApiCallBoar(String text) {
-        ApiHelper.getBoars("getAllBoars", null, new BaseJsonHttpResponseHandler<Object>() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("API HANDLER Success", rawJsonResponse);
+        if(ApiHelper.isInternetAvailable(getContext())){
+            ApiHelper.getBoars("getAllBoars", null, new BaseJsonHttpResponseHandler<Object>() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                    Log.d("API HANDLER Success", rawJsonResponse);
+                    autoAdapter.setData(boarStringList);
+                    autoAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                    Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                    Log.d("API HANDLER FAIL", errorResponse.toString());
+                }
+
+                @Override
+                protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                    JSONArray jsonArray = new JSONArray(rawJsonData);
+                    JSONObject jsonObject;
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        jsonObject = (JSONObject) jsonArray.get(i);
+                        boarStringList.add(jsonObject.getString("pig_registration_id"));
+                    }
+                    return null;
+                }
+            });
+        } else{
+            Cursor data = dbHelper.generateBoarList(text);
+            int numRows = data.getCount();
+            if(numRows == 0){
+                Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
+            }else {
+                while (data.moveToNext()) {
+                    boarStringList.add(data.getString(0));
+                }
                 autoAdapter.setData(boarStringList);
                 autoAdapter.notifyDataSetChanged();
             }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                Log.d("API HANDLER FAIL", errorResponse.toString());
-            }
-
-            @Override
-            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                JSONArray jsonArray = new JSONArray(rawJsonData);
-                JSONObject jsonObject;
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    jsonObject = (JSONObject) jsonArray.get(i);
-                    boarStringList.add(jsonObject.getString("pig_registration_id"));
-                }
-                return null;
-            }
-        });
-
+        }
     }
 
     private void requestFocus (View view){

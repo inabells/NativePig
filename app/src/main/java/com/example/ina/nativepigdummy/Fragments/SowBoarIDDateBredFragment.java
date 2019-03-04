@@ -1,6 +1,7 @@
 package com.example.ina.nativepigdummy.Fragments;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -17,7 +18,9 @@ import android.widget.Toast;
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.ViewBreedingActivity;
 import com.example.ina.nativepigdummy.Adapters.BreedingRecordDataAdapter;
+import com.example.ina.nativepigdummy.Adapters.MortalityDataAdapter;
 import com.example.ina.nativepigdummy.Data.BreedingRecordData;
+import com.example.ina.nativepigdummy.Data.MortalityData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.BreedingRecordsDialog;
 import com.example.ina.nativepigdummy.R;
@@ -36,7 +39,7 @@ public class SowBoarIDDateBredFragment extends Fragment {
 
     ListView listView;
     private FloatingActionButton breedingrecord;
-    DatabaseHelper myDB;
+    DatabaseHelper dbHelper;
     ArrayList<BreedingRecordData> breedingRecordList;
     BreedingRecordData breedingRecordData;
 
@@ -47,44 +50,14 @@ public class SowBoarIDDateBredFragment extends Fragment {
         listView = view.findViewById(R.id.listview_breeding_record);
         breedingrecord = view.findViewById(R.id.floating_action_breeding_record);
 
-        myDB = new DatabaseHelper(getActivity());
+        dbHelper = new DatabaseHelper(getActivity());
 
         breedingRecordList = new ArrayList<>();
 
         if(ApiHelper.isInternetAvailable(getContext())) {
-            ApiHelper.getBreedingRecord("getBreedingRecord", null, new BaseJsonHttpResponseHandler<Object>() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                    Log.d("API HANDLER Success", rawJsonResponse);
-                    BreedingRecordDataAdapter adapter = new BreedingRecordDataAdapter(getActivity(), R.layout.listview_breeding_record, breedingRecordList);
-                    listView.setAdapter(adapter);
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                    Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                    Log.d("API HANDLER FAIL", "Error occurred");
-                }
-
-                @Override
-                protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                    JSONArray jsonArray = new JSONArray(rawJsonData);
-                    JSONObject jsonObject;
-                    BreedingRecordData mData;
-                    for (int i = jsonArray.length() - 1; i >= 0; i--) {
-                        jsonObject = (JSONObject) jsonArray.get(i);
-                        mData = new BreedingRecordData();
-                        mData.setSow_id(jsonObject.getString("sow_registration_id"));
-                        mData.setBoar_id(jsonObject.getString("boar_registration_id"));
-                        mData.setDate_bred(jsonObject.getString("date_bred"));
-                        breedingRecordList.add(mData);
-                    }
-                    return null;
-                }
-            });
-
+            api_getBreedingRecord();
         } else{
-            Toast.makeText(getActivity(), "No internet connection", Toast.LENGTH_SHORT).show();
+            local_getBreedingRecord();
         }
 
         breedingrecord.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +79,54 @@ public class SowBoarIDDateBredFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void local_getBreedingRecord(){
+        Cursor data = dbHelper.getBreedingContents();
+        int numRows = data.getCount();
+        if(numRows == 0){
+            Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
+        }else {
+            while (data.moveToNext()) {
+                breedingRecordData = new BreedingRecordData(data.getString(1), data.getString(2), data.getString(3));
+                breedingRecordList.add(breedingRecordData);
+            }
+            BreedingRecordDataAdapter adapter = new BreedingRecordDataAdapter(getActivity(), R.layout.listview_breeding_record, breedingRecordList);
+            listView.setAdapter(adapter);
+        }
+    }
+
+    private void api_getBreedingRecord(){
+        ApiHelper.getBreedingRecord("getBreedingRecord", null, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("API HANDLER Success", rawJsonResponse);
+                BreedingRecordDataAdapter adapter = new BreedingRecordDataAdapter(getActivity(), R.layout.listview_breeding_record, breedingRecordList);
+                listView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                Log.d("API HANDLER FAIL", "Error occurred");
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONArray jsonArray = new JSONArray(rawJsonData);
+                JSONObject jsonObject;
+                BreedingRecordData mData;
+                for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                    jsonObject = (JSONObject) jsonArray.get(i);
+                    mData = new BreedingRecordData();
+                    mData.setSow_id(jsonObject.getString("sow_registration_id"));
+                    mData.setBoar_id(jsonObject.getString("boar_registration_id"));
+                    mData.setDate_bred(jsonObject.getString("date_bred"));
+                    breedingRecordList.add(mData);
+                }
+                return null;
+            }
+        });
     }
 
     @Override

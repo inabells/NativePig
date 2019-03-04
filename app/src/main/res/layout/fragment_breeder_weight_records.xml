@@ -28,7 +28,7 @@
                 android:fontFamily="sans-serif-light"
                 android:text="@string/registration_id"
                 android:textColor="@color/colorWhite"
-                android:textSize="32sp" />
+                android:textSize="25sp" />
 
             <ImageView
                 android:id="@+id/edit_breeder_weight_records"
