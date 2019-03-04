@@ -358,7 +358,7 @@ public class AddNewPigActivity extends AppCompatActivity {
     }
 
     private String generateRegistrationId() {
-        return "UPLB"+"AnimalScience"+"-"+ getYear(addBirthDate.getText().toString()) + addSex.getSelectedItem().toString() + addAnimalEarnotch.getText().toString();
+        return "LAGIAS"+"Berkjala"+"-"+ getYear(addBirthDate.getText().toString()) + addSex.getSelectedItem().toString() + addAnimalEarnotch.getText().toString();
     }
 
     @Override

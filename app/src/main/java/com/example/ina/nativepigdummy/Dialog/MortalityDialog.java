@@ -38,6 +38,7 @@ import org.json.JSONObject;
 
 import java.security.AuthProvider;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -306,8 +307,8 @@ public class MortalityDialog extends DialogFragment {
 
     public String computeAge(String birthDate) {
         try {
-            Date startDate = new SimpleDateFormat("yyyy--mm--dd").parse(birthDate);
-            Date endDate = new SimpleDateFormat("yyyy--mm--dd").parse(dateofdeath.getText().toString());
+            Date startDate = new SimpleDateFormat("yyyy-mm-dd").parse(birthDate);
+            Date endDate = new SimpleDateFormat("yyyy-mm-dd").parse(dateofdeath.getText().toString());
 
             int milliseconds = (int) (endDate.getTime() - startDate.getTime());
             int days = milliseconds/(1000 * 3600 * 24);

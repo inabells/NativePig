@@ -39,7 +39,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
@@ -162,6 +167,8 @@ public class BreedingRecordsDialog extends DialogFragment {
                         String editsowid = sowid.getText().toString();
                         String editboarid = boarid.getText().toString();
                         String editdatebred = datebred.getText().toString();
+                        String expecteddatefarrow = computeExpected(editdatebred);
+                        String editsowstatus = "Bred";
 
                         if(editsowid.length() == 0 || editboarid.length() == 0 || editdatebred.length() == 0){
                             Toast.makeText(getActivity(),"Please fill out all the fields!",Toast.LENGTH_LONG).show();
@@ -191,7 +198,7 @@ public class BreedingRecordsDialog extends DialogFragment {
                                 });
 
                             } else{
-                                boolean insertData = dbHelper.addBreedingRecord(editsowid, editboarid, editdatebred, null, null, "false");
+                                boolean insertData = dbHelper.addBreedingRecord(editsowid, editboarid, editdatebred, editsowstatus, expecteddatefarrow, "false");
 
                                 if(insertData){
                                     Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
@@ -297,6 +304,39 @@ public class BreedingRecordsDialog extends DialogFragment {
         if(view.requestFocus()){
             getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
+    }
+
+    public String computeExpected(String birthDate){
+        String oldDate = birthDate;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+        Calendar c = Calendar.getInstance();
+        try{
+            c.setTime(sdf.parse(oldDate));
+        }catch(ParseException e){
+            e.printStackTrace();
+        }
+        //Number of Days to add
+//        c.add(Calendar.MONTH,3);
+//        c.add(Calendar.DATE, 6);
+        c.add(Calendar.DAY_OF_MONTH, 114);
+        //Date after adding the days to the given date
+        String newDate = sdf.format(c.getTime());
+        //Displaying the new Date after addition of Days
+
+        return newDate;
+    }
+
+    public String computeExpected2(String dateBred){
+        try {
+            Date startDate = new SimpleDateFormat("yyyy-mm-dd").parse(dateBred);
+            long milliseconds = startDate.getTime() + 114*24*60*60*1000;
+            Date expectedDate = new Date(milliseconds);
+            String expectedDateFarrow = String.valueOf(expectedDate);
+            return expectedDateFarrow;
+        }catch (Exception e){
+            Log.d("computeAge", "Error in computing age");
+        }
+        return "- days";
     }
 
 
