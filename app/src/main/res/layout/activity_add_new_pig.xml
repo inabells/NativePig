@@ -121,7 +121,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-light"
-                                    android:inputType="number"
+                                    android:inputType="text|number"
                                     android:textColor="#000000"
                                     android:textSize="18sp" />
 
@@ -231,7 +231,7 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:fontFamily="sans-serif-light"
-                                        android:inputType="number"
+                                        android:inputType="number|numberDecimal"
                                         android:textColor="#000000"
                                         android:textSize="18sp" />
 
@@ -256,7 +256,7 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:fontFamily="sans-serif-light"
-                                        android:inputType="number"
+                                        android:inputType="number|numberDecimal"
                                         android:textColor="#000000"
                                         android:textSize="18sp" />
 
@@ -282,7 +282,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-light"
-                                    android:inputType="numberSigned"
+                                    android:inputType="text|number|numberDecimal"
                                     android:textColor="#000000"
                                     android:textSize="18sp" />
 
@@ -306,7 +306,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-light"
-                                    android:inputType="number"
+                                    android:inputType="text|number|numberDecimal"
                                     android:textColor="#000000"
                                     android:textSize="18sp" />
 

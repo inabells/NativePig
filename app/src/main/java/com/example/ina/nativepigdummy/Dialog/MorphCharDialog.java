@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -82,7 +83,12 @@ public class MorphCharDialog extends DialogFragment {
             }
         });
 
-        getMorphCharProfile(reg_id);
+        if(ApiHelper.isInternetAvailable(getContext())){
+            api_getMorphCharProfile(reg_id);
+        }else{
+            local_getMorphCharProfile(reg_id);
+        }
+
 
         builder.setView(view)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
@@ -173,7 +179,7 @@ public class MorphCharDialog extends DialogFragment {
         return requestParams;
     }
 
-    private void getMorphCharProfile(String id) {
+    private void api_getMorphCharProfile(String id) {
         RequestParams params = new RequestParams();
         params.add("registration_id", id);
 
@@ -214,6 +220,23 @@ public class MorphCharDialog extends DialogFragment {
                 return null;
             }
         });
+    }
+
+    private void local_getMorphCharProfile(String reg_id){
+        Cursor data = dbHelper.getMorphCharProfile(reg_id);
+
+        if (data.moveToFirst()) {
+            datecollected.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected"))));
+            earlength.setText(setBlankIfNull(data.getString(data.getColumnIndex("ear_length"))));
+            headlength.setText(setBlankIfNull(data.getString(data.getColumnIndex("head_length"))));
+            snoutlength.setText(setBlankIfNull(data.getString(data.getColumnIndex("snout_length"))));
+            bodylength.setText(setBlankIfNull(data.getString(data.getColumnIndex("body_length"))));
+            heartgirth.setText(setBlankIfNull(data.getString(data.getColumnIndex("heart_girth"))));
+            pelvicwidth.setText(setBlankIfNull(data.getString(data.getColumnIndex("pelvic_width"))));
+            taillength.setText(setBlankIfNull(data.getString(data.getColumnIndex("tail_length"))));
+            heightatwithers.setText(setBlankIfNull(data.getString(data.getColumnIndex("height_at_withers"))));
+            progressText.setText(setBlankIfNull(data.getString(data.getColumnIndex("normal_teats"))));
+        }
     }
 
     private String setBlankIfNull(String text) {

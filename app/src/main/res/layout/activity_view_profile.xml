@@ -61,7 +61,7 @@
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="15sp"
                             android:fontFamily="sans-serif-light"
-                            android:text="UPLB"
+                            android:text="UPLB Institute of Animal Science"
                             android:textColor="@color/colorWhite"
                             android:textSize="32sp" />
 
@@ -73,7 +73,7 @@
                             android:layout_below="@+id/farm"
                             android:layout_centerHorizontal="true"
                             android:fontFamily="sans-serif"
-                            android:text="AnimalScience"
+                            android:text="LAGIAS"
                             android:textAllCaps="true"
                             android:textColor="@color/colorWhite"
                             android:textSize="14sp" />
@@ -193,7 +193,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="sans-serif-light"
-                                    android:text="Animal Science"
+                                    android:text="Berkjala"
                                     android:textColor="#000000"
                                     android:textSize="18sp" />
 
