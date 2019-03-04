@@ -120,7 +120,7 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
         Cursor data = dbHelper.getSinglePig(reg_id);
         if (data.moveToFirst()) {
             TextViewbirthday.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_birthdate"))));
-            TextViewsex.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_weaningdate"))));
+            TextViewsex.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("sex_ratio"))));
             TextViewbirthweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_birthweight"))));
             TextViewweaningweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_weaningweight"))));
             TextViewlittersizebornweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("litter_size_born_alive"))));

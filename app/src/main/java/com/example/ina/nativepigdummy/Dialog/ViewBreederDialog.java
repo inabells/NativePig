@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -63,8 +64,11 @@ public class ViewBreederDialog extends DialogFragment {
         pedigreemother = view.findViewById(R.id.pedigree_mother);
         pedigreefather = view.findViewById(R.id.pedigree_father);
 
-        getSinglePig(pig_reg_id);
-
+        if(ApiHelper.isInternetAvailable(getContext())) {
+            api_getSinglePig(pig_reg_id);
+        } else{
+            local_getSinglePig(pig_reg_id);
+        }
         builder.setView(view)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
                     @Override
@@ -171,11 +175,27 @@ public class ViewBreederDialog extends DialogFragment {
         return requestParams;
     }
 
-    private void getSinglePig(String id) {
+    private void local_getSinglePig(String id){
+        Cursor data = dbHelper.getSinglePig(id);
+        if (data.moveToFirst()) {
+            birthday.setText(setBlankIfNull(data.getString(data.getColumnIndex("pig_birthdate"))));
+            sex.setText(setBlankIfNull(data.getString(data.getColumnIndex("sex_ratio"))));
+            birthweight.setText(setBlankIfNull(data.getString(data.getColumnIndex("pig_birthweight"))));
+            weaningweight.setText(setBlankIfNull(data.getString(data.getColumnIndex("pig_weaningweight"))));
+            littersizebornweight.setText(setBlankIfNull(data.getString(data.getColumnIndex("litter_size_born_alive"))));
+            ageatfirstmating.setText(setBlankIfNull(data.getString(data.getColumnIndex("age_first_mating"))));
+            ageatweaning.setText(setBlankIfNull(data.getString(data.getColumnIndex("age_at_weaning"))));
+            pedigreemother.setText(setBlankIfNull(data.getString(data.getColumnIndex("pig_mother_earnotch"))));
+            pedigreefather.setText(setBlankIfNull(data.getString(data.getColumnIndex("pig_mother_earnotch"))));
+        }
+
+    }
+
+    private void api_getSinglePig(String id) {
         RequestParams params = new RequestParams();
         params.add("pig_registration_id", id);
 
-        ApiHelper.getSinglePig("getSinglePig", params, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getSinglePig("api_getSinglePig", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 birthday.setText(setBlankIfNull(editBirthday));
