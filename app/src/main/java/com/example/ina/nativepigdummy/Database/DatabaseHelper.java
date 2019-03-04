@@ -985,6 +985,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return data;
     }
 
+    public Cursor getBreedingProfile(String sowRegId, String boarRegId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String columns[] = { "*" };
+        String whereClause = "sow_registration_id = ? AND boar_registration_id = ?";
+        String[] whereArgs = new String[]{sowRegId,boarRegId};
+        Cursor data = db.query("pig_breeding_table", columns, whereClause , whereArgs, null, null, null);
+        return data;
+    }
+
     public Cursor generatePigList(String reg_id){
         SQLiteDatabase db = this.getWritableDatabase();
         String columns[] = {"pig_registration_id"};
