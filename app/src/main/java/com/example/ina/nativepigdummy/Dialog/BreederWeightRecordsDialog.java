@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -60,7 +61,11 @@ public class BreederWeightRecordsDialog extends DialogFragment {
         datecollected150 = view.findViewById(R.id.date_collected_150_days);
         datecollected180 = view.findViewById(R.id.date_collected_180_days);
 
-        getWeightProfile(reg_id);
+        if(ApiHelper.isInternetAvailable(getContext())){
+            getWeightProfile(reg_id);
+        } else{
+            local_getWeightProfile(reg_id);
+        }
 
         builder.setView(view)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
@@ -83,6 +88,22 @@ public class BreederWeightRecordsDialog extends DialogFragment {
                 });
 
         return builder.create();
+    }
+
+    private void local_getWeightProfile(String reg_id) {
+        Cursor data = dbHelper.getWeightRecords(reg_id);
+        if (data.moveToFirst()) {
+            weightat45.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_45"))));
+            weightat60.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_60"))));
+            weightat90.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_90"))));
+            weightat150.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_150"))));
+            weightat180.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_180"))));
+            datecollected45.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_45"))));
+            datecollected60.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_60"))));
+            datecollected90.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_90"))));
+            datecollected150.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_150"))));
+            datecollected180.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_180"))));
+        }
     }
 
     private void local_updateWeightRecords() {

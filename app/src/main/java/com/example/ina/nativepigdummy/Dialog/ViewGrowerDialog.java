@@ -1,5 +1,7 @@
 package com.example.ina.nativepigdummy.Dialog;
 
+import android.annotation.SuppressLint;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,8 +14,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 
+@SuppressLint("ValidFragment")
 public class ViewGrowerDialog extends DialogFragment {
     private static final String TAG = "ViewGrowerDialog";
     private EditText weightat45;
@@ -27,10 +31,12 @@ public class ViewGrowerDialog extends DialogFragment {
     private EditText datecollected150;
     private EditText datecollected180;
     private Button editButton;
+    private String reg_id;
     private ImageView exit_profile;
+    DatabaseHelper dbHelper;
 
-    public ViewGrowerDialog(){
-
+    public ViewGrowerDialog(String reg_id){
+        this.reg_id = reg_id;
     }
 
     @Nullable
@@ -50,6 +56,9 @@ public class ViewGrowerDialog extends DialogFragment {
         datecollected90 = view.findViewById(R.id.date_collected_90_days);
         datecollected150 = view.findViewById(R.id.date_collected_150_days);
         datecollected180 = view.findViewById(R.id.date_collected_180_days);
+        dbHelper = new DatabaseHelper(getActivity());
+
+        local_getWeightProfile(reg_id);
 
         editButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -67,6 +76,26 @@ public class ViewGrowerDialog extends DialogFragment {
         });
 
         return view;
+    }
+
+    private void local_getWeightProfile(String reg_id) {
+        Cursor data = dbHelper.getWeightRecords(reg_id);
+        if (data.moveToFirst()) {
+            weightat45.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_45"))));
+            weightat60.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_60"))));
+            weightat90.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_90"))));
+            weightat150.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_150"))));
+            weightat180.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_180"))));
+            datecollected45.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_45"))));
+            datecollected60.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_60"))));
+            datecollected90.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_90"))));
+            datecollected150.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_150"))));
+            datecollected180.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_180"))));
+        }
+    }
+
+    private String setBlankIfNull(String text) {
+        return ((text=="null" || text.isEmpty()) ? "" : text);
     }
 
     public void onStart(){

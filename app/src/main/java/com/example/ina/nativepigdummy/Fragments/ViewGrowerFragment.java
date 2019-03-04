@@ -54,7 +54,7 @@ public class ViewGrowerFragment extends Fragment {
         edit_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ViewGrowerDialog growerDialog = new ViewGrowerDialog();
+                ViewGrowerDialog growerDialog = new ViewGrowerDialog(pigRegIdHolder);
                 growerDialog.setTargetFragment(ViewGrowerFragment.this, 1);
                 growerDialog.show(getFragmentManager(),"ViewGrowerDialog");
             }
