@@ -164,7 +164,6 @@ public class ApiHelper {
             NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
             isConnected = (activeNetwork != null) && (activeNetwork.isConnectedOrConnecting());
         }
-
         return isConnected;
     }
 }

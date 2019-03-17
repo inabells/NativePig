@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -27,6 +29,7 @@ public class StatusDialog extends DialogFragment {
 
     private Spinner status, editSowStatus;
     public ViewStatusListener onViewStatusListener;
+    DatabaseHelper dbHelper = new DatabaseHelper(getContext());
     private String sow_id, boar_id, sow_status;
 
     public StatusDialog(String sowId, String boarId, String sowStatus){
@@ -44,6 +47,8 @@ public class StatusDialog extends DialogFragment {
 
         status = view.findViewById(R.id.status);
 
+
+
         builder.setView(view)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
                     @Override
@@ -58,13 +63,23 @@ public class StatusDialog extends DialogFragment {
                             RequestParams requestParams = buildParams(sow_id, boar_id);
                             updateSowStatus(requestParams);
                         }else{
-                            Toast.makeText(getActivity(),"No internet connection", Toast.LENGTH_SHORT).show();
+                            //local_updateSowStatus();
                         }
                     }
 
                 });
 
         return builder.create();
+    }
+
+
+    private void local_updateSowStatus(){
+        String editSowStatus = status.getSelectedItem().toString();
+
+        boolean insertData = dbHelper.updateSowStatus(sow_id, boar_id, editSowStatus);
+
+        if(insertData) Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
+        else Toast.makeText(getContext(), "Local insert error", Toast.LENGTH_SHORT).show();
     }
 
     private void updateSowStatus(RequestParams params) {

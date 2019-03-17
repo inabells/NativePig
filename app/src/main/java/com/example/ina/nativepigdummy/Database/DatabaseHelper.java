@@ -6,8 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.GlobalClass;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -98,10 +100,281 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String farm_province = "farm_province";
     private static final String farm_town = "farm_town";
     private static final String farm_barangay = "farm_barangay";
+    private static final String sow_litter_table = "sow_litter_table";
+    private static final String parity = "parity";
+    private static final String total_litter_size_born = "total_litter_size_born";
+    private static final String total_litter_size_born_alive = "total_litter_size_born_alive";
+    private static final String number_weaned = "number_weaned";
+    private static final String average_birth_weight = "average_birth_weight";
+    private static final String number_of_males = "number_of_males";
+    private static final String number_of_females = "number_of_females";
+    private static final String average_weaning_weight = "average_weaning_weight";
+    private static final String number_stillborn = "number_stillborn";
+    private static final String number_mummified = "number_mummified";
+    private static final String abnormalities = "abnormalities";
+
+
+    //------------------------- new db
+
+    private static final String administrators = "administrators";
+    private static final String admins = "admins";
+    private static final String animals = "animals";
+    private static final String animaltype_id = "animaltype_id";
+    private static final String registry_id = "registry_id";
+    private static final String breed_id = "breed_id";
+    private static final String grossmorpho = "grossmorpho";
+    private static final String morphochars = "morphochars";
+    private static final String weightrecord = "weightrecord";
+    private static final String status = "status";
+    private static final String created_at = "created_at";
+    private static final String updated_at = "updated_at";
+    private static final String animal_properties = "animal_properties";
+    private static final String animal_id = "animal_id";
+    private static final String property_id = "property_id";
+    private static final String value = "value";
+    private static final String animal_types = "animal_types";
+    private static final String species = "species";
+    private static final String breeds = "breeds";
+    private static final String breed = "breed";
+    private static final String farms = "farms";
+    private static final String name = "name";
+    private static final String code = "code";
+    private static final String region = "region";
+    private static final String province = "province";
+    private static final String town = "town";
+    private static final String barangay = "barangay";
+    private static final String breedable_id = "breedable_id";
+    private static final String user_id = "user_id";
+    private static final String user_type = "user_type";
+    private static final String farm_animaltypes = "farm_animaltypes";
+    private static final String farm_users = "farm_users";
+    private static final String groupings = "groupings";
+    private static final String registryid = "registryid";
+    private static final String mother_id = "mother_id";
+    private static final String father_id = "father_id";
+    private static final String members = "members";
+    private static final String grouping_members = "grouping_members";
+    private static final String grouping_id = "grouping_id";
+    private static final String grouping_properties = "grouping_properties";
+    private static final String migrations = "migrations";
+    private static final String migration = "migration";
+    private static final String batch = "batch";
+    private static final String mortalities = "mortalities";
+    private static final String datedied = "datedied";
+    private static final String cause = "cause";
+    private static final String password_resets = "password_resets";
+    private static final String email = "email";
+    private static final String token = "token";
+    private static final String removed_animals = "removed_animal";
+    private static final String dateremoved = "dateremoved";
+    private static final String reason = "reason";
+    private static final String roles = "roles";
+    private static final String title = "title";
+    private static final String role_user = "role_user";
+    private static final String role_id = "role_id";
+    private static final String sales = "sales";
+    private static final String datesold = "datesold";
+    private static final String weight = "weight";
+    private static final String price = "price";
+    private static final String users = "users";
+    private static final String phone = "phone";
+    private static final String lastseen = "lastseen";
+    private static final String photo = "photo";
+    private static final String isadmin = "isadmin";
+    private static final String farmable_id = "farmable_id";
+    private static final String deleted_at = "deleted_at";
+    private static final String remember_token = "remember_token";
+    private static final String weight_collections = "weight_collections";
+    private static final String properties = "properties";
+    private static final String fname = "fname";
+    private static final String description = "description";
+
 
     public DatabaseHelper(Context context){
-        super(context, DATABASE_NAME, null, 22);
+        super(context, DATABASE_NAME, null, 26);
     }
+    //------------------------------------------------------------------------------------------
+    private static final String Administrators = "CREATE TABLE " + administrators + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)";
+
+    private static final String Admins = "CREATE TABLE " + admins + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)";
+
+    private static final String Animals = "CREATE TABLE " + animals + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + animaltype_id + " INTEGER(10),"
+            + registry_id + " VARCHAR(225),"
+            + farm_id + " INTEGER(10),"
+            + breed_id + " INTEGER(10),"
+            + grossmorpho + " TINYINT(1),"
+            + morphochars + " TINYINT(1),"
+            + weightrecord + " TINYINT(1),"
+            + status + " VARCHAR(225),"
+            + created_at + " TIMESTAMP,"
+            + updated_at + " TIMESTAMP)";
+
+    private static final String Animal_Properties = "CREATE TABLE " + animal_properties + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + animal_id + " INTEGER(10),"
+            + property_id + " INTEGER(10),"
+            + value + " VARCHAR(225),"
+            + created_at + " TIMESTAMP,"
+            + updated_at + " TIMESTAMP)";
+
+    private static final String Animal_Types = "CREATE TABLE " + animal_types + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + species + " VARCHAR(225))";
+
+    private static final String Breeds = "CREATE TABLE " + breeds + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + breed + " VARCHAR(225),"
+            + animaltype_id + " INTEGER(10))";
+
+    private static final String Farms = "CREATE TABLE " + farms + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + name + " VARCHAR(225),"
+            + registry_id + " VARCHAR(225),"
+            + code + " VARCHAR(225),"
+            + region + " VARCHAR(225),"
+            + province + " VARCHAR(225),"
+            + town + " VARCHAR(225),"
+            + barangay + " VARCHAR(225),"
+            + breedable_id + " INTEGER(10))";
+
+    private static final String Farm_AnimalTypes = "CREATE TABLE " + farm_animaltypes + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + farm_id + " INTEGER(10),"
+            + animaltype_id + " INTEGER(10))";
+
+    private static final String Farm_Users = "CREATE TABLE " + farm_users + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + user_id + " INTEGER(10),"
+            + farm_id + " INTEGER(10),"
+            + user_type + " VARCHAR(225))";
+
+    private static final String Groupings = "CREATE TABLE " + groupings + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + registryid + " VARCHAR(225),"
+            + mother_id + " INTEGER(10),"
+            + father_id + " INTEGER(10),"
+            + breed_id + " INTEGER(10),"
+            + members + " TINYINT(1))";
+
+    private static final String Grouping_Members = "CREATE TABLE " + grouping_members + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + grouping_id + " INTEGER(10),"
+            + animal_id + " INTEGER(10),"
+            + created_at + " TIMESTAMP,"
+            + updated_at + " TIMESTAMP)";
+
+    private static final String Grouping_Properties = "CREATE TABLE " + grouping_properties + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + grouping_id + " INTEGER(10),"
+            + property_id + " INTEGER(10),"
+            + value + " VARCHAR(225),"
+            + created_at + " TIMESTAMP,"
+            + updated_at + " TIMESTAMP)";
+
+    private static final String Migrations = "CREATE TABLE " + migrations + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + migration + " VARCHAR(225),"
+            + batch + " INTEGER(11))";
+
+    private static final String Mortalities = "CREATE TABLE " + mortalities + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + animal_id + " INTEGER(10),"
+            + animaltype_id + " INTEGER(10),"
+            + breed_id + " INTEGER(10),"
+            + datedied + " DATE,"
+            + cause + " VARCHAR(225),"
+            + age + " VARCHAR(225),"
+            + created_at + " TIMESTAMP,"
+            + updated_at + " TIMESTAMP)";
+
+    private static final String Password_Resets = "CREATE TABLE " + password_resets + "("
+            + email + " VARCHAR(225),"
+            + token + " VARCHAR(225),"
+            + created_at + " TIMESTAMP)";
+
+    private static final String Properties = "CREATE TABLE " + properties + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + name + " VARCHAR(225),"
+            + fname + " VARCHAR(225),"
+            + description + " TEXT)";
+
+    private static final String Removed_Animals = "CREATE TABLE " + removed_animals + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + animal_id + " INTEGER(10),"
+            + animaltype_id + " INTEGER(10),"
+            + breed_id + " INTEGER(10),"
+            + dateremoved + " DATE,"
+            + reason + " VARCHAR(225),"
+            + age + " VARCHAR(225),"
+            + created_at + " TIMESTAMP,"
+            + updated_at + " TIMESTAMP)";
+
+    private static final String Roles = "CREATE TABLE " + roles + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + title + " VARCHAR(225))";
+
+    private static final String Role_User = "CREATE TABLE " + role_user + "("
+            + user_id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + role_id + " INTEGER(10))";
+
+    private static final String Sales = "CREATE TABLE " + sales + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + animal_id + " INTEGER(10),"
+            + animaltype_id + " INTEGER(10),"
+            + breed_id + " INTEGER(10),"
+            + datesold + " DATE,"
+            + weight + " VARCHAR(225),"
+            + price + " VARCHAR(225),"
+            + age + " VARCHAR(225),"
+            + created_at + " TIMESTAMP,"
+            + updated_at + " TIMESTAMP)";
+
+    private static final String Users = "CREATE TABLE " + users + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + name + " VARCHAR(225),"
+            + email + " VARCHAR(225),"
+            + phone + " VARCHAR(225),"
+            + lastseen + " DATE,"
+            + photo + " VARCHAR(225),"
+            + isadmin + " TINYINT(1),"
+            + farmable_id + " INTEGER(10),"
+            + deleted_at + " TIMESTAMP,"
+            + remember_token + " VARCHAR(100),"
+            + created_at + " TIMESTAMP,"
+            + updated_at + " TIMESTAMP)";
+
+    private static final String Weight_Collections = "CREATE TABLE " + weight_collections + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + animal_id + " INTEGER(10),"
+            + weight + " DOUBLE,"
+            + created_at + " TIMESTAMP,"
+            + updated_at + " TIMESTAMP)";
+
+    //------------------------------------------------------------------------------------------
+
+    private static final String CREATE_SOW_LITTER_TABLE = "CREATE TABLE " + sow_litter_table + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + sow_registration_id + " TEXT,"
+            + boar_registration_id + " TEXT,"
+            + date_bred + " TEXT,"
+            + expected_date_farrow + " TEXT,"
+            + pig_weaningdate + " TEXT,"
+            + parity + " TEXT,"
+            + total_litter_size_born + " TEXT,"
+            + total_litter_size_born_alive + " TEXT,"
+            + number_weaned + " TEXT,"
+            + average_birth_weight + " TEXT,"
+            + number_of_males + " TEXT,"
+            + number_of_females + " TEXT,"
+            + average_weaning_weight + " TEXT,"
+            + number_stillborn + " TEXT,"
+            + number_mummified + " TEXT,"
+            + abnormalities + " TEXT,"
+            + is_synced + " TEXT)";
 
     private static final String CREATE_TABLE_PIG = "CREATE TABLE " + pig_table + "("
             + pig_id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -210,6 +483,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_WEIGHT_RECORDS);
         db.execSQL(CREATE_TABLE_PIG_BREEDING);
         db.execSQL(CREATE_TABLE_FARM);
+        db.execSQL(CREATE_SOW_LITTER_TABLE);
+
+//-----------------------------------------------
+
+        db.execSQL(Administrators);
+        db.execSQL(Admins);
+        db.execSQL(Animals);
+        db.execSQL(Animal_Properties);
+        db.execSQL(Animal_Types);
+        db.execSQL(Breeds);
+        db.execSQL(Farms);
+        db.execSQL(Farm_AnimalTypes);
+        db.execSQL(Farm_Users);
+        db.execSQL(Groupings);
+        db.execSQL(Grouping_Members);
+        db.execSQL(Grouping_Properties);
+        db.execSQL(Migrations);
+        db.execSQL(Mortalities);
+        db.execSQL(Password_Resets);
+        db.execSQL(Properties);
+        db.execSQL(Removed_Animals);
+        db.execSQL(Roles);
+        db.execSQL(Role_User);
+        db.execSQL(Sales);
+        db.execSQL(Users);
+        db.execSQL(Weight_Collections);
+
+        populateFarmUsers();
     }
 
     @Override
@@ -221,9 +522,121 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "  + breeder_morphometric_characteristics);
         db.execSQL("DROP TABLE IF EXISTS "  + breeder_gross_morphology);
         db.execSQL("DROP TABLE IF EXISTS "  + weight_records);
+        db.execSQL("DROP TABLE IF EXISTS "  + sow_litter_table);
+
+        db.execSQL("DROP TABLE IF EXISTS " + administrators);
+        db.execSQL("DROP TABLE IF EXISTS " + admins);
+        db.execSQL("DROP TABLE IF EXISTS " + animals);
+        db.execSQL("DROP TABLE IF EXISTS " + animal_properties);
+        db.execSQL("DROP TABLE IF EXISTS " + animal_types);
+        db.execSQL("DROP TABLE IF EXISTS " + breeds);
+        db.execSQL("DROP TABLE IF EXISTS " + farms);
+        db.execSQL("DROP TABLE IF EXISTS " + farm_animaltypes);
+        db.execSQL("DROP TABLE IF EXISTS " + farm_users);
+        db.execSQL("DROP TABLE IF EXISTS " + groupings);
+        db.execSQL("DROP TABLE IF EXISTS " + grouping_members);
+        db.execSQL("DROP TABLE IF EXISTS " + grouping_properties);
+        db.execSQL("DROP TABLE IF EXISTS " + migrations);
+        db.execSQL("DROP TABLE IF EXISTS " + mortalities);
+        db.execSQL("DROP TABLE IF EXISTS " + password_resets);
+        db.execSQL("DROP TABLE IF EXISTS " + properties);
+        db.execSQL("DROP TABLE IF EXISTS " + removed_animals);
+        db.execSQL("DROP TABLE IF EXISTS " + roles);
+        db.execSQL("DROP TABLE IF EXISTS " + role_user);
+        db.execSQL("DROP TABLE IF EXISTS " + sales);
+        db.execSQL("DROP TABLE IF EXISTS " + users);
+        db.execSQL("DROP TABLE IF EXISTS " + weight_collections);
+
         onCreate(db);
     }
 
+    public boolean populateFarmUsers(){
+        long result;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues content = new ContentValues();
+        content.put(name, "BAI");
+        content.put(email, "baibppig@gmail.com");
+        content.put(farmable_id, 1);
+        result = db.insert(users, null, content);
+
+        content.put(name, "BSU");
+        content.put(email, "benguetpig@gmail.com");
+        content.put(farmable_id, 2);
+        result = db.insert(users, null, content);
+
+        content.put(name, "ESSU");
+        content.put(email, "siniranganpig@gmail.com");
+        content.put(farmable_id, 3);
+        result = db.insert(users, null, content);
+
+        content.put(name, "IAS");
+        content.put(email, "berkjalapig@gmail.com");
+        content.put(farmable_id, 4);
+        result = db.insert(users, null, content);
+
+        content.put(name, "ISU");
+        content.put(email, "isabelaisupig@gmail.com");
+        content.put(farmable_id, 5);
+        result = db.insert(users, null, content);
+
+        content.put(name, "KSU");
+        content.put(email, "yookahpig@gmail.com");
+        content.put(farmable_id, 6);
+        result = db.insert(users, null, content);
+
+        content.put(name, "MSC");
+        content.put(email, "marindukepig@gmail.com");
+        content.put(farmable_id, 7);
+        result = db.insert(users, null, content);
+
+        content.put(name, "NVSU");
+        content.put(email, "nuevaviscayapig@gmail.com");
+        content.put(farmable_id, 8);
+        result = db.insert(users, null, content);
+
+        content.put(name, "MSC2");
+        content.put(email, "marmscpig@gmail.com");
+        content.put(farmable_id, 9);
+        result = db.insert(users, null, content);
+
+        return result != -1;
+    }
+
+    public Cursor getEmailInDb(String email){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM "+users+" WHERE email = "+email;
+        Cursor cursor = db.rawQuery(query, null);
+        return cursor;
+    }
+
+    public boolean addSowLitterRecord(String sowid, String boarid, String datebred, String datefarrow, String weandate,
+                                 String pig_parity, String litterborn, String litteralive, String numWean, String aveBirth,
+                                 String numMales, String numFemales, String aveWean, String stillborn, String mummified, String abnormal,
+                                 String isSynced){
+        SQLiteDatabase db =  this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(sow_registration_id, sowid);
+        contentValues.put(boar_registration_id, boarid);
+        contentValues.put(date_bred, datebred);
+        contentValues.put(expected_date_farrow, datefarrow);
+        contentValues.put(pig_weaningdate, weandate);
+        contentValues.put(parity, pig_parity);
+        contentValues.put(total_litter_size_born, litterborn);
+        contentValues.put(total_litter_size_born_alive, litteralive);
+        contentValues.put(number_weaned, numWean);
+        contentValues.put(average_birth_weight, aveBirth);
+        contentValues.put(number_of_males, numMales);
+        contentValues.put(number_of_females, numFemales);
+        contentValues.put(average_weaning_weight, aveWean);
+        contentValues.put(number_stillborn, stillborn);
+        contentValues.put(number_mummified, mummified);
+        contentValues.put(abnormalities, abnormal);
+        contentValues.put(is_synced, isSynced);
+
+        long result = db.insert(sow_litter_table, null, contentValues);
+
+        return result != -1;
+    }
 
     public boolean addNewPigData(String classification, String animalearnotch, String sex, String birthdate, String weaningdate,
                                  String birthweight, String weaningweight, String motherpedigree, String fatherpedigree, String sexratio,
@@ -248,31 +661,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         long result = db.insert(pig_table, null, contentValues);
 
-        if(result == -1) return false;
-        else return true;
+        return result != -1;
     }
 
-//    public boolean updateBreederProfile(String regId, String birthday, String sexRatio, String birthWeight, String weaningWeight, String litterSize,
-//                                        String ageMating, String ageWeaning, String motherPedigree, String fatherPedigree, String isSynced){
-//        SQLiteDatabase db =  this.getWritableDatabase();
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(pig_registration_id, regId);
-//        contentValues.put(pig_birthdate, birthday);
-//        contentValues.put(pig_birthweight, birthWeight);
-//        contentValues.put(pig_weaningweight, weaningWeight);
-//        contentValues.put(pig_mother_earnotch, motherPedigree);
-//        contentValues.put(pig_father_earnotch, fatherPedigree);
-//        contentValues.put(sex_ratio, sexRatio);
-//        contentValues.put(litter_size_born_alive, litterSize);
-//        contentValues.put(age_first_mating, ageMating);
-//        contentValues.put(age_at_weaning, ageWeaning);
-//        contentValues.put(is_synced, isSynced);
+//    public boolean addNewPigData(){
 //
-//        long result = db.insert(pig_table, null, contentValues);
-//
-//        if(result == -1) return false;
-//        else return true;
 //    }
+
 
     public boolean addBreederDetails(String reg_id, String birthdate, String sexRatio, String birthWeight, String weaningWeight,
                                      String litterSize, String ageFirstMating, String ageWeaning, String motherEarnotch,
@@ -1014,8 +1409,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String columns[] = { "*" };
         String whereClause = "sow_registration_id = ? AND boar_registration_id = ?";
-        String[] whereArgs = new String[]{sowRegId,boarRegId};
+        String[] whereArgs = new String[]{sowRegId, boarRegId};
         Cursor data = db.query("pig_breeding_table", columns, whereClause , whereArgs, null, null, null);
+        return data;
+    }
+
+    public Cursor getSowLitterProfile(String sowRegId, String boarRegId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String columns[] = { "*" };
+        String whereClause = "sow_registration_id = ? AND boar_registration_id = ?";
+        String[] whereArgs = new String[]{sowRegId, boarRegId};
+        Cursor data = db.query("sow_litter_table", columns, whereClause , whereArgs, null, null, null);
         return data;
     }
 
@@ -1045,4 +1449,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor data = db.query("pig_table", columns, whereClause , whereArgs, null, null, null);
         return data;
     }
+
+    public boolean updateSowStatus(String sow_reg_id, String boar_id, String sowStatus){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(sow_status, sowStatus);
+        String whereClause = "sow_registration_id = ? AND boar_registration = ?";
+        String[] whereArgs = new String[]{sow_reg_id, boar_id};
+
+        long result = db.update(pig_breeding_table, contentValues, whereClause, whereArgs);
+        if(result == -1) return false;
+        else return true;
+    }
+
 }

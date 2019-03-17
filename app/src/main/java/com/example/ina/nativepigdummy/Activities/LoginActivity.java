@@ -1,6 +1,7 @@
 package com.example.ina.nativepigdummy.Activities;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
+import com.example.ina.nativepigdummy.GlobalClass;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -29,9 +32,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 1;
 
+    final GlobalClass globalVariable = (GlobalClass) getApplicationContext();
     private GoogleApiClient mGoogleApiClient;
     private GoogleSignInClient mGoogleSignInClient;
     private boolean loggedInFlag = false;
+    DatabaseHelper dbHelper;
 
     private FirebaseAuth mAuth;
 
@@ -40,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        dbHelper = new DatabaseHelper(getApplicationContext());
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -82,6 +88,13 @@ public class LoginActivity extends AppCompatActivity {
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+
+        Cursor cursor = dbHelper.getEmailInDb(mAuth.getCurrentUser().getEmail());
+        while(cursor.moveToNext()){
+            globalVariable.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            globalVariable.setName(cursor.getString(cursor.getColumnIndex("name")));
+            globalVariable.setEmail(cursor.getString(cursor.getColumnIndex("email")));
+        }
     }
 
 
