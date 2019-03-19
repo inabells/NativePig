@@ -7,6 +7,9 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 
 public class MyApplication extends MultiDexApplication {
     public static Context context;
+    public static int id;
+    public static String email;
+    public static String name;
 
     private static MyApplication mInstance;
 
@@ -17,10 +20,6 @@ public class MyApplication extends MultiDexApplication {
 
 
         Fresco.initialize(this.context);
-
-
-
-
     }
 
     public static synchronized MyApplication getInstance() {
@@ -30,6 +29,4 @@ public class MyApplication extends MultiDexApplication {
     public static Context getAppContext() {
         return MyApplication.context;
     }
-
-
 }

@@ -6,10 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
-import com.example.ina.nativepigdummy.GlobalClass;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -602,7 +600,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    public Cursor getEmailInDb(String email){
+    public Cursor getEmailInLocalDb(String email){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM "+users+" WHERE email = "+email;
         Cursor cursor = db.rawQuery(query, null);

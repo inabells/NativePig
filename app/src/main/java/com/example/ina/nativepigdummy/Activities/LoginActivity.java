@@ -7,10 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
-import com.example.ina.nativepigdummy.GlobalClass;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -27,12 +25,13 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import com.example.ina.nativepigdummy.R;
 
+import java.util.Optional;
+
 
 public class LoginActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 1;
 
-    final GlobalClass globalVariable = (GlobalClass) getApplicationContext();
     private GoogleApiClient mGoogleApiClient;
     private GoogleSignInClient mGoogleSignInClient;
     private boolean loggedInFlag = false;
@@ -88,13 +87,6 @@ public class LoginActivity extends AppCompatActivity {
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
-
-        Cursor cursor = dbHelper.getEmailInDb(mAuth.getCurrentUser().getEmail());
-        while(cursor.moveToNext()){
-            globalVariable.setId(cursor.getInt(cursor.getColumnIndex("id")));
-            globalVariable.setName(cursor.getString(cursor.getColumnIndex("name")));
-            globalVariable.setEmail(cursor.getString(cursor.getColumnIndex("email")));
-        }
     }
 
 
@@ -116,6 +108,13 @@ public class LoginActivity extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             loggedInFlag = true;
             firebaseAuthWithGoogle(account);
+
+            Cursor cursor = dbHelper.getEmailInLocalDb(mAuth.getCurrentUser().getEmail());
+            while(cursor.moveToNext()){
+                MyApplication.id = cursor.getInt(cursor.getColumnIndex("id"));
+                MyApplication.name = cursor.getString(cursor.getColumnIndex("name"));
+                MyApplication.email = cursor.getString(cursor.getColumnIndex("email"));
+            }
 
             //proceed to dashboard
             Log.d("Google hndlSignInResult", "Proceed to Intent");
