@@ -109,12 +109,12 @@ public class LoginActivity extends AppCompatActivity {
             loggedInFlag = true;
             firebaseAuthWithGoogle(account);
 
-            Cursor cursor = dbHelper.getEmailInLocalDb(mAuth.getCurrentUser().getEmail());
-            while(cursor.moveToNext()){
-                MyApplication.id = cursor.getInt(cursor.getColumnIndex("id"));
-                MyApplication.name = cursor.getString(cursor.getColumnIndex("name"));
-                MyApplication.email = cursor.getString(cursor.getColumnIndex("email"));
-            }
+//            Cursor cursor = dbHelper.getEmailInLocalDb(mAuth.getCurrentUser().getEmail());
+//            while(cursor.moveToNext()){
+//                MyApplication.id = cursor.getInt(cursor.getColumnIndex("id"));
+//                MyApplication.name = cursor.getString(cursor.getColumnIndex("name"));
+//                MyApplication.email = cursor.getString(cursor.getColumnIndex("email"));
+//            }
 
             //proceed to dashboard
             Log.d("Google hndlSignInResult", "Proceed to Intent");
