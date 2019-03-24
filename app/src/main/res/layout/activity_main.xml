@@ -48,7 +48,7 @@
                                 android:id="@+id/textView_dateToday"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:background="@drawable/pigfarm"
+                                android:background="@drawable/newpigfarm"
                                 android:gravity="bottom|end"
                                 android:paddingBottom="15dp"
                                 android:paddingRight="15dp"
@@ -91,6 +91,7 @@
                                 android:padding="8dp"
                                 android:scaleType="centerInside"
 
+                                android:text="20"
                                 android:textColor="@color/colorWhite"
                                 android:textSize="40dp"
                                 android:tint="@color/colorWhite" />
@@ -133,6 +134,7 @@
                                 android:padding="8dp"
                                 android:scaleType="centerInside"
 
+                                android:text="12"
                                 android:textColor="@color/colorWhite"
                                 android:textSize="40dp"
                                 android:tint="@color/colorWhite" />
@@ -182,6 +184,7 @@
                                 android:padding="8dp"
                                 android:scaleType="centerInside"
 
+                                android:text="15"
                                 android:textColor="@color/colorWhite"
                                 android:textSize="40dp"
                                 android:tint="@color/colorWhite" />
@@ -224,6 +227,7 @@
                                 android:padding="8dp"
                                 android:scaleType="centerInside"
 
+                                android:text="10"
                                 android:textColor="@color/colorWhite"
                                 android:textSize="40dp"
                                 android:tint="@color/colorWhite" />
