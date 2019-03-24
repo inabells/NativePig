@@ -91,7 +91,6 @@
                                 android:padding="8dp"
                                 android:scaleType="centerInside"
 
-                                android:text="20"
                                 android:textColor="@color/colorWhite"
                                 android:textSize="40dp"
                                 android:tint="@color/colorWhite" />
@@ -134,7 +133,6 @@
                                 android:padding="8dp"
                                 android:scaleType="centerInside"
 
-                                android:text="12"
                                 android:textColor="@color/colorWhite"
                                 android:textSize="40dp"
                                 android:tint="@color/colorWhite" />
@@ -184,7 +182,6 @@
                                 android:padding="8dp"
                                 android:scaleType="centerInside"
 
-                                android:text="15"
                                 android:textColor="@color/colorWhite"
                                 android:textSize="40dp"
                                 android:tint="@color/colorWhite" />
@@ -227,7 +224,6 @@
                                 android:padding="8dp"
                                 android:scaleType="centerInside"
 
-                                android:text="10"
                                 android:textColor="@color/colorWhite"
                                 android:textSize="40dp"
                                 android:tint="@color/colorWhite" />

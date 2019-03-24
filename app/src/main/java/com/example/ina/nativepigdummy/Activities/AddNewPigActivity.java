@@ -1,6 +1,7 @@
 package com.example.ina.nativepigdummy.Activities;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -238,14 +239,20 @@ public class AddNewPigActivity extends AppCompatActivity {
                 RadioGroup group = findViewById(R.id.newpig_classification);
                 int selectedId = group.getCheckedRadioButtonId();
                 final RadioButton radiobutton = findViewById(selectedId);
+                String addAnimalEarnotchString = addAnimalEarnotch.getText().toString();
 
-                if (addAnimalEarnotch.getText().toString().equals(""))
+                if(addAnimalEarnotchString.equals("")){
                     Toast.makeText(AddNewPigActivity.this, "Please fill out Animal Earnotch", Toast.LENGTH_SHORT).show();
-                else if (radiobutton == null)
+                }else if(addAnimalEarnotchString.length() > 6){
+                    Toast.makeText(AddNewPigActivity.this, "Earnotch is too long", Toast.LENGTH_SHORT).show();
+                } else if(radiobutton == null){
                     Toast.makeText(AddNewPigActivity.this, "Please fill out Classification", Toast.LENGTH_SHORT).show();
-                else {
+                }
+                else{
+                    if(addAnimalEarnotchString.length() < 6)
+                        addAnimalEarnotchString = String.format("%6s", addAnimalEarnotchString).replace("", "0");
+                    requestParams.add("pig_earnotch", addAnimalEarnotchString);
                     requestParams.add("pig_classification", radiobutton.getText().toString());
-                    requestParams.add("pig_earnotch", addAnimalEarnotch.getText().toString());
                     requestParams.add("pig_sex", addSex.getSelectedItem().toString());
                     requestParams.add("pig_birthdate", addBirthDate.getText().toString());
                     requestParams.add("pig_weaningdate", addWeanDate.getText().toString());
@@ -358,7 +365,7 @@ public class AddNewPigActivity extends AppCompatActivity {
     }
 
     private String generateRegistrationId() {
-        return "LAGIAS"+"Berkjala"+"-"+ getYear(addBirthDate.getText().toString()) + addSex.getSelectedItem().toString() + addAnimalEarnotch.getText().toString();
+        return dbHelper.getFarmCode() + dbHelper.getFarmBreed() +"-"+ getYear(addBirthDate.getText().toString()) + addSex.getSelectedItem().toString() + addAnimalEarnotch.getText().toString();
     }
 
     @Override

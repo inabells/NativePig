@@ -2,12 +2,18 @@ package com.example.ina.nativepigdummy.Database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.RadioButton;
+import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.AddNewPigActivity;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
+import com.google.android.gms.flags.impl.DataUtils;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -118,7 +124,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String admins = "admins";
     private static final String animals = "animals";
     private static final String animaltype_id = "animaltype_id";
-    private static final String registry_id = "registry_id";
+    private static final String registryid = "registryid";
     private static final String breed_id = "breed_id";
     private static final String grossmorpho = "grossmorpho";
     private static final String morphochars = "morphochars";
@@ -147,7 +153,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String farm_animaltypes = "farm_animaltypes";
     private static final String farm_users = "farm_users";
     private static final String groupings = "groupings";
-    private static final String registryid = "registryid";
+    //private static final String registryid = "registryid";
     private static final String mother_id = "mother_id";
     private static final String father_id = "father_id";
     private static final String members = "members";
@@ -189,7 +195,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public DatabaseHelper(Context context){
-        super(context, DATABASE_NAME, null, 26);
+        super(context, DATABASE_NAME, null, 27);
     }
     //------------------------------------------------------------------------------------------
     private static final String Administrators = "CREATE TABLE " + administrators + "("
@@ -201,7 +207,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String Animals = "CREATE TABLE " + animals + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + animaltype_id + " INTEGER(10),"
-            + registry_id + " VARCHAR(225),"
+            + registryid + " VARCHAR(225),"
             + farm_id + " INTEGER(10),"
             + breed_id + " INTEGER(10),"
             + grossmorpho + " TINYINT(1),"
@@ -231,7 +237,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String Farms = "CREATE TABLE " + farms + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + name + " VARCHAR(225),"
-            + registry_id + " VARCHAR(225),"
+            + registryid + " VARCHAR(225),"
             + code + " VARCHAR(225),"
             + region + " VARCHAR(225),"
             + province + " VARCHAR(225),"
@@ -508,7 +514,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(Users);
         db.execSQL(Weight_Collections);
 
-        populateFarmUsers();
+ //       populateFarmUsers();
     }
 
     @Override
@@ -548,7 +554,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean populateFarmUsers(){
+    public boolean populateUsers(){
         long result;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues content = new ContentValues();
@@ -600,6 +606,474 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    public boolean populateFarms(){
+        long result;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues content = new ContentValues();
+        content.put(name, "BAI-NSPRDC");
+        content.put(code, "QUEBAI");
+        //content.put(region, "");
+        content.put(province, "Quezon");
+        //content.put(town, "");
+        //content.put(barangay, "");
+        content.put(breedable_id, 1);
+        result = db.insert(farms, null, content);
+
+        content.put(name, "Benguet State University");
+        content.put(code, "BENBSU");
+        //content.put(region, "");
+        content.put(province, "Benguet");
+        //content.put(town, "");
+        //content.put(barangay, "");
+        content.put(breedable_id, 2);
+        result = db.insert(farms, null, content);
+
+        content.put(name, "Eastern Samar State University");
+        content.put(code, "EASESSU");
+        content.put(region, "8");
+        content.put(province, "Eastern Samar");
+        content.put(town, "Borongan");
+        //content.put(barangay, "");
+        content.put(breedable_id, 3);
+        result = db.insert(farms, null, content);
+
+        content.put(name, "UPLB Institute of Animal Science");
+        content.put(code, "LAGIAS");
+        //content.put(region, "8");
+        content.put(province, "Laguna");
+        //content.put(town, "Borongan");
+        //content.put(barangay, "");
+        content.put(breedable_id, 4);
+        result = db.insert(farms, null, content);
+
+        content.put(name, "Isabela State University");
+        content.put(code, "ISAISU");
+        //content.put(region, "8");
+        content.put(province, "Isabela");
+        //content.put(town, "Borongan");
+        //content.put(barangay, "");
+        content.put(breedable_id, 5);
+        result = db.insert(farms, null, content);
+
+        content.put(name, "Kalinga State University");
+        content.put(code, "KAKSU");
+        //content.put(region, "8");
+        content.put(province, "Kalinga");
+        //content.put(town, "Borongan");
+        //content.put(barangay, "");
+        content.put(breedable_id, 6);
+        result = db.insert(farms, null, content);
+
+        content.put(name, "Marinduque State College");
+        content.put(code, "MARMSC");
+        //content.put(region, "8");
+        content.put(province, "Marinduque");
+        //content.put(town, "Borongan");
+        //content.put(barangay, "");
+        content.put(breedable_id, 7);
+        result = db.insert(farms, null, content);
+
+        content.put(name, "Nueva Vizcaya State University");
+        content.put(code, "NUVNVSU");
+        //content.put(region, "8");
+        content.put(province, "Nueva Vizcaya");
+        //content.put(town, "Borongan");
+        //content.put(barangay, "");
+        content.put(breedable_id, 8);
+        result = db.insert(farms, null, content);
+
+        content.put(name, "Marinduque State College");
+        content.put(code, "MARMSC2");
+        //content.put(region, "8");
+        content.put(province, "Marinduque");
+        content.put(town, "Torrijos");
+        //content.put(barangay, "");
+        content.put(breedable_id, 9);
+        result = db.insert(farms, null, content);
+
+        return result != -1;
+    }
+
+    public boolean populateBreeds(){
+        long result;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues content = new ContentValues();
+        content.put(breed, "BP");
+        content.put(animaltype_id, 3);
+        result = db.insert(breeds, null, content);
+
+        content.put(breed, "Benguet");
+        content.put(animaltype_id, 3);
+        result = db.insert(breeds, null, content);
+
+        content.put(breed, "Sinirangan");
+        content.put(animaltype_id, 3);
+        result = db.insert(breeds, null, content);
+
+        content.put(breed, "Berkjala");
+        content.put(animaltype_id, 3);
+        result = db.insert(breeds, null, content);
+
+        content.put(breed, "Isabela");
+        content.put(animaltype_id, 3);
+        result = db.insert(breeds, null, content);
+
+        content.put(breed, "Yookah");
+        content.put(animaltype_id, 3);
+        result = db.insert(breeds, null, content);
+
+        content.put(breed, "Marinduke");
+        content.put(animaltype_id, 3);
+        result = db.insert(breeds, null, content);
+
+        content.put(breed, "NuevaVizcaya");
+        content.put(animaltype_id, 3);
+        result = db.insert(breeds, null, content);
+
+        content.put(breed, "MarindukePig");
+        content.put(animaltype_id, 3);
+        result = db.insert(breeds, null, content);
+
+        return result != -1;
+    }
+
+    public boolean populateAnimalTypes(){
+        long result;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues content = new ContentValues();
+
+        content.put(species, "Chicken");
+        result = db.insert(animal_types, null, content);
+
+        content.put(species, "Duck");
+        result = db.insert(animal_types, null, content);
+
+        content.put(species, "Pig");
+        result = db.insert(animal_types, null, content);
+
+        return result != -1;
+    }
+
+    public boolean populateProperties(){
+        long result;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues content = new ContentValues();
+
+        content.put(name,"Earnotch");
+        content.put(fname,"earnotch");
+        content.put(description,"Earnotch or eartag number of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Sex");
+        content.put(fname,"sex");
+        content.put(description,"Sex of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Date Farrowed");
+        content.put(fname,"date_farrowed");
+        content.put(description,"Date when pig was born");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Registration ID");
+        content.put(fname,"registration_id");
+        content.put(description,"Complete registration ID of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Birth Weight");
+        content.put(fname,"birth_weight");
+        content.put(description,"Weight of the pig when it was born");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Date Weaned");
+        content.put(fname,"date_weaned");
+        content.put(description,"Date when pig was weaned");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Weaning Weight");
+        content.put(fname,"weaning_weight");
+        content.put(description,"Weight of the pig when it was weaned");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Dam");
+        content.put(fname,"dam");
+        content.put(description,"Mother of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Sire");
+        content.put(fname,"sire");
+        content.put(description,"Father of the pig");
+        result = db.insert(properties, null, content);
+
+        //-----GROSS MORPHOLOGY-----//
+
+        content.put(name,"Date Collected for Gross Morphology");
+        content.put(fname,"date_collected_gross_morpho");
+        content.put(description,"Date when gross morphology was collected");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Hair Type");
+        content.put(fname,"hair_type");
+        content.put(description,"Hair length classification of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Hair Length");
+        content.put(fname,"hair_length");
+        content.put(description,"Mother of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Coat Color");
+        content.put(fname,"coat_color");
+        content.put(description,"Coat color of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Color Pattern");
+        content.put(fname,"color_pattern");
+        content.put(description,"Color pattern of the coat of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Head Shape");
+        content.put(fname,"head_shape");
+        content.put(description,"Head shape of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Skin Type");
+        content.put(fname,"skin_type");
+        content.put(description,"Skin Type of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Ear Type");
+        content.put(fname,"ear_type");
+        content.put(description,"Ear type of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Tail Type");
+        content.put(fname,"tail_type");
+        content.put(description,"Tail type of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Backline");
+        content.put(fname,"backline");
+        content.put(description,"Backline of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Other Marks");
+        content.put(fname,"other_marks");
+        content.put(description,"Other marks that can identify the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Date Collected for Morphometric Characteristics");
+        content.put(fname,"date_collected_morpho_chars");
+        content.put(description,"Date when morphometric characteristics were collected");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Ear Length");
+        content.put(fname,"ear_length");
+        content.put(description,"Ear length of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Head Length");
+        content.put(fname,"head_length");
+        content.put(description,"Head length of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Snout Length");
+        content.put(fname,"snout_length");
+        content.put(description,"Snout length of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Body Length");
+        content.put(fname,"body_length");
+        content.put(description,"Body length of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Heart Girth");
+        content.put(fname,"heart_girth");
+        content.put(description,"Heart girth of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Pelvic Width");
+        content.put(fname,"pelvic_width");
+        content.put(description,"Pelvic width of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Tail Length");
+        content.put(fname,"tail_length");
+        content.put(description,"Tail length of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Height at Withers");
+        content.put(fname,"height_at_withers");
+        content.put(description,"Height at withers of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Number of Normal Teats");
+        content.put(fname,"number_normal_teats");
+        content.put(description,"Number of the normal teats of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Ponderal Index");
+        content.put(fname,"ponderal_index");
+        content.put(description,"Computed ponderal index of the pig");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Body Weight at 45 Days");
+        content.put(fname,"body_weight_at_45_days");
+        content.put(description,"Body weight of the pig at 45 days");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Body Weight at 60 Days");
+        content.put(fname,"body_weight_at_60_days");
+        content.put(description,"Body weight of the pig at 60 days");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Body Weight at 90 Days");
+        content.put(fname,"body_weight_at_90_days");
+        content.put(description,"Body weight of the pig at 90 days");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Body Weight at 150 Days");
+        content.put(fname,"body_weight_at_150_days");
+        content.put(description,"Body weight of the pig at 150 days");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Body Weight at 180 Days");
+        content.put(fname,"body_weight_at_180_days");
+        content.put(description,"Body weight of the pig at 180 days");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Date Colleceted at 45 Days");
+        content.put(fname,"date_collected_at_45_days");
+        content.put(description,"Date when body weight at 45 days was collected");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Date Colleceted at 60 Days");
+        content.put(fname,"date_collected_at_60_days");
+        content.put(description,"Date when body weight at 60 days was collected");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Date Colleceted at 90 Days");
+        content.put(fname,"date_collected_at_90_days");
+        content.put(description,"Date when body weight at 90 days was collected");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Date Colleceted at 150 Days");
+        content.put(fname,"date_collected_at_150_days");
+        content.put(description,"Date when body weight at 150 days was collected");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Date Colleceted at 180 Days");
+        content.put(fname,"date_collected_at_180_days");
+        content.put(description,"Date when body weight at 180 days was collected");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Date Bred");
+        content.put(fname,"date_bred");
+        content.put(description,"Date when two pigs were bred");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Expected Date of Farrowing");
+        content.put(fname,"expected_date_of_farrowing");
+        content.put(description,"Expected date of farrowing");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Date Aborted");
+        content.put(fname,"date_aborted");
+        content.put(description,"Date when litters were aborted");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Number Stillborn");
+        content.put(fname,"number_stillborn");
+        content.put(description,"Number of stillbirths");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Number Mummified");
+        content.put(fname,"number_mummified");
+        content.put(description,"Number of mummified offspring");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Abnormalities");
+        content.put(fname,"abnormalities");
+        content.put(description,"Abnomalities of the litter");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Parity");
+        content.put(fname,"parity");
+        content.put(description,"Parity of the sow");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Total Littersize Born");
+        content.put(fname,"lsb");
+        content.put(description,"Total litters born");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Total Littersize Born Alive");
+        content.put(fname,"lsba");
+        content.put(description,"Total litters born alive");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Number of Males");
+        content.put(fname,"number_males");
+        content.put(description,"Number of males born");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Number of Females");
+        content.put(fname,"number_females");
+        content.put(description,"Number of females born");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Sex Ratio");
+        content.put(fname,"sex_ratio");
+        content.put(description,"Sex ratio of the litters");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Weighing Option");
+        content.put(fname,"weighing_option");
+        content.put(description,"Weighing option of the farm");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Litter Birth Weight");
+        content.put(fname,"litter_birth_weight");
+        content.put(description,"Litter birth weight");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Average Birth Weight");
+        content.put(fname,"average_birth_weight");
+        content.put(description,"Average birth weight");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Number Weaned");
+        content.put(fname,"number_weaned");
+        content.put(description,"Number of pigs weaned");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Average Weaning Weight");
+        content.put(fname,"average_weaning_weight");
+        content.put(description,"Average weaning weight");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Preweaning Mortality");
+        content.put(fname,"preweaning_mortality");
+        content.put(description,"Number of pigs which died before weaning");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Status");
+        content.put(fname,"status");
+        content.put(description,"Any status used in the information system");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Frequency");
+        content.put(fname,"frequency");
+        content.put(description,"Number of times sow or boar was used in breeding");
+        result = db.insert(properties, null, content);
+
+        content.put(name,"Litter Weaning Weight");
+        content.put(fname,"litter_weaning_weight");
+        content.put(description,"Litter weaning weight");
+        result = db.insert(properties, null, content);
+
+        return result != -1;
+    }
+
     public Cursor getEmailInLocalDb(String email){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM "+users+" WHERE email = "+email;
@@ -636,35 +1110,141 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+//    public boolean addNewPigData(String classification, String animalearnotch, String sex, String birthdate, String weaningdate,
+//                                 String birthweight, String weaningweight, String motherpedigree, String fatherpedigree, String sexratio,
+//                                 String littersizebornalive, String agefirstmating, String ageweaning, String regId, String isSynced){
+//        SQLiteDatabase db =  this.getWritableDatabase();
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(pig_classification, classification);
+//        contentValues.put(pig_earnotch, animalearnotch);
+//        contentValues.put(pig_sex, sex);
+//        contentValues.put(pig_birthdate, birthdate);
+//        contentValues.put(pig_weaningdate, weaningdate);
+//        contentValues.put(pig_birthweight, birthweight);
+//        contentValues.put(pig_weaningweight, weaningweight);
+//        contentValues.put(pig_mother_earnotch, motherpedigree);
+//        contentValues.put(pig_father_earnotch, fatherpedigree);
+//        contentValues.put(sex_ratio, sexratio);
+//        contentValues.put(litter_size_born_alive, littersizebornalive);
+//        contentValues.put(age_first_mating, agefirstmating);
+//        contentValues.put(age_at_weaning, ageweaning);
+//        contentValues.put(pig_registration_id, regId);
+//        contentValues.put(is_synced, isSynced);
+//
+//        long result = db.insert(pig_table, null, contentValues);
+//
+//        return result != -1;
+//    }
+
+
+
     public boolean addNewPigData(String classification, String animalearnotch, String sex, String birthdate, String weaningdate,
                                  String birthweight, String weaningweight, String motherpedigree, String fatherpedigree, String sexratio,
                                  String littersizebornalive, String agefirstmating, String ageweaning, String regId, String isSynced){
+        //SQLiteDatabase db = this.getWritableDatabase();
+        addToAnimalDB(regId, classification);
+        String animalId = getAnimalId(regId);
+        addToAnimalPropertyDB(1, animalId, animalearnotch);
+        addToAnimalPropertyDB(2, animalId, sex);
+        addToAnimalPropertyDB(3, animalId, changeToNotSpecifiedIfNull(birthdate));
+        addToAnimalPropertyDB(4, animalId, regId);
+        addToAnimalPropertyDB(5, animalId, changeToBlankIfNull(birthweight));
+        addToAnimalPropertyDB(6, animalId, changeToNotSpecifiedIfNull(weaningdate));
+        addToAnimalPropertyDB(7, animalId, changeToBlankIfNull(weaningweight));
+        addDamAndSire(motherpedigree, fatherpedigree, animalId);
+        return true;
+    }
+
+    private void addDamAndSire(String motherPedigree, String fatherPedigree, String animalId){
+        int founddam = 0, foundsire = 0;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        if(motherPedigree.length() < 6)
+            motherPedigree = String.format("%6s", motherPedigree).replace("", "0");
+        if(fatherPedigree.length() < 6)
+            fatherPedigree = String.format("%6s", fatherPedigree).replace("", "0");
+
+        if(checkIfPigExistsInAnimalDB(motherPedigree)){
+            contentValues.put(mother_id, getAnimalId(motherPedigree));
+            founddam = 1;
+        }
+        if(checkIfPigExistsInAnimalDB(fatherPedigree)){
+            contentValues.put(father_id, getAnimalId(fatherPedigree));
+            foundsire = 1;
+        }
+
+        if(founddam != 1) addToAnimalPropertyDB(8, animalId, generateRegistrationId("F", motherPedigree));
+        if(foundsire != 1) addToAnimalPropertyDB(9, animalId, generateRegistrationId("M", fatherPedigree));
+
+        if(founddam == 1 || foundsire == 1){
+            contentValues.put(breed_id, MyApplication.id);
+            contentValues.put(members, 1);
+            db.insert(groupings, null, contentValues);
+        }
+
+
+    }
+
+    private String generateRegistrationId(String sex, String animalearnotch) {
+        return getFarmCode() + getFarmBreed() +"-"+ sex + animalearnotch;
+    }
+
+    private Cursor getAllPigsGivenRegistryId(){
+        String id = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = { "*" };
+        String whereClause = "breed_id = ?";
+        String[] whereArgs = new String[]{(Integer.toString(MyApplication.id))};
+        Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
+        return data;
+    }
+
+    private boolean checkIfPigExistsInAnimalDB(String regId){
+        String id = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = { "*" };
+        String whereClause = "registryid LIKE ?";
+        String[] whereArgs = new String[]{regId};
+        Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
+        if(data.moveToFirst()) return true;
+        else return false;
+    }
+
+    public boolean addToAnimalDB(String regId, String pig_classification){
         SQLiteDatabase db =  this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(pig_classification, classification);
-        contentValues.put(pig_earnotch, animalearnotch);
-        contentValues.put(pig_sex, sex);
-        contentValues.put(pig_birthdate, birthdate);
-        contentValues.put(pig_weaningdate, weaningdate);
-        contentValues.put(pig_birthweight, birthweight);
-        contentValues.put(pig_weaningweight, weaningweight);
-        contentValues.put(pig_mother_earnotch, motherpedigree);
-        contentValues.put(pig_father_earnotch, fatherpedigree);
-        contentValues.put(sex_ratio, sexratio);
-        contentValues.put(litter_size_born_alive, littersizebornalive);
-        contentValues.put(age_first_mating, agefirstmating);
-        contentValues.put(age_at_weaning, ageweaning);
-        contentValues.put(pig_registration_id, regId);
-        contentValues.put(is_synced, isSynced);
-
-        long result = db.insert(pig_table, null, contentValues);
-
+        contentValues.put(registryid, regId);
+        contentValues.put(farm_id, MyApplication.id);
+        contentValues.put(breed_id, MyApplication.id);
+        contentValues.put(status, pig_classification);
+        long result = db.insert(animals,null,contentValues);
         return result != -1;
     }
 
-//    public boolean addNewPigData(){
-//
-//    }
+    public boolean addToAnimalPropertyDB(int propertyId, String animalId, String valueString){
+        SQLiteDatabase db =  this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(animal_id, animalId);
+        contentValues.put(property_id, propertyId);
+        contentValues.put(value, valueString);
+        long result = db.insert(animal_properties,null,contentValues);
+        return result != -1;
+    }
+
+    private String getAnimalId(String regId) {
+        String id = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = { "id" };
+        String whereClause = "registryid = ?";
+        String[] whereArgs = new String[]{regId};
+        Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
+        if(data.moveToFirst()){
+            id = data.getString(data.getColumnIndex("id"));
+        }
+        return id;
+    }
+
 
 
     public boolean addBreederDetails(String reg_id, String birthdate, String sexRatio, String birthWeight, String weaningWeight,
@@ -1367,6 +1947,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         });
     }
 
+    public String getFarmCode(){
+        String returnString = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = { "code" };
+        String whereClause = "breedable_id = ?";
+        String[] whereArgs = new String[]{Integer.toString(MyApplication.id)};
+        Cursor data = db.query("farms", columns, whereClause , whereArgs, null, null, null);
+        if(data.moveToFirst()){
+            returnString = data.getString(data.getColumnIndex("code"));
+        }
+        return returnString;
+    }
+
+    public String getFarmBreed(){
+        String returnString = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = { "breed" };
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{Integer.toString(MyApplication.id)};
+        Cursor data = db.query("breeds", columns, whereClause , whereArgs, null, null, null);
+        if(data.moveToFirst()){
+            returnString = data.getString(data.getColumnIndex("breed"));
+        }
+        return returnString;
+    }
+
     public Cursor getSinglePig(String reg_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         String columns[] = { "*" };
@@ -1458,6 +2064,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long result = db.update(pig_breeding_table, contentValues, whereClause, whereArgs);
         if(result == -1) return false;
         else return true;
+    }
+
+    private String changeToNotSpecifiedIfNull(String value) {
+        if(value == null || value.isEmpty())
+            return "Not specified";
+        else
+            return value;
+    }
+
+    private String changeToBlankIfNull(String value) {
+        if(value == null || value.isEmpty())
+            return "";
+        else
+            return value;
     }
 
 }
