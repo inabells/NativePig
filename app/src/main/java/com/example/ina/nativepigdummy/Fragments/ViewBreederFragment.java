@@ -1,5 +1,6 @@
 package com.example.ina.nativepigdummy.Fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -27,6 +28,11 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -116,19 +122,66 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
         return params;
     }
 
-    private void local_getSinglePig(String reg_id) {
+    @SuppressLint("SetTextI18n")
+    private void local_getSinglePig(String reg_id){
+        String birthDate="", weaningDate="";
         Cursor data = dbHelper.getSinglePig(reg_id);
-        if (data.moveToFirst()) {
-            TextViewbirthday.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_birthdate"))));
-            TextViewsex.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("sex_ratio"))));
-            TextViewbirthweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_birthweight"))));
-            TextViewweaningweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_weaningweight"))));
-            TextViewlittersizebornweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("litter_size_born_alive"))));
-            TextViewageatfirstmating.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("age_first_mating"))));
-            TextViewageatweaning.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("age_at_weaning"))));
-            TextViewpedigreemother.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_mother_earnotch"))));
-            TextViewpedigreefather.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pig_father_earnotch"))));
+        while (data.moveToNext()) {
+            switch(data.getString(data.getColumnIndex("property_id"))) {
+                case "3":   birthDate = data.getString(data.getColumnIndex("value"));
+                            TextViewbirthday.setText(setDefaultTextIfNull(birthDate));
+                            break;
+                case "6":   weaningDate = data.getString(data.getColumnIndex("value"));
+                            break;
+                case "53":  TextViewsex.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                            break;
+                case "5":   TextViewbirthweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                            break;
+                case "7":   TextViewweaningweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                            break;
+                case "50":  TextViewlittersizebornweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                            break;
+                case "8":   TextViewpedigreemother.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                            break;
+                case "9":   TextViewpedigreefather.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                            break;
+            }
+
+            if(birthDate != null && weaningDate != null && !birthDate.isEmpty() && !weaningDate.isEmpty()){
+                if(birthDate.equals("Not specified") || weaningDate.equals("Not specified")){
+                    TextViewageatweaning.setText(setDefaultTextIfNull(""));
+                }else{
+                    try {
+                        TextViewageatweaning.setText(computeAgeWeaning(birthDate, weaningDate));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }else{
+                TextViewageatweaning.setText(setDefaultTextIfNull(""));
+            }
         }
+    }
+
+    private String computeAgeWeaning(String birthDate, String weaningDate) throws ParseException {
+        String date = "";
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        Date firstDate = format.parse(birthDate);
+        Date secondDate = format.parse(weaningDate);
+
+        long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
+        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+        if((Long.toString(diff/30) ).equals("1") && (Long.toString(diff%30)).equals("1")){
+            date = Long.toString(diff/30) + " month, " + Long.toString(diff%30) + " day";
+        }else if((Long.toString(diff/30).equals("1"))){
+            date = Long.toString(diff/30) + " month, " + Long.toString(diff%30) + " days";
+        }else if((Long.toString(diff%30).equals("1"))){
+            date = Long.toString(diff/30) + " months, " + Long.toString(diff%30) + " day";
+        }else{
+            date = Long.toString(diff/30) + " months, " + Long.toString(diff%30) + " days";
+        }
+        return date;
     }
 
     private void api_getSinglePig(RequestParams params) {

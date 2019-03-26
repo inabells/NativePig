@@ -89,19 +89,30 @@ public class BreederWeightRecordsFragment extends Fragment implements BreederWei
     }
 
     private void local_getWeightProfile(String reg_id) {
-        Cursor data = dbHelper.getWeightRecords(reg_id);
-
-        if (data.moveToFirst()) {
-            TextViewWeight45.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("weight_at_45"))));
-            TextViewWeight60.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("weight_at_60"))));
-            TextViewWeight90.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("weight_at_90"))));
-            TextViewWeight150.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("weight_at_150"))));
-            TextViewWeight180.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("weight_at_180"))));
-            TextViewDate45.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected_at_45"))));
-            TextViewDate60.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected_at_60"))));
-            TextViewDate90.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected_at_90"))));
-            TextViewDate150.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected_at_150"))));
-            TextViewDate180.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected_at_180"))));
+        Cursor data = dbHelper.getSinglePig(reg_id);
+        while(data.moveToNext()) {
+            switch(data.getString(data.getColumnIndex("property_id"))) {
+                case "32": TextViewWeight45.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "33": TextViewWeight60.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "34": TextViewWeight90.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "35": TextViewWeight150.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "36": TextViewWeight180.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "37": TextViewDate45.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "38": TextViewDate60.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "39": TextViewDate90.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "40": TextViewDate150.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "41": TextViewDate180.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+            }
         }
     }
 

@@ -81,7 +81,7 @@ public class FemaleGrowersFragment extends Fragment {
             Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
         }else {
             while (data.moveToNext()) {
-                femaleData = new FemaleGrowerData(data.getString(1));
+                femaleData = new FemaleGrowerData(data.getString(2));
                 femaleList.add(femaleData);
             }
             FemaleGrowerDataAdapter adapter = new FemaleGrowerDataAdapter(getActivity(), R.layout.listview_breeder_grower, femaleList);

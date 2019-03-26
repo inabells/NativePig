@@ -78,7 +78,7 @@ public class SowsFragment extends Fragment {
             Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
         }else {
             while (data.moveToNext()) {
-                sowData = new SowData(data.getString(1));
+                sowData = new SowData(data.getString(2));
                 sowList.add(sowData);
             }
             SowDataAdapter adapter = new SowDataAdapter(getActivity(), R.layout.listview_breeder_grower, sowList);

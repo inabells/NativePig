@@ -84,20 +84,32 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
     }
 
     private void local_getGrossMorphProfile(String reg_id) {
-        Cursor data = dbHelper.getGrossMorphProfile(reg_id);
-
-        if (data.moveToFirst()) {
-            TextViewDateCollected.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected"))));
-            TextViewOtherMarks.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("other_marks"))));
-            hairType.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("hair_type"))));
-            hairLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("hair_length"))));
-            coatColor.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("coat_color"))));
-            colorPattern.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("color_pattern"))));
-            headShape.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("head_shape"))));
-            skinType.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("skin_type"))));
-            earType.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("ear_type"))));
-            tailType.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("tail_type"))));
-            backLine.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("backline"))));
+        Cursor data = dbHelper.getSinglePig(reg_id);
+        while(data.moveToNext()) {
+            switch(data.getString(data.getColumnIndex("property_id"))) {
+                case "10": TextViewDateCollected.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "11": hairType.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "12": hairLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "13": coatColor.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "14": colorPattern.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "15": headShape.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "16": skinType.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "17": earType.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "18": tailType.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "19": backLine.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "20": TextViewOtherMarks.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+            }
         }
     }
 

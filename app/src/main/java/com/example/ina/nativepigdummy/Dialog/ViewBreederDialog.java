@@ -26,6 +26,7 @@ import com.loopj.android.http.RequestParams;
 
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
@@ -195,19 +196,26 @@ public class ViewBreederDialog extends DialogFragment {
     }
 
     private void local_getSinglePig(String id){
+        String birthDate = "", weaningDate = "";
         Cursor data = dbHelper.getSinglePig(id);
-        if (data.moveToFirst()) {
-            birthday.setText(setBlankIfNull(data.getString(data.getColumnIndex("pig_birthdate"))));
-            sex.setText(setBlankIfNull(data.getString(data.getColumnIndex("sex_ratio"))));
-            birthweight.setText(setBlankIfNull(data.getString(data.getColumnIndex("pig_birthweight"))));
-            weaningweight.setText(setBlankIfNull(data.getString(data.getColumnIndex("pig_weaningweight"))));
-            littersizebornweight.setText(setBlankIfNull(data.getString(data.getColumnIndex("litter_size_born_alive"))));
-            ageatfirstmating.setText(setBlankIfNull(data.getString(data.getColumnIndex("age_first_mating"))));
-            ageatweaning.setText(setBlankIfNull(data.getString(data.getColumnIndex("age_at_weaning"))));
-            pedigreemother.setText(setBlankIfNull(data.getString(data.getColumnIndex("pig_mother_earnotch"))));
-            pedigreefather.setText(setBlankIfNull(data.getString(data.getColumnIndex("pig_mother_earnotch"))));
+        while (data.moveToNext()) {
+            switch(data.getString(data.getColumnIndex("property_id"))) {
+                case "3":   birthday.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "53":  sex.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "5":   birthweight.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "7":   weaningweight.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "50":  littersizebornweight.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "8":   pedigreemother.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "9":   pedigreefather.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+            }
         }
-
     }
 
     private void api_getSinglePig(String id) {

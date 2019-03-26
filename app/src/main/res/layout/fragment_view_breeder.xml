@@ -305,7 +305,7 @@ tools:context=".Fragments.ViewBreederFragment">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/pedigree"
+                    android:text="Mother Pedigree"
                     android:textColor="@color/colorPrimary"
                     android:textSize="13sp" />
 
@@ -335,7 +335,7 @@ tools:context=".Fragments.ViewBreederFragment">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/pedigree"
+                    android:text="Father Pedigree"
                     android:textColor="@color/colorPrimary"
                     android:textSize="13sp" />
 

@@ -20,6 +20,8 @@ import com.loopj.android.http.RequestParams;
 
 import org.json.JSONObject;
 
+import java.text.ParseException;
+
 import cz.msebera.android.httpclient.Header;
 
 public class MorphCharFragment extends Fragment implements MorphCharDialog.ViewMorphCharListener{
@@ -81,19 +83,30 @@ public class MorphCharFragment extends Fragment implements MorphCharDialog.ViewM
     }
 
     private void local_getMorphCharProfile(String reg_id) {
-        Cursor data = dbHelper.getMorphCharProfile(reg_id);
-
-        if (data.moveToFirst()) {
-            TextViewDateCollected.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("date_collected"))));
-            TextViewEarLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("ear_length"))));
-            TextViewHeadLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("head_length"))));
-            TextViewSnoutLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("snout_length"))));
-            TextViewBodyLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("body_length"))));
-            TextViewHeartGirth.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("heart_girth"))));
-            TextViewPelvicWidth.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("pelvic_width"))));
-            TextViewTailLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("tail_length"))));
-            TextViewHeightAtWithers.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("height_at_withers"))));
-            TextViewNormalTeats.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("normal_teats"))));
+       Cursor data = dbHelper.getSinglePig(reg_id);
+        while (data.moveToNext()) {
+            switch(data.getString(data.getColumnIndex("property_id"))) {
+                case "21": TextViewDateCollected.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "22": TextViewEarLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "23": TextViewHeadLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "24": TextViewSnoutLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "25": TextViewBodyLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "26": TextViewHeartGirth.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "27": TextViewPelvicWidth.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "28": TextViewTailLength.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "29": TextViewHeightAtWithers.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "30": TextViewNormalTeats.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+            }
         }
     }
 

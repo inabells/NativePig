@@ -76,7 +76,7 @@ public class BoarsFragment extends Fragment {
             Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
         }else {
             while (data.moveToNext()) {
-                boarData = new BoarData(data.getString(1));
+                boarData = new BoarData(data.getString(2));
                 boarList.add(boarData);
             }
             BoarDataAdapter adapter = new BoarDataAdapter(getActivity(), R.layout.listview_breeder_grower, boarList);
