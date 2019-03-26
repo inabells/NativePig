@@ -20,6 +20,7 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.sql.SQLInput;
 import java.util.HashMap;
 
 import cz.msebera.android.httpclient.Header;
@@ -195,7 +196,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public DatabaseHelper(Context context){
-        super(context, DATABASE_NAME, null, 27);
+        super(context, DATABASE_NAME, null, 29);
     }
     //------------------------------------------------------------------------------------------
     private static final String Administrators = "CREATE TABLE " + administrators + "("
@@ -215,7 +216,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + weightrecord + " TINYINT(1),"
             + status + " VARCHAR(225),"
             + created_at + " TIMESTAMP,"
-            + updated_at + " TIMESTAMP)";
+            + updated_at + " TIMESTAMP,"
+            + is_synced + " TEXT)";
 
     private static final String Animal_Properties = "CREATE TABLE " + animal_properties + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -223,16 +225,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + property_id + " INTEGER(10),"
             + value + " VARCHAR(225),"
             + created_at + " TIMESTAMP,"
-            + updated_at + " TIMESTAMP)";
+            + updated_at + " TIMESTAMP,"
+            + is_synced + " TEXT)";
 
     private static final String Animal_Types = "CREATE TABLE " + animal_types + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-            + species + " VARCHAR(225))";
+            + species + " VARCHAR(225),"
+            + is_synced + " TEXT)";
 
     private static final String Breeds = "CREATE TABLE " + breeds + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + breed + " VARCHAR(225),"
-            + animaltype_id + " INTEGER(10))";
+            + animaltype_id + " INTEGER(10),"
+            + is_synced + " TEXT)";
 
     private static final String Farms = "CREATE TABLE " + farms + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -243,18 +248,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + province + " VARCHAR(225),"
             + town + " VARCHAR(225),"
             + barangay + " VARCHAR(225),"
-            + breedable_id + " INTEGER(10))";
+            + breedable_id + " INTEGER(10),"
+            + is_synced + " TEXT)";
 
     private static final String Farm_AnimalTypes = "CREATE TABLE " + farm_animaltypes + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + farm_id + " INTEGER(10),"
-            + animaltype_id + " INTEGER(10))";
+            + animaltype_id + " INTEGER(10),"
+            + is_synced + " TEXT)";
 
     private static final String Farm_Users = "CREATE TABLE " + farm_users + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + user_id + " INTEGER(10),"
             + farm_id + " INTEGER(10),"
-            + user_type + " VARCHAR(225))";
+            + user_type + " VARCHAR(225),"
+            + is_synced + " TEXT)";
 
     private static final String Groupings = "CREATE TABLE " + groupings + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -262,14 +270,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + mother_id + " INTEGER(10),"
             + father_id + " INTEGER(10),"
             + breed_id + " INTEGER(10),"
-            + members + " TINYINT(1))";
+            + members + " TINYINT(1),"
+            + is_synced + " TEXT)";
 
     private static final String Grouping_Members = "CREATE TABLE " + grouping_members + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + grouping_id + " INTEGER(10),"
             + animal_id + " INTEGER(10),"
             + created_at + " TIMESTAMP,"
-            + updated_at + " TIMESTAMP)";
+            + updated_at + " TIMESTAMP,"
+            + is_synced + " TEXT)";
 
     private static final String Grouping_Properties = "CREATE TABLE " + grouping_properties + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -277,12 +287,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + property_id + " INTEGER(10),"
             + value + " VARCHAR(225),"
             + created_at + " TIMESTAMP,"
-            + updated_at + " TIMESTAMP)";
+            + updated_at + " TIMESTAMP,"
+            + is_synced + " TEXT)";
 
     private static final String Migrations = "CREATE TABLE " + migrations + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + migration + " VARCHAR(225),"
-            + batch + " INTEGER(11))";
+            + batch + " INTEGER(11),"
+            + is_synced + " TEXT)";
 
     private static final String Mortalities = "CREATE TABLE " + mortalities + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -293,18 +305,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + cause + " VARCHAR(225),"
             + age + " VARCHAR(225),"
             + created_at + " TIMESTAMP,"
-            + updated_at + " TIMESTAMP)";
+            + updated_at + " TIMESTAMP,"
+            + is_synced + " TEXT)";
 
     private static final String Password_Resets = "CREATE TABLE " + password_resets + "("
             + email + " VARCHAR(225),"
             + token + " VARCHAR(225),"
-            + created_at + " TIMESTAMP)";
+            + created_at + " TIMESTAMP,"
+            + is_synced + " TEXT)";
 
     private static final String Properties = "CREATE TABLE " + properties + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + name + " VARCHAR(225),"
             + fname + " VARCHAR(225),"
-            + description + " TEXT)";
+            + description + " TEXT,"
+            + is_synced + " TEXT)";
 
     private static final String Removed_Animals = "CREATE TABLE " + removed_animals + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -315,15 +330,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + reason + " VARCHAR(225),"
             + age + " VARCHAR(225),"
             + created_at + " TIMESTAMP,"
-            + updated_at + " TIMESTAMP)";
+            + updated_at + " TIMESTAMP,"
+            + is_synced + " TEXT)";
 
     private static final String Roles = "CREATE TABLE " + roles + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-            + title + " VARCHAR(225))";
+            + title + " VARCHAR(225),"
+            + is_synced + " TEXT)";
 
     private static final String Role_User = "CREATE TABLE " + role_user + "("
             + user_id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
-            + role_id + " INTEGER(10))";
+            + role_id + " INTEGER(10),"
+            + is_synced + " TEXT)";
 
     private static final String Sales = "CREATE TABLE " + sales + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -335,7 +353,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + price + " VARCHAR(225),"
             + age + " VARCHAR(225),"
             + created_at + " TIMESTAMP,"
-            + updated_at + " TIMESTAMP)";
+            + updated_at + " TIMESTAMP,"
+            + is_synced + " TEXT)";
 
     private static final String Users = "CREATE TABLE " + users + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -349,14 +368,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + deleted_at + " TIMESTAMP,"
             + remember_token + " VARCHAR(100),"
             + created_at + " TIMESTAMP,"
-            + updated_at + " TIMESTAMP)";
+            + updated_at + " TIMESTAMP,"
+            + is_synced + " TEXT)";
 
     private static final String Weight_Collections = "CREATE TABLE " + weight_collections + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + animal_id + " INTEGER(10),"
             + weight + " DOUBLE,"
             + created_at + " TIMESTAMP,"
-            + updated_at + " TIMESTAMP)";
+            + updated_at + " TIMESTAMP,"
+            + is_synced + " TEXT)";
 
     //------------------------------------------------------------------------------------------
 
@@ -514,7 +535,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(Users);
         db.execSQL(Weight_Collections);
 
- //       populateFarmUsers();
+        populateFarms(db);
+        populateAnimalTypes(db);
+        populateBreeds(db);
+        populateProperties(db);
+        //populateUsers();
     }
 
     @Override
@@ -606,10 +631,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    public boolean populateFarms(){
+    public boolean populateFarms(SQLiteDatabase db){
         long result;
-        SQLiteDatabase db = this.getWritableDatabase();
+//        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues content = new ContentValues();
+
         content.put(name, "BAI-NSPRDC");
         content.put(code, "QUEBAI");
         //content.put(region, "");
@@ -694,9 +720,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    public boolean populateBreeds(){
+    public boolean populateBreeds(SQLiteDatabase db){
         long result;
-        SQLiteDatabase db = this.getWritableDatabase();
+        //SQLiteDatabase db = this.getWritableDatabase();
         ContentValues content = new ContentValues();
         content.put(breed, "BP");
         content.put(animaltype_id, 3);
@@ -737,9 +763,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    public boolean populateAnimalTypes(){
+    public boolean populateAnimalTypes(SQLiteDatabase db){
         long result;
-        SQLiteDatabase db = this.getWritableDatabase();
+        //SQLiteDatabase db = this.getWritableDatabase();
         ContentValues content = new ContentValues();
 
         content.put(species, "Chicken");
@@ -754,9 +780,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    public boolean populateProperties(){
+    public boolean populateProperties(SQLiteDatabase db){
         long result;
-        SQLiteDatabase db = this.getWritableDatabase();
+        //SQLiteDatabase db = this.getWritableDatabase();
         ContentValues content = new ContentValues();
 
         content.put(name,"Earnotch");
@@ -1110,80 +1136,123 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-//    public boolean addNewPigData(String classification, String animalearnotch, String sex, String birthdate, String weaningdate,
-//                                 String birthweight, String weaningweight, String motherpedigree, String fatherpedigree, String sexratio,
-//                                 String littersizebornalive, String agefirstmating, String ageweaning, String regId, String isSynced){
-//        SQLiteDatabase db =  this.getWritableDatabase();
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(pig_classification, classification);
-//        contentValues.put(pig_earnotch, animalearnotch);
-//        contentValues.put(pig_sex, sex);
-//        contentValues.put(pig_birthdate, birthdate);
-//        contentValues.put(pig_weaningdate, weaningdate);
-//        contentValues.put(pig_birthweight, birthweight);
-//        contentValues.put(pig_weaningweight, weaningweight);
-//        contentValues.put(pig_mother_earnotch, motherpedigree);
-//        contentValues.put(pig_father_earnotch, fatherpedigree);
-//        contentValues.put(sex_ratio, sexratio);
-//        contentValues.put(litter_size_born_alive, littersizebornalive);
-//        contentValues.put(age_first_mating, agefirstmating);
-//        contentValues.put(age_at_weaning, ageweaning);
-//        contentValues.put(pig_registration_id, regId);
-//        contentValues.put(is_synced, isSynced);
-//
-//        long result = db.insert(pig_table, null, contentValues);
-//
-//        return result != -1;
-//    }
-
-
-
     public boolean addNewPigData(String classification, String animalearnotch, String sex, String birthdate, String weaningdate,
                                  String birthweight, String weaningweight, String motherpedigree, String fatherpedigree, String sexratio,
                                  String littersizebornalive, String agefirstmating, String ageweaning, String regId, String isSynced){
-        //SQLiteDatabase db = this.getWritableDatabase();
-        addToAnimalDB(regId, classification);
+
+        addToAnimalDB(regId, classification, "false");
         String animalId = getAnimalId(regId);
-        addToAnimalPropertyDB(1, animalId, animalearnotch);
-        addToAnimalPropertyDB(2, animalId, sex);
-        addToAnimalPropertyDB(3, animalId, changeToNotSpecifiedIfNull(birthdate));
-        addToAnimalPropertyDB(4, animalId, regId);
-        addToAnimalPropertyDB(5, animalId, changeToBlankIfNull(birthweight));
-        addToAnimalPropertyDB(6, animalId, changeToNotSpecifiedIfNull(weaningdate));
-        addToAnimalPropertyDB(7, animalId, changeToBlankIfNull(weaningweight));
-        addDamAndSire(motherpedigree, fatherpedigree, animalId);
+        addToAnimalPropertyDB(1, animalId, animalearnotch, "false");
+        addToAnimalPropertyDB(2, animalId, sex, "false");
+        addToAnimalPropertyDB(3, animalId, changeToNotSpecifiedIfNull(birthdate), "false");
+        addToAnimalPropertyDB(4, animalId, regId, "false");
+        addToAnimalPropertyDB(5, animalId, changeToBlankIfNull(birthweight), "false");
+        addToAnimalPropertyDB(6, animalId, changeToNotSpecifiedIfNull(weaningdate), "false");
+        addToAnimalPropertyDB(7, animalId, changeToBlankIfNull(weaningweight), "false");
+        addDamAndSire(motherpedigree, fatherpedigree, animalId, "false");
+
         return true;
     }
 
-    private void addDamAndSire(String motherPedigree, String fatherPedigree, String animalId){
+    public boolean addGrossMorphologyData(String regId, String datecollected, String hairtype, String hairlength, String coatcolor, String colorpattern,
+                                          String headshape, String skintype, String eartype, String tailtype, String back_line, String othermarks, String isSynced){
+
+        String animalId = getAnimalId(regId);
+        addToAnimalPropertyDB(10, animalId, datecollected, "false");
+        addToAnimalPropertyDB(11, animalId, hairtype, "false");
+        addToAnimalPropertyDB(12, animalId, hairlength, "false");
+        addToAnimalPropertyDB(13, animalId, coatcolor, "false");
+        addToAnimalPropertyDB(14, animalId, colorpattern, "false");
+        addToAnimalPropertyDB(15, animalId, headshape, "false");
+        addToAnimalPropertyDB(16, animalId, skintype, "false");
+        addToAnimalPropertyDB(17, animalId, eartype, "false");
+        addToAnimalPropertyDB(18, animalId, tailtype, "false");
+        addToAnimalPropertyDB(19, animalId, back_line, "false");
+        addToAnimalPropertyDB(20, animalId, othermarks, "false");
+
+        updateGrossMorpho(regId);
+
+        return true;
+    }
+
+    public boolean addMorphCharData(String regId, String datecollected, String earlength, String headlength,
+                                    String snoutlength, String bodylength, String heartgirth, String pelvicwidth,
+                                    String taillength, String heightwithers, String normalteats, String isSynced){
+
+        String animalId = getAnimalId(regId);
+        addToAnimalPropertyDB(21, animalId, datecollected, "false");
+        addToAnimalPropertyDB(22, animalId, earlength, "false");
+        addToAnimalPropertyDB(23, animalId, headlength, "false");
+        addToAnimalPropertyDB(24, animalId, snoutlength, "false");
+        addToAnimalPropertyDB(25, animalId, bodylength, "false");
+        addToAnimalPropertyDB(26, animalId, heartgirth, "false");
+        addToAnimalPropertyDB(27, animalId, pelvicwidth, "false");
+        addToAnimalPropertyDB(28, animalId, taillength, "false");
+        addToAnimalPropertyDB(29, animalId, heightwithers, "false");
+        addToAnimalPropertyDB(30, animalId, normalteats, "false");
+
+        updateMorphChar(regId);
+
+        return true;
+    }
+
+    public boolean addWeightRecords(String regId, String datecollected45, String datecollected60, String datecollected90, String datecollected150,
+                                    String datecollected180, String weight45, String weight60, String weight90, String weight150, String weight180, String isSynced){
+
+        String animalId = getAnimalId(regId);
+        addToAnimalPropertyDB(32, animalId, weight45, "false");
+        addToAnimalPropertyDB(33, animalId, weight60, "false");
+        addToAnimalPropertyDB(34, animalId, weight90, "false");
+        addToAnimalPropertyDB(35, animalId, weight150, "false");
+        addToAnimalPropertyDB(36, animalId, weight180, "false");
+        addToAnimalPropertyDB(37, animalId, datecollected45, "false");
+        addToAnimalPropertyDB(38, animalId, datecollected60, "false");
+        addToAnimalPropertyDB(39, animalId, datecollected90, "false");
+        addToAnimalPropertyDB(40, animalId, datecollected150, "false");
+        addToAnimalPropertyDB(41, animalId, datecollected180, "false");
+
+        updateWeightRecords(regId);
+
+        return true;
+    }
+
+    private void addDamAndSire(String motherPedigree, String fatherPedigree, String animalId, String isSynced){
         int founddam = 0, foundsire = 0;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put(is_synced, isSynced);
 
-        if(motherPedigree.length() < 6)
-            motherPedigree = String.format("%6s", motherPedigree).replace("", "0");
-        if(fatherPedigree.length() < 6)
-            fatherPedigree = String.format("%6s", fatherPedigree).replace("", "0");
+        if(!(motherPedigree).equals("") && !(fatherPedigree).equals("")){
+            if(motherPedigree.length() < 6) motherPedigree = padLeftZeros(motherPedigree, 6);
+            if(fatherPedigree.length() < 6) fatherPedigree = padLeftZeros(motherPedigree, 6);
 
-        if(checkIfPigExistsInAnimalDB(motherPedigree)){
-            contentValues.put(mother_id, getAnimalId(motherPedigree));
-            founddam = 1;
+            if(checkIfPigExistsInAnimalDB(motherPedigree)){
+                contentValues.put(mother_id, getAnimalId(motherPedigree));
+                founddam = 1;
+            }
+
+            if(checkIfPigExistsInAnimalDB(fatherPedigree)){
+                contentValues.put(father_id, getAnimalId(fatherPedigree));
+                foundsire = 1;
+            }
+
+            if(founddam != 1) addToAnimalPropertyDB(8, animalId, generateRegistrationId("F", motherPedigree), "false");
+            if(foundsire != 1) addToAnimalPropertyDB(9, animalId, generateRegistrationId("M", fatherPedigree), "false");
+
+            if(founddam == 1 || foundsire == 1){
+                contentValues.put(breed_id, MyApplication.id);
+                contentValues.put(members, 1);
+                db.insert(groupings, null, contentValues);
+            }
+        }else{
+            motherPedigree = "";
+            fatherPedigree = "";
         }
-        if(checkIfPigExistsInAnimalDB(fatherPedigree)){
-            contentValues.put(father_id, getAnimalId(fatherPedigree));
-            foundsire = 1;
-        }
 
-        if(founddam != 1) addToAnimalPropertyDB(8, animalId, generateRegistrationId("F", motherPedigree));
-        if(foundsire != 1) addToAnimalPropertyDB(9, animalId, generateRegistrationId("M", fatherPedigree));
+    }
 
-        if(founddam == 1 || foundsire == 1){
-            contentValues.put(breed_id, MyApplication.id);
-            contentValues.put(members, 1);
-            db.insert(groupings, null, contentValues);
-        }
-
-
+    public static String padLeftZeros(String str, int n) {
+        return String.format("%1$" + n + "s", str).replace(' ', '0');
     }
 
     private String generateRegistrationId(String sex, String animalearnotch) {
@@ -1211,23 +1280,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else return false;
     }
 
-    public boolean addToAnimalDB(String regId, String pig_classification){
+    public boolean addToAnimalDB(String regId, String pig_classification, String isSynced){
         SQLiteDatabase db =  this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put(animaltype_id, 3);
         contentValues.put(registryid, regId);
         contentValues.put(farm_id, MyApplication.id);
         contentValues.put(breed_id, MyApplication.id);
+        contentValues.put(grossmorpho, MyApplication.id);
+        contentValues.put(morphochars, MyApplication.id);
+        contentValues.put(weightrecord, MyApplication.id);
         contentValues.put(status, pig_classification);
+        contentValues.put(is_synced, isSynced);
         long result = db.insert(animals,null,contentValues);
         return result != -1;
     }
 
-    public boolean addToAnimalPropertyDB(int propertyId, String animalId, String valueString){
+    public boolean addToAnimalPropertyDB(int propertyId, String animalId, String valueString, String isSynced){
         SQLiteDatabase db =  this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(animal_id, animalId);
         contentValues.put(property_id, propertyId);
         contentValues.put(value, valueString);
+        contentValues.put(is_synced, isSynced);
         long result = db.insert(animal_properties,null,contentValues);
         return result != -1;
     }
@@ -1244,8 +1319,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return id;
     }
-
-
 
     public boolean addBreederDetails(String reg_id, String birthdate, String sexRatio, String birthWeight, String weaningWeight,
                                      String litterSize, String ageFirstMating, String ageWeaning, String motherEarnotch,
@@ -1267,78 +1340,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] whereArgs = new String[]{reg_id};
         
         long result = db.update(pig_table, contentValues, whereClause, whereArgs);
-
-        if(result == -1) return false;
-        else return true;
-    }
-
-    public boolean addGrossMorphologyData(String regId, String datecollected, String hairtype, String hairlength, String coatcolor, String colopattern,
-                                          String headshape, String skintype, String eartype, String tailtype, String back_line, String othermarks, String isSynced){
-        SQLiteDatabase db =  this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(registration_id, regId);
-        contentValues.put(date_collected, datecollected);
-        contentValues.put(hair_type, hairtype);
-        contentValues.put(hair_length, hairlength);
-        contentValues.put(coat_color, coatcolor);
-        contentValues.put(color_pattern, colopattern);
-        contentValues.put(head_shape, headshape);
-        contentValues.put(skin_type, skintype);
-        contentValues.put(ear_type, eartype);
-        contentValues.put(tail_type, tailtype);
-        contentValues.put(backline, back_line);
-        contentValues.put(other_marks, othermarks);
-        contentValues.put(is_synced, isSynced);
-
-        long result = db.insert(breeder_gross_morphology, null, contentValues);
-
-        if(result == -1) return false;
-        else return true;
-    }
-
-    public boolean addMorphCharData(String regId, String datecollected, String earlength, String headlength,
-                                    String snoutlength, String bodylength, String heartgirth, String pelvicwidth,
-                                    String taillength, String heightwithers, String normalteats, String isSynced){
-
-        SQLiteDatabase db =  this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(registration_id, regId);
-        contentValues.put(date_collected, datecollected);
-        contentValues.put(ear_length, earlength);
-        contentValues.put(head_length, headlength);
-        contentValues.put(snout_length, snoutlength);
-        contentValues.put(body_length, bodylength);
-        contentValues.put(heart_girth, heartgirth);
-        contentValues.put(pelvic_width, pelvicwidth);
-        contentValues.put(tail_length, taillength);
-        contentValues.put(height_at_withers, heightwithers);
-        contentValues.put(normal_teats, normalteats);
-        contentValues.put(is_synced, isSynced);
-
-        long result = db.insert(breeder_morphometric_characteristics, null, contentValues);
-
-        if(result == -1) return false;
-        else return true;
-    }
-
-    public boolean addWeightRecords(String regId, String datecollected45, String datecollected60, String datecollected90, String datecollected150,
-                                    String datecollected180, String weight45, String weight60, String weight90, String weight150, String weight180, String isSynced){
-        SQLiteDatabase db =  this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(registration_id, regId);
-        contentValues.put(date_collected_at_45, datecollected45);
-        contentValues.put(date_collected_at_60, datecollected60);
-        contentValues.put(date_collected_at_90, datecollected90);
-        contentValues.put(date_collected_at_150, datecollected150);
-        contentValues.put(date_collected_at_180, datecollected180);
-        contentValues.put(weight_at_45, weight45);
-        contentValues.put(weight_at_60, weight60);
-        contentValues.put(weight_at_90, weight90);
-        contentValues.put(weight_at_150, weight150);
-        contentValues.put(weight_at_180, weight180);
-        contentValues.put(is_synced, isSynced);
-
-        long result = db.insert(weight_records, null, contentValues);
 
         if(result == -1) return false;
         else return true;
@@ -1439,36 +1440,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Cursor getBoarContents(){
         SQLiteDatabase db = this.getWritableDatabase();
         String columns[] = { "*" };
-        String whereClause = "pig_classification = ? AND pig_sex = ? AND is_synced != ?";
-        String[] whereArgs = new String[]{"Breeder", "M", "delete"};
-        Cursor data = db.query(DatabaseHelper.pig_table, columns, whereClause , whereArgs, null, null, null);
+        String whereClause = "substr(registryid, -7, 1) = ? AND status = ? AND is_synced != ?";
+        String[] whereArgs = new String[]{"M", "Breeder", "delete"};
+        Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
         return data;
     }
 
     public Cursor getSowContents(){
         SQLiteDatabase db = this.getWritableDatabase();
         String columns[] = { "*" };
-        String whereClause = "pig_classification = ? AND pig_sex = ? AND is_synced != ?";
-        String[] whereArgs = new String[]{"Breeder", "F", "delete"};
-        Cursor data = db.query(DatabaseHelper.pig_table, columns, whereClause , whereArgs, null, null, null);
+        String whereClause = "substr(registryid, -7, 1) = ? AND status = ? AND is_synced != ?";
+        String[] whereArgs = new String[]{"F", "Breeder", "delete"};
+        Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
         return data;
     }
 
     public Cursor getFemaleGrowerContents(){
         SQLiteDatabase db = this.getWritableDatabase();
         String columns[] = { "*" };
-        String whereClause = "pig_classification = ? AND pig_sex = ? AND is_synced != ?";
-        String[] whereArgs = new String[]{"Grower", "F", "delete"};
-        Cursor data = db.query(DatabaseHelper.pig_table, columns, whereClause , whereArgs, null, null, null);
+        String whereClause = "substr(registryid, -7, 1) = ? AND status = ? AND is_synced != ?";
+        String[] whereArgs = new String[]{"F", "Grower", "delete"};
+        Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
         return data;
     }
 
     public Cursor getMaleGrowerContents(){
         SQLiteDatabase db = this.getWritableDatabase();
         String columns[] = { "*" };
-        String whereClause = "pig_classification = ? AND pig_sex = ? AND is_synced != ?";
-        String[] whereArgs = new String[]{"Grower", "M", "delete"};
-        Cursor data = db.query(DatabaseHelper.pig_table, columns, whereClause , whereArgs, null, null, null);
+        String whereClause = "substr(registryid, -7, 1) = ? AND status = ? AND is_synced != ?";
+        String[] whereArgs = new String[]{"M", "Grower", "delete"};
+        Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
         return data;
     }
 
@@ -1950,10 +1951,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public String getFarmCode(){
         String returnString = "";
         SQLiteDatabase db = this.getReadableDatabase();
-        String columns[] = { "code" };
+        String columns[] = { "*" };
         String whereClause = "breedable_id = ?";
         String[] whereArgs = new String[]{Integer.toString(MyApplication.id)};
-        Cursor data = db.query("farms", columns, whereClause , whereArgs, null, null, null);
+        Cursor data = db.query(farms, columns, whereClause , whereArgs, null, null, null);
         if(data.moveToFirst()){
             returnString = data.getString(data.getColumnIndex("code"));
         }
@@ -1973,12 +1974,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return returnString;
     }
 
-    public Cursor getSinglePig(String reg_id) {
+//    select property_id, value from animal_properties as a inner join animals as b on a.animal_id = b.id
+//    where b.registryid = ? ;
+
+    public Cursor getSinglePig(String regId) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String columns[] = { "*" };
-        String whereClause = "pig_registration_id = ?";
-        String[] whereArgs = new String[]{reg_id};
-        Cursor data = db.query("pig_table", columns, whereClause , whereArgs, null, null, null);
+        String[] whereArgs = new String[]{regId};
+        Cursor data = db.rawQuery("SELECT property_id, value FROM animal_properties as a INNER JOIN animals as b on a.animal_id = b.id WHERE b.registryid = ?", whereArgs);
         return data;
     }
 
@@ -2062,6 +2064,42 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String[] whereArgs = new String[]{sow_reg_id, boar_id};
 
         long result = db.update(pig_breeding_table, contentValues, whereClause, whereArgs);
+        if(result == -1) return false;
+        else return true;
+    }
+
+    public boolean updateMorphChar(String regId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(morphochars, "1");
+        String whereClause = "registryid = ?";
+        String[] whereArgs = new String[]{regId};
+
+        long result = db.update(animals, contentValues, whereClause, whereArgs);
+        if(result == -1) return false;
+        else return true;
+    }
+
+    public boolean updateGrossMorpho(String regId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(grossmorpho, "1");
+        String whereClause = "registryid = ?";
+        String[] whereArgs = new String[]{regId};
+
+        long result = db.update(animals, contentValues, whereClause, whereArgs);
+        if(result == -1) return false;
+        else return true;
+    }
+
+    public boolean updateWeightRecords(String regId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(weightrecord, "1");
+        String whereClause = "registryid = ?";
+        String[] whereArgs = new String[]{regId};
+
+        long result = db.update(animals, contentValues, whereClause, whereArgs);
         if(result == -1) return false;
         else return true;
     }

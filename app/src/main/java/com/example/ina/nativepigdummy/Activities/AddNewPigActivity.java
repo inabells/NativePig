@@ -59,6 +59,7 @@ public class AddNewPigActivity extends AppCompatActivity {
     private Bitmap bitmap_foto;
     private RoundedBitmapDrawable roundedBitmapDrawable;
     private byte[] bytes;
+    private String addAnimalEarnotchString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -239,18 +240,19 @@ public class AddNewPigActivity extends AppCompatActivity {
                 RadioGroup group = findViewById(R.id.newpig_classification);
                 int selectedId = group.getCheckedRadioButtonId();
                 final RadioButton radiobutton = findViewById(selectedId);
-                String addAnimalEarnotchString = addAnimalEarnotch.getText().toString();
+                addAnimalEarnotchString = addAnimalEarnotch.getText().toString();
 
                 if(addAnimalEarnotchString.equals("")){
                     Toast.makeText(AddNewPigActivity.this, "Please fill out Animal Earnotch", Toast.LENGTH_SHORT).show();
                 }else if(addAnimalEarnotchString.length() > 6){
                     Toast.makeText(AddNewPigActivity.this, "Earnotch is too long", Toast.LENGTH_SHORT).show();
-                } else if(radiobutton == null){
+                }else if(radiobutton == null){
                     Toast.makeText(AddNewPigActivity.this, "Please fill out Classification", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    if(addAnimalEarnotchString.length() < 6)
-                        addAnimalEarnotchString = String.format("%6s", addAnimalEarnotchString).replace("", "0");
+                    if(!addAnimalEarnotchString.equals("") && addAnimalEarnotchString.length() < 6){
+                        addAnimalEarnotchString = padLeftZeros(addAnimalEarnotchString, 6);
+                    }
                     requestParams.add("pig_earnotch", addAnimalEarnotchString);
                     requestParams.add("pig_classification", radiobutton.getText().toString());
                     requestParams.add("pig_sex", addSex.getSelectedItem().toString());
@@ -260,7 +262,7 @@ public class AddNewPigActivity extends AppCompatActivity {
                     requestParams.add("pig_weaningweight", addWeanWeight.getText().toString());
                     requestParams.add("pig_mother_earnotch", addMotherEarnotch.getText().toString());
                     requestParams.add("pig_father_earnotch", addFatherEarnotch.getText().toString());
-                    requestParams.add("pig_registration_id", generateRegistrationId());
+                    requestParams.add("pig_registration_id", generateRegistrationId(addAnimalEarnotchString));
 
                     if(ApiHelper.isInternetAvailable(getApplicationContext())) {
                         api_addPig(requestParams, radiobutton);
@@ -284,7 +286,7 @@ public class AddNewPigActivity extends AppCompatActivity {
             addMotherEarnotch.getText().toString(),
             addFatherEarnotch.getText().toString(),
             null, null, null, null,
-            generateRegistrationId(), "false");
+            generateRegistrationId(addAnimalEarnotchString), "false");
 
         if(insertData){
             Toast.makeText(AddNewPigActivity.this, "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
@@ -295,7 +297,6 @@ public class AddNewPigActivity extends AppCompatActivity {
     }
 
     private void api_addPig(RequestParams requestParams, final RadioButton radiobutton) {
-
         ApiHelper.addPig("addPig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
@@ -322,7 +323,7 @@ public class AddNewPigActivity extends AppCompatActivity {
 
     private void addRegId(){
         RequestParams requestParams = new RequestParams();
-        requestParams.add("registration_id", generateRegistrationId());
+        requestParams.add("registration_id", generateRegistrationId(addAnimalEarnotchString));
 
         ApiHelper.addRegId("addRegId", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
@@ -344,7 +345,7 @@ public class AddNewPigActivity extends AppCompatActivity {
 
     private void addRegIdWeightRecords(){
         RequestParams requestParams = new RequestParams();
-        requestParams.add("registration_id", generateRegistrationId());
+        requestParams.add("registration_id", generateRegistrationId(addAnimalEarnotchString));
 
         ApiHelper.addRegIdWeightRecords("addRegIdWeightRecords", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
@@ -364,8 +365,12 @@ public class AddNewPigActivity extends AppCompatActivity {
         });
     }
 
-    private String generateRegistrationId() {
-        return dbHelper.getFarmCode() + dbHelper.getFarmBreed() +"-"+ getYear(addBirthDate.getText().toString()) + addSex.getSelectedItem().toString() + addAnimalEarnotch.getText().toString();
+    private String generateRegistrationId(String addAnimalEarnotchString) {
+        return dbHelper.getFarmCode() + dbHelper.getFarmBreed() +"-"+ getYear(addBirthDate.getText().toString()) + addSex.getSelectedItem().toString() + addAnimalEarnotchString;
+    }
+
+    public static String padLeftZeros(String str, int n) {
+        return String.format("%1$" + n + "s", str).replace(' ', '0');
     }
 
     @Override
