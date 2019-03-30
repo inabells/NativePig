@@ -109,18 +109,30 @@ public class BreederWeightRecordsDialog extends DialogFragment {
 
 
     private void local_getWeightProfile(String reg_id) {
-        Cursor data = dbHelper.getWeightRecords(reg_id);
-        if (data.moveToFirst()) {
-            weightat45.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_45"))));
-            weightat60.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_60"))));
-            weightat90.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_90"))));
-            weightat150.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_150"))));
-            weightat180.setText(setBlankIfNull(data.getString(data.getColumnIndex("weight_at_180"))));
-            datecollected45.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_45"))));
-            datecollected60.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_60"))));
-            datecollected90.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_90"))));
-            datecollected150.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_150"))));
-            datecollected180.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected_at_180"))));
+        Cursor data = dbHelper.getSinglePig(reg_id);
+        while(data.moveToNext()) {
+            switch(data.getString(data.getColumnIndex("property_id"))) {
+                case "32": weightat45.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "33": weightat60.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "34": weightat90.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "35": weightat150.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "36": weightat180.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "37": datecollected45.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "38": datecollected60.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "39": datecollected90.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "40": datecollected150.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "41": datecollected180.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+            }
         }
     }
 

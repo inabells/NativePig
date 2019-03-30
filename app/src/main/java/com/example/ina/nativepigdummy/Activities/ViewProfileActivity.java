@@ -182,7 +182,13 @@ public class ViewProfileActivity extends AppCompatActivity implements ViewProfil
             }
         });
 
+//        local_getProfile();
+
     }
+
+//    private void local_getProfile(){
+//
+//    }
 
     public void openViewProfileDialog(){
         ViewProfileDialog viewProfileDialog = new ViewProfileDialog();

@@ -37,11 +37,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.security.AuthProvider;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -143,11 +146,35 @@ public class MortalityDialog extends DialogFragment {
 
     private void local_addMortalityData(AppCompatAutoCompleteTextView autoCompleteTextView) {
         final String editchoosepig = autoCompleteTextView.getText().toString();
-        final String editdateofdeath = dateofdeath.getText().toString();
-        final String editcauseofdeath = causeofdeath.getText().toString();
-        String editage = "0 months, 0 days";
+        String editdateofdeath = dateofdeath.getText().toString();
+        String editcauseofdeath = causeofdeath.getText().toString();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = java.util.Calendar.getInstance().getTime();
+        String editage = "";
+        String birthDate = "";
 
-        boolean insertData = dbHelper.addMortalitySalesData(editchoosepig, editdateofdeath, editcauseofdeath, null, null, editage, "false");
+        Cursor data = dbHelper.getSinglePig(editchoosepig);
+        while (data.moveToNext()) {
+            switch (data.getString(data.getColumnIndex("property_id"))) {
+                case "3":
+                    birthDate = data.getString(data.getColumnIndex("value"));
+                    break;
+            }
+        }
+
+        if(editcauseofdeath.equals("")) editcauseofdeath = "Not specified";
+        if(editdateofdeath.equals("")) editdateofdeath = sdf.format(date);
+        if(birthDate.equals("Not specified")){
+            editage = "Age unavailable";
+        }else{
+            try {
+                editage = computeAge(editchoosepig, birthDate, editdateofdeath);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        boolean insertData = dbHelper.addToMortalitiesDB(editchoosepig, editdateofdeath, editcauseofdeath, editage, "false");
 
         if(insertData){
             Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
@@ -156,6 +183,7 @@ public class MortalityDialog extends DialogFragment {
         }
         else Toast.makeText(getContext(), "Local insert error", Toast.LENGTH_SHORT).show();
     }
+
 
     private RequestParams buildRequest(AppCompatAutoCompleteTextView autoCompleteTextView) {
         RequestParams requestParams = new RequestParams();
@@ -168,9 +196,31 @@ public class MortalityDialog extends DialogFragment {
         requestParams.add("cause_of_death", editcauseofdeath);
 
         getAgeMortality(requestParams);
-        requestParams.add("age", computeAge(pigDateOfBirth));
+
+        requestParams.add("age", "Age unavailable");
 
         return requestParams;
+    }
+
+    private String computeAge(String regId, String birthDate, String dateDied) throws ParseException {
+        String date = "";
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        Date firstDate = format.parse(birthDate);
+        Date secondDate = format.parse(dateDied);
+
+        long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
+        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+        if ((Long.toString(diff / 30)).equals("1") && (Long.toString(diff % 30)).equals("1")) {
+            date = Long.toString(diff / 30) + " month, " + Long.toString(diff % 30) + " day";
+        } else if ((Long.toString(diff / 30).equals("1"))) {
+            date = Long.toString(diff / 30) + " month, " + Long.toString(diff % 30) + " days";
+        } else if ((Long.toString(diff % 30).equals("1"))) {
+            date = Long.toString(diff / 30) + " months, " + Long.toString(diff % 30) + " day";
+        } else {
+            date = Long.toString(diff / 30) + " months, " + Long.toString(diff % 30) + " days";
+        }
+        return date;
     }
 
     private void deleteAddedPigFromPigTable(RequestParams requestParams) {
@@ -303,22 +353,6 @@ public class MortalityDialog extends DialogFragment {
                 }
             }
         });
-    }
-
-    public String computeAge(String birthDate) {
-        try {
-            Date startDate = new SimpleDateFormat("yyyy-mm-dd").parse(birthDate);
-            Date endDate = new SimpleDateFormat("yyyy-mm-dd").parse(dateofdeath.getText().toString());
-
-            int milliseconds = (int) (endDate.getTime() - startDate.getTime());
-            int days = milliseconds/(1000 * 3600 * 24);
-
-            return String.valueOf(days) + " days";
-        }catch (Exception e){
-            Log.d("computeAge", "Error in computing age");
-        }
-
-        return "- days";
     }
 
 }

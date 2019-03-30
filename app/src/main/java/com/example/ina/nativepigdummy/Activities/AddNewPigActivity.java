@@ -285,7 +285,7 @@ public class AddNewPigActivity extends AppCompatActivity {
             addWeanWeight.getText().toString(),
             addMotherEarnotch.getText().toString(),
             addFatherEarnotch.getText().toString(),
-            null, null, null, null,
+            "No data available", "No data available", "No data available", null,
             generateRegistrationId(addAnimalEarnotchString), "false");
 
         if(insertData){

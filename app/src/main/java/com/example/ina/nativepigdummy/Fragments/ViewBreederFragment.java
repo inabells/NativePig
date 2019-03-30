@@ -66,7 +66,7 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
         roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap_foto);
         roundedBitmapDrawable.setCircular(true);
         imageView.setImageDrawable(roundedBitmapDrawable);
-        edit_profile = view.findViewById(R.id.edit_view_breeder);
+        //edit_profile = view.findViewById(R.id.edit_view_breeder);
         TextViewbirthday = (TextView) view.findViewById(R.id.textViewBirthday);
         TextViewsex = (TextView) view.findViewById(R.id.textViewSexRatio);
         TextViewbirthweight = (TextView) view.findViewById(R.id.textViewBirthWeight);
@@ -88,14 +88,6 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
             api_getSinglePig(params);
         else
             local_getSinglePig(pigRegIdHolder);
-
-
-        edit_profile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openViewBreederDialog(pigRegIdHolder);
-            }
-        });
 
         imageView.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -133,17 +125,17 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
                             break;
                 case "6":   weaningDate = data.getString(data.getColumnIndex("value"));
                             break;
-                case "53":  TextViewsex.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                case "53":  TextViewsex.setText(setNoDataAvailableIfNull(data.getString(data.getColumnIndex("value"))));
                             break;
-                case "5":   TextViewbirthweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                case "5":   TextViewbirthweight.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
                             break;
-                case "7":   TextViewweaningweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                case "7":   TextViewweaningweight.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
                             break;
-                case "50":  TextViewlittersizebornweight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                case "50":  TextViewlittersizebornweight.setText(setNoDataAvailableIfNull(data.getString(data.getColumnIndex("value"))));
                             break;
-                case "8":   TextViewpedigreemother.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                case "8":   TextViewpedigreemother.setText(setNoDataAvailableIfNull(data.getString(data.getColumnIndex("value"))));
                             break;
-                case "9":   TextViewpedigreefather.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
+                case "9":   TextViewpedigreefather.setText(setNoDataAvailableIfNull(data.getString(data.getColumnIndex("value"))));
                             break;
             }
 
@@ -189,14 +181,14 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 TextViewbirthday.setText(setDefaultTextIfNull(birthday));
-                TextViewsex.setText(setDefaultTextIfNull(sex));
+                TextViewsex.setText(setNoDataAvailableIfNull(sex));
                 TextViewbirthweight.setText(setDefaultTextIfNull(birthweight));
                 TextViewweaningweight.setText(setDefaultTextIfNull(weaningweight));
-                TextViewlittersizebornweight.setText(setDefaultTextIfNull(littersizebornweight));
-                TextViewageatfirstmating.setText(setDefaultTextIfNull(ageatfirstmating));
-                TextViewageatweaning.setText(setDefaultTextIfNull(ageatweaning));
-                TextViewpedigreemother.setText(setDefaultTextIfNull(pedigreemother));
-                TextViewpedigreefather.setText(setDefaultTextIfNull(pedigreefather));
+                TextViewlittersizebornweight.setText(setNoDataAvailableIfNull(littersizebornweight));
+                TextViewageatfirstmating.setText(setNoDataAvailableIfNull(ageatfirstmating));
+                TextViewageatweaning.setText(setNoDataAvailableIfNull(ageatweaning));
+                TextViewpedigreemother.setText(setNoDataAvailableIfNull(pedigreemother));
+                TextViewpedigreefather.setText(setNoDataAvailableIfNull(pedigreefather));
                 Log.d("ViewBreeder", "Successfully added data");
             }
 
@@ -224,6 +216,14 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
 
     private String setDefaultTextIfNull(String text) {
         return ((text==null || text.equals("null") || text.equals("") || text.isEmpty()) ? "Not specified" : text);
+    }
+
+    private String setBlankIfNull(String text) {
+        return ((text==null || text.equals("null") || text.equals("") || text.isEmpty()) ? "" : text);
+    }
+
+    private String setNoDataAvailableIfNull(String text){
+        return ((text==null) || text.equals("") ? "No data available" : text);
     }
 
     public void openViewBreederDialog(String pigRegId){

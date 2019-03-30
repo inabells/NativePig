@@ -71,7 +71,7 @@ public class MortalityFragment extends Fragment {
             Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
         }else {
             while (data.moveToNext()) {
-                mortalityData = new MortalityData(data.getString(1), data.getString(2), data.getString(3), data.getString(6));
+                mortalityData = new MortalityData(data.getString(0), data.getString(5), data.getString(6), data.getString(7));
                 mortalityList.add(mortalityData);
             }
             MortalityDataAdapter adapter = new MortalityDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, mortalityList);

@@ -28,7 +28,7 @@
     <string name="age_at_weaning">Age at Weaning</string>
     <string name="age_at_first_mating">Age at First Mating</string>
     <string name="litter_size_born_alive">Litter-size Born Alive</string>
-    <string name="weaning_weight">Weaning Weight</string>
+    <string name="weaning_weight">Weaning Weight, KG</string>
     <string name="birth_weight">Birth Weight</string>
     <string name="ear_length">Ear Length</string>
     <string name="head_length">Head Length</string>

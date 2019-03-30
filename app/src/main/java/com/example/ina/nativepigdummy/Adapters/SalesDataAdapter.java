@@ -27,6 +27,7 @@ public class SalesDataAdapter extends ArrayAdapter<SalesData> {
         TextView sales_id;
         TextView date_sold;
         TextView weight;
+        TextView price;
         TextView age;
     }
 
@@ -43,10 +44,11 @@ public class SalesDataAdapter extends ArrayAdapter<SalesData> {
         String sales_id = getItem(position).getSales_reg_id();
         String date_sold = getItem(position).getDate_sold();
         String weight = getItem(position).getWeight();
+        String price = getItem(position).getPrice();
         String age = getItem(position).getAge();
 
 
-        SalesData sales = new SalesData(sales_id,date_sold,weight,age);
+        SalesData sales = new SalesData(sales_id, date_sold, weight, price, age);
 
         final View result;
 
@@ -60,6 +62,7 @@ public class SalesDataAdapter extends ArrayAdapter<SalesData> {
             holder.sales_id = (TextView) convertView.findViewById(R.id.textView1);
             holder.date_sold = (TextView) convertView.findViewById(R.id.textView2);
             holder.weight = (TextView) convertView.findViewById(R.id.textView3);
+            holder.price = (TextView) convertView.findViewById(R.id.textView5);
             holder.age = (TextView) convertView.findViewById(R.id.textView4);
 
             result = convertView;
@@ -80,6 +83,7 @@ public class SalesDataAdapter extends ArrayAdapter<SalesData> {
         holder.sales_id.setText(sales.getSales_reg_id());
         holder.date_sold.setText(sales.getDate_sold());
         holder.weight.setText(sales.getWeight());
+        holder.price.setText(sales.getPrice());
         holder.age.setText(sales.getAge());
 
         return convertView;

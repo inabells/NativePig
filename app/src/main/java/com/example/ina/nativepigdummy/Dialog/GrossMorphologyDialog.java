@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -66,7 +67,11 @@ public class GrossMorphologyDialog extends DialogFragment {
         backLine = view.findViewById(R.id.radioGroup_BackLine);
         othermarks = view.findViewById(R.id.other_marks);
 
-        getGrossMorphProfile(reg_id, view);
+        if(ApiHelper.isInternetAvailable(getContext())){
+            api_getGrossMorphProfile(reg_id, view);
+        }else{
+            local_getGrossMorphProfile(reg_id, view);
+        }
 
         builder.setView(view)
             .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
@@ -90,6 +95,7 @@ public class GrossMorphologyDialog extends DialogFragment {
 
         return builder.create();
     }
+
     @Override
     public void onDismiss(final DialogInterface dialog) {
         List<Fragment> fragList = getFragmentManager().getFragments();
@@ -104,6 +110,36 @@ public class GrossMorphologyDialog extends DialogFragment {
         fragmentTransaction.commit();
     }
 
+    private void local_getGrossMorphProfile(String reg_id, final View view) {
+        Cursor data = dbHelper.getSinglePig(reg_id);
+        while (data.moveToNext()) {
+            switch(data.getString(data.getColumnIndex("property_id"))) {
+                case "10": datecollected.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "11": hair_type = data.getString(data.getColumnIndex("value"));
+                    break;
+                case "12": hair_length = data.getString(data.getColumnIndex("value"));
+                    break;
+                case "13": coat_color = data.getString(data.getColumnIndex("value"));
+                    break;
+                case "14": color_pattern = data.getString(data.getColumnIndex("value"));
+                    break;
+                case "15": head_shape = data.getString(data.getColumnIndex("value"));
+                    break;
+                case "16": skin_type = data.getString(data.getColumnIndex("value"));
+                    break;
+                case "17": ear_type = data.getString(data.getColumnIndex("value"));
+                    break;
+                case "18": tail_type = data.getString(data.getColumnIndex("value"));
+                    break;
+                case "19": back_line = data.getString(data.getColumnIndex("value"));
+                    break;
+                case "20": othermarks.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+            }
+        }
+        setCheckedRadioButtons(view);
+    }
 
     private void local_updateGrossMorphology() {
         int editHairType = hairType.getCheckedRadioButtonId();
@@ -183,7 +219,7 @@ public class GrossMorphologyDialog extends DialogFragment {
         return requestParams;
     }
 
-    private void getGrossMorphProfile(String id, final View view) {
+    private void api_getGrossMorphProfile(String id, final View view) {
         RequestParams params = new RequestParams();
         params.add("registration_id", id);
 

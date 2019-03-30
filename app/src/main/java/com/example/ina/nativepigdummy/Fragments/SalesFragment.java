@@ -82,10 +82,10 @@ public class SalesFragment extends Fragment {
             Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
         }else {
             while (data.moveToNext()) {
-                salesData = new SalesData(data.getString(1), data.getString(2), data.getString(4), data.getString(6));
+                salesData = new SalesData(data.getString(0), data.getString(5), data.getString(6), data.getString(7), data.getString(8));
                 salesList.add(salesData);
             }
-            SalesDataAdapter adapter = new SalesDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, salesList);
+            SalesDataAdapter adapter = new SalesDataAdapter(getActivity(), R.layout.listview_sales, salesList);
             listView.setAdapter(adapter);
         }
     }

@@ -83,7 +83,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
-                    android:inputType="number"
+                    android:inputType="number|numberDecimal"
                     android:textColor="#000000"
                     android:textSize="18sp" />
 
@@ -107,7 +107,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
-                    android:inputType="number"
+                    android:inputType="number|numberDecimal"
                     android:textColor="#000000"
                     android:textSize="18sp" />
 
@@ -131,7 +131,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
-                    android:inputType="number"
+                    android:inputType="number|numberDecimal"
                     android:textColor="#000000"
                     android:textSize="18sp" />
 
@@ -154,8 +154,8 @@
                     android:id="@+id/body_length"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
                     android:fontFamily="sans-serif-light"
+                    android:inputType="number|numberDecimal"
                     android:textColor="#000000"
                     android:textSize="18sp" />
 
@@ -179,7 +179,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
-                    android:inputType="number"
+                    android:inputType="number|numberDecimal"
                     android:textColor="#000000"
                     android:textSize="18sp" />
 
@@ -203,7 +203,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
-                    android:inputType="number"
+                    android:inputType="number|numberDecimal"
                     android:textColor="#000000"
                     android:textSize="18sp" />
 
@@ -227,7 +227,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
-                    android:inputType="number"
+                    android:inputType="number|numberDecimal"
                     android:textColor="#000000"
                     android:textSize="18sp" />
 
@@ -251,7 +251,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
-                    android:inputType="number"
+                    android:inputType="number|numberDecimal"
                     android:textColor="#000000"
                     android:textSize="18sp" />
 

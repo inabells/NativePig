@@ -94,7 +94,6 @@ public class MorphCharDialog extends DialogFragment {
             local_getMorphCharProfile(reg_id);
         }
 
-
         builder.setView(view)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
                     @Override
@@ -241,20 +240,31 @@ public class MorphCharDialog extends DialogFragment {
         });
     }
 
-    private void local_getMorphCharProfile(String reg_id){
-        Cursor data = dbHelper.getMorphCharProfile(reg_id);
-
-        if (data.moveToFirst()) {
-            datecollected.setText(setBlankIfNull(data.getString(data.getColumnIndex("date_collected"))));
-            earlength.setText(setBlankIfNull(data.getString(data.getColumnIndex("ear_length"))));
-            headlength.setText(setBlankIfNull(data.getString(data.getColumnIndex("head_length"))));
-            snoutlength.setText(setBlankIfNull(data.getString(data.getColumnIndex("snout_length"))));
-            bodylength.setText(setBlankIfNull(data.getString(data.getColumnIndex("body_length"))));
-            heartgirth.setText(setBlankIfNull(data.getString(data.getColumnIndex("heart_girth"))));
-            pelvicwidth.setText(setBlankIfNull(data.getString(data.getColumnIndex("pelvic_width"))));
-            taillength.setText(setBlankIfNull(data.getString(data.getColumnIndex("tail_length"))));
-            heightatwithers.setText(setBlankIfNull(data.getString(data.getColumnIndex("height_at_withers"))));
-            progressText.setText(setBlankIfNull(data.getString(data.getColumnIndex("normal_teats"))));
+    private void local_getMorphCharProfile(String reg_id) {
+        Cursor data = dbHelper.getSinglePig(reg_id);
+        while (data.moveToNext()) {
+            switch(data.getString(data.getColumnIndex("property_id"))) {
+                case "21": datecollected.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "22": earlength.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "23": headlength.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "24": snoutlength.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "25": bodylength.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "26": heartgirth.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "27": pelvicwidth.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "28": taillength.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "29": heightatwithers.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+                case "30": progressText.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
+            }
         }
     }
 

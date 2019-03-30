@@ -82,7 +82,7 @@ public class OthersFragment extends Fragment {
             Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
         }else {
             while (data.moveToNext()) {
-                othersData = new OthersData(data.getString(1), data.getString(2), data.getString(5), data.getString(6));
+                othersData = new OthersData(data.getString(0), data.getString(5), data.getString(6), data.getString(7));
                 otherList.add(othersData);
             }
             OthersDataAdapter adapter = new OthersDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, otherList);

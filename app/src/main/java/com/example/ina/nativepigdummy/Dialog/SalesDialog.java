@@ -34,8 +34,13 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -46,6 +51,7 @@ public class SalesDialog extends DialogFragment {
     private EditText choosepig;
     private EditText datesold;
     private EditText weightsold;
+    private EditText pricesold;
     private static final int TRIGGER_AUTO_COMPLETE = 100;
     private static final long AUTO_COMPLETE_DELAY = 300;
     private Handler handler;
@@ -64,6 +70,7 @@ public class SalesDialog extends DialogFragment {
         final AppCompatAutoCompleteTextView autoCompleteTextView = view.findViewById(R.id.choose_pig);
         datesold = view.findViewById(R.id.date_sold);
         weightsold = view.findViewById(R.id.weight_sold);
+        pricesold = view.findViewById(R.id.price);
         pigList = new ArrayList<>();
         dbHelper = new DatabaseHelper(getActivity());
 
@@ -137,10 +144,36 @@ public class SalesDialog extends DialogFragment {
     private void local_addSalesData(AppCompatAutoCompleteTextView autoCompleteTextView) {
         final String editchoosepig = autoCompleteTextView.getText().toString();
         String editdatesold = datesold.getText().toString();
-        String editweightsold= weightsold.getText().toString();
-        String editage = "0 months, 0 days";
+        String editweightsold = weightsold.getText().toString();
+        String editpricesold = pricesold.getText().toString();
+        String editage = "";
+        String birthDate = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = java.util.Calendar.getInstance().getTime();
 
-        boolean insertData = dbHelper.addMortalitySalesData(editchoosepig, editdatesold, null, editweightsold, null, editage, "false");
+        Cursor data = dbHelper.getSinglePig(editchoosepig);
+        while (data.moveToNext()) {
+            switch (data.getString(data.getColumnIndex("property_id"))) {
+                case "3":
+                    birthDate = data.getString(data.getColumnIndex("value"));
+                    break;
+            }
+        }
+
+        if(editpricesold.equals("")) editpricesold = "Not specified";
+        if(editweightsold.equals("")) editweightsold = "Weight unavailable";
+        if(editdatesold.equals("")) editdatesold = sdf.format(date);
+        if(birthDate.equals("Not specified")) {
+            editage = "Age unavailable";
+        }else {
+            try {
+                editage = computeAge(editchoosepig, birthDate, editdatesold);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        boolean insertData = dbHelper.addToSalesDB(editchoosepig, editdatesold, editweightsold, editpricesold, editage, "false");
 
         if(insertData){
             Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
@@ -154,12 +187,11 @@ public class SalesDialog extends DialogFragment {
         final String editchoosepig = autoCompleteTextView.getText().toString();
         String editdatesold = datesold.getText().toString();
         String editweightsold= weightsold.getText().toString();
-        String editage = "0 months, 0 days";
+        String editage = "Not specified";
 
         requestParams.add("pig_registration_id", editchoosepig);
         requestParams.add("date_removed_died", editdatesold);
         requestParams.add("weight_sold", editweightsold);
-
         requestParams.add("age", editage);
 
         return requestParams;
@@ -248,6 +280,27 @@ public class SalesDialog extends DialogFragment {
                 autoAdapter.notifyDataSetChanged();
             }
         }
+    }
+
+    private String computeAge(String regId, String birthDate, String dateDied) throws ParseException {
+        String date = "";
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        Date firstDate = format.parse(birthDate);
+        Date secondDate = format.parse(dateDied);
+
+        long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
+        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+        if ((Long.toString(diff / 30)).equals("1") && (Long.toString(diff % 30)).equals("1")) {
+            date = Long.toString(diff / 30) + " month, " + Long.toString(diff % 30) + " day";
+        } else if ((Long.toString(diff / 30).equals("1"))) {
+            date = Long.toString(diff / 30) + " month, " + Long.toString(diff % 30) + " days";
+        } else if ((Long.toString(diff % 30).equals("1"))) {
+            date = Long.toString(diff / 30) + " months, " + Long.toString(diff % 30) + " day";
+        } else {
+            date = Long.toString(diff / 30) + " months, " + Long.toString(diff % 30) + " days";
+        }
+        return date;
     }
 
     private void requestFocus (View view){

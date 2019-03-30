@@ -164,9 +164,14 @@ public class BreedingRecordsDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         RequestParams requestParams = new RequestParams();
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        Date date = java.util.Calendar.getInstance().getTime();
                         String editsowid = sowid.getText().toString();
                         String editboarid = boarid.getText().toString();
                         String editdatebred = datebred.getText().toString();
+                        if(editdatebred.equals("")){
+                            editdatebred = sdf.format(date);
+                        }
                         String expecteddatefarrow = computeExpected(editdatebred);
                         String editsowstatus = "Bred";
 
@@ -198,7 +203,7 @@ public class BreedingRecordsDialog extends DialogFragment {
                                 });
 
                             } else{
-                                boolean insertData = dbHelper.addBreedingRecord(editsowid, editboarid, editdatebred, editsowstatus, expecteddatefarrow, "false");
+                                boolean insertData = dbHelper.addBreedingRecord(editsowid, editboarid, editdatebred, "false");
 
                                 if(insertData){
                                     Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();

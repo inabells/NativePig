@@ -353,26 +353,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="113dp"
-            android:layout_below="@+id/container"
-            android:gravity="center">
-
-            <Button
-                android:id="@+id/edit_button"
-                android:layout_width="118dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/container"
-                android:layout_gravity="center"
-                android:layout_margin="15dp"
-                android:background="@drawable/addsavebutton"
-                android:drawableLeft="@drawable/ic_mode_edit_white"
-                android:text="Update"
-                android:textColor="@color/colorWhite" />
-
-        </LinearLayout>
-
     </LinearLayout>
 
 </ScrollView>

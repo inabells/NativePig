@@ -34,8 +34,13 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -45,7 +50,7 @@ public class OthersDialog extends DialogFragment {
 
     private EditText choosepig;
     private EditText dateremoved;
-    private Spinner choosereason;
+    private EditText choosereason;
     DatabaseHelper dbHelper;
     private static final int TRIGGER_AUTO_COMPLETE = 100;
     private static final long AUTO_COMPLETE_DELAY = 300;
@@ -140,11 +145,34 @@ public class OthersDialog extends DialogFragment {
     private void local_addOthersData(AppCompatAutoCompleteTextView autoCompleteTextView) {
         final String editchoosepig = autoCompleteTextView.getText().toString();
         String editdateremoved = dateremoved.getText().toString();
-        String editreason= choosereason.getSelectedItem().toString();
-        String editage = "0 months, 0 days";
+        String editreason= choosereason.getText().toString();
+        String editage = "";
+        String birthDate = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = java.util.Calendar.getInstance().getTime();
 
-        boolean insertData = dbHelper.addMortalitySalesData(editchoosepig, editdateremoved, null,
-                null, editreason, editage, "false");
+        Cursor data = dbHelper.getSinglePig(editchoosepig);
+        while (data.moveToNext()) {
+            switch (data.getString(data.getColumnIndex("property_id"))) {
+                case "3":
+                    birthDate = data.getString(data.getColumnIndex("value"));
+                    break;
+            }
+        }
+
+        if(editreason.equals("")) editreason = "Donated";
+        if(editdateremoved.equals("")) editdateremoved = sdf.format(date);
+        if(birthDate.equals("Not specified")) {
+            editage = "Age unavailable";
+        }else {
+            try {
+                editage = computeAge(editchoosepig, birthDate, editdateremoved);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        boolean insertData = dbHelper.addToRemovedAnimalsDB(editchoosepig, editdateremoved, editreason, editage, "false");
 
         if(insertData){
             Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
@@ -157,7 +185,7 @@ public class OthersDialog extends DialogFragment {
         RequestParams requestParams = new RequestParams();
         final String editchoosepig = autoCompleteTextView.getText().toString();
         String editdateremoved = dateremoved.getText().toString();
-        String editreason= choosereason.getSelectedItem().toString();
+        String editreason= choosereason.getText().toString();
         String editage = "0 months, 0 days";
 
         requestParams.add("pig_registration_id", editchoosepig);
@@ -273,6 +301,27 @@ public class OthersDialog extends DialogFragment {
             }
         });
 
+    }
+
+    private String computeAge(String regId, String birthDate, String dateDied) throws ParseException {
+        String date = "";
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        Date firstDate = format.parse(birthDate);
+        Date secondDate = format.parse(dateDied);
+
+        long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
+        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+        if ((Long.toString(diff / 30)).equals("1") && (Long.toString(diff % 30)).equals("1")) {
+            date = Long.toString(diff / 30) + " month, " + Long.toString(diff % 30) + " day";
+        } else if ((Long.toString(diff / 30).equals("1"))) {
+            date = Long.toString(diff / 30) + " month, " + Long.toString(diff % 30) + " days";
+        } else if ((Long.toString(diff % 30).equals("1"))) {
+            date = Long.toString(diff / 30) + " months, " + Long.toString(diff % 30) + " day";
+        } else {
+            date = Long.toString(diff / 30) + " months, " + Long.toString(diff % 30) + " days";
+        }
+        return date;
     }
 }
 

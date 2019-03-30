@@ -88,7 +88,7 @@ public class SowBoarIDDateBredFragment extends Fragment {
             Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
         }else {
             while (data.moveToNext()) {
-                breedingRecordData = new BreedingRecordData(data.getString(1), data.getString(2), data.getString(3));
+                breedingRecordData = new BreedingRecordData(data.getString(0), data.getString(1), data.getString(2));
                 breedingRecordList.add(breedingRecordData);
             }
             BreedingRecordDataAdapter adapter = new BreedingRecordDataAdapter(getActivity(), R.layout.listview_breeding_record, breedingRecordList);

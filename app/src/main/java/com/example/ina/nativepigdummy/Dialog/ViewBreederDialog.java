@@ -27,7 +27,11 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONObject;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -60,7 +64,7 @@ public class ViewBreederDialog extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_view_breeder,null);
 
         dbHelper = new DatabaseHelper(getContext());
-        birthday = view.findViewById(R.id.birthday);
+        //birthday = view.findViewById(R.id.birthday);
         sex = view.findViewById(R.id.sex);
         birthweight = view.findViewById(R.id.birth_weight);
         weaningweight = view.findViewById(R.id.weaning_weight);
@@ -89,7 +93,7 @@ public class ViewBreederDialog extends DialogFragment {
                             RequestParams requestParams = buildParams(pig_reg_id);
                             api_updateBreederPigProfile(requestParams);
                         }else{
-                            local_updateBreederPigProfile();
+                            //local_updateBreederPigProfile();
                         }
                     }
 
@@ -112,22 +116,22 @@ public class ViewBreederDialog extends DialogFragment {
         fragmentTransaction.commit();
     }
 
-    private void local_updateBreederPigProfile() {
-       boolean insertData = dbHelper.addBreederDetails(pig_reg_id,
-                    birthday.getText().toString(),
-                    sex.getText().toString(),
-                    birthweight.getText().toString(),
-                    weaningweight.getText().toString(),
-                    littersizebornweight.getText().toString(),
-                    ageatfirstmating.getText().toString(),
-                    ageatweaning.getText().toString(),
-                    pedigreemother.getText().toString(),
-                    pedigreefather.getText().toString(),
-                    "false");
-
-        if(insertData) Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
-        else Toast.makeText(getContext(), "Local insert error", Toast.LENGTH_SHORT).show();
-    }
+//    private void local_updateBreederPigProfile() {
+//       boolean insertData = dbHelper.addBreederDetails(pig_reg_id,
+//                    birthday.getText().toString(),
+//                    sex.getText().toString(),
+//                    birthweight.getText().toString(),
+//                    weaningweight.getText().toString(),
+//                    littersizebornweight.getText().toString(),
+//                    ageatfirstmating.getText().toString(),
+//                    ageatweaning.getText().toString(),
+//                    pedigreemother.getText().toString(),
+//                    pedigreefather.getText().toString(),
+//                    "false");
+//
+//        if(insertData) Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
+//        else Toast.makeText(getContext(), "Local insert error", Toast.LENGTH_SHORT).show();
+//    }
 
     private void api_updateBreederPigProfile(RequestParams params) {
         ApiHelper.updateBreederPigProfile("updateBreederPigProfile", params, new BaseJsonHttpResponseHandler<Object>() {
@@ -195,13 +199,11 @@ public class ViewBreederDialog extends DialogFragment {
         return requestParams;
     }
 
-    private void local_getSinglePig(String id){
-        String birthDate = "", weaningDate = "";
-        Cursor data = dbHelper.getSinglePig(id);
+    @SuppressLint("SetTextI18n")
+    private void local_getSinglePig(String reg_id){
+        Cursor data = dbHelper.getSinglePig(reg_id);
         while (data.moveToNext()) {
             switch(data.getString(data.getColumnIndex("property_id"))) {
-                case "3":   birthday.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
-                    break;
                 case "53":  sex.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
                     break;
                 case "5":   birthweight.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
@@ -216,6 +218,27 @@ public class ViewBreederDialog extends DialogFragment {
                     break;
             }
         }
+    }
+
+    private String computeAgeWeaning(String birthDate, String weaningDate) throws ParseException {
+        String date = "";
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        Date firstDate = format.parse(birthDate);
+        Date secondDate = format.parse(weaningDate);
+
+        long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
+        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+
+        if((Long.toString(diff/30) ).equals("1") && (Long.toString(diff%30)).equals("1")){
+            date = Long.toString(diff/30) + " month, " + Long.toString(diff%30) + " day";
+        }else if((Long.toString(diff/30).equals("1"))){
+            date = Long.toString(diff/30) + " month, " + Long.toString(diff%30) + " days";
+        }else if((Long.toString(diff%30).equals("1"))){
+            date = Long.toString(diff/30) + " months, " + Long.toString(diff%30) + " day";
+        }else{
+            date = Long.toString(diff/30) + " months, " + Long.toString(diff%30) + " days";
+        }
+        return date;
     }
 
     private void api_getSinglePig(String id) {
