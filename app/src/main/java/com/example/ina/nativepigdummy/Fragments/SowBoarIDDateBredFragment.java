@@ -74,6 +74,7 @@ public class SowBoarIDDateBredFragment extends Fragment {
                 Intent intent_view_breeding = new Intent(getActivity(), ViewBreedingActivity.class);
                 intent_view_breeding.putExtra("sow_id", breedingRecordList.get(i).getSow_id());
                 intent_view_breeding.putExtra("boar_id", breedingRecordList.get(i).getBoar_id());
+                intent_view_breeding.putExtra("date_bred", breedingRecordList.get(i).getDate_bred());
                 startActivity(intent_view_breeding);
             }
         });

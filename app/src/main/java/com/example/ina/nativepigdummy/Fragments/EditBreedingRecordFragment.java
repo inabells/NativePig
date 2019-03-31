@@ -28,6 +28,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -67,6 +69,20 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
         sow_reg_id.setText(sowIdHolder);
         boarIdHolder = getActivity().getIntent().getStringExtra("boar_id");
         boar_reg_id.setText(boarIdHolder);
+        editDateBred = getActivity().getIntent().getStringExtra("date_bred");
+        TextViewDate.setText(editDateBred);
+
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        Date edf = null;
+        try {
+            edf = sdf.parse(editDateBred);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String exDateFarrow = sdf.format(addDays(edf, 114));
+        TextViewFarrow.setText(exDateFarrow);
 
         RequestParams params = buildParams();
         if(ApiHelper.isInternetAvailable(getContext())){
@@ -74,16 +90,6 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
         } else{
             local_getBreedingProfile(sowIdHolder,boarIdHolder);
         }
-
-
-//        farrowing.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                ExpectedDateofFarrowingDialog dialog = new ExpectedDateofFarrowingDialog(sowIdHolder, boarIdHolder, editExpectedFarrowDate);
-//                dialog.setTargetFragment(EditBreedingRecordFragment.this, 1);
-//                dialog.show(getFragmentManager(), "ExpectedDateofFarrowingDialog");
-//            }
-//        });
 
         status.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +104,10 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
             @Override
             public void onClick(View v) {
                 Intent intent_sow_litter = new Intent(getActivity(), SowLitterActivity.class);
+                intent_sow_litter.putExtra("sow_idSLR", sowIdHolder);
+                intent_sow_litter.putExtra("boar_idSLR", boarIdHolder);
+                intent_sow_litter.putExtra("date_bredSLR", TextViewDate.getText().toString());
+                intent_sow_litter.putExtra("date_farrowSLR", TextViewFarrow.getText().toString());
                 startActivity(intent_sow_litter);
             }
         });
@@ -149,7 +159,14 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
         });
     }
 
+    public static Date addDays(Date date, int days) {
+        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days);
 
+        return cal.getTime();
+    }
 
     @Override public void applyText(String dateoffarrowing){
         TextViewFarrow.setText(dateoffarrowing);

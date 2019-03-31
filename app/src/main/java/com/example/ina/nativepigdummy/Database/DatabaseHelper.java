@@ -1114,6 +1114,94 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    public int getNoOfMales(String motherId, String fatherId){
+        int numOfMales = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT substr(c.registryid, -7, 1) FROM groupings a, grouping_members b, animals c " +
+            "WHERE a.id=grouping_id AND b.animal_id=c.id AND a.mother_id = ? AND a.father_id = ? ";
+        String[] whereArgs = new String[]{motherId, fatherId};
+        Cursor cursor = db.rawQuery(query, whereArgs);
+        while(cursor.moveToNext()){
+            if(cursor.getString(0).equals("M"))
+                numOfMales++;
+        }
+        return numOfMales;
+    }
+
+    public int getNoOfFemales(String motherId, String fatherId){
+        int numOfMales = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT substr(c.registryid, -7, 1) FROM groupings a, grouping_members b, animals c " +
+                "WHERE a.id=grouping_id AND b.animal_id=c.id AND a.mother_id = ? AND a.father_id = ? ";
+        String[] whereArgs = new String[]{motherId, fatherId};
+        Cursor cursor = db.rawQuery(query, whereArgs);
+        while(cursor.moveToNext()){
+            if(cursor.getString(0).equals("F"))
+                numOfMales++;
+        }
+        return numOfMales;
+    }
+
+    public long getAveBirthWeight(String motherId, String fatherId){
+        long sumOfBirthWeights = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT d.value FROM groupings a, grouping_members b, animal_properties d WHERE a.id = b.grouping_id AND d.animal_id = b.animal_id AND d.property_id = 5 AND a.mother_id =? AND a.father_id = ?";
+        String[] whereArgs = new String[]{motherId, fatherId};
+        Cursor cursor = db.rawQuery(query, whereArgs);
+        while(cursor.moveToNext()){
+            sumOfBirthWeights += cursor.getLong(0);
+        }
+        return sumOfBirthWeights/cursor.getCount();
+    }
+
+    public long noOfPigsWeaned(String motherId, String fatherId){
+        long noOfPigsWeaned = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT d.value FROM groupings a, grouping_members b, animal_properties d WHERE a.id = b.grouping_id AND d.animal_id = b.animal_id AND d.property_id = 7 AND a.mother_id =? AND a.father_id = ?";
+        String[] whereArgs = new String[]{motherId, fatherId};
+        Cursor cursor = db.rawQuery(query, whereArgs);
+        if(cursor.moveToFirst()){
+            noOfPigsWeaned = cursor.getCount();
+        }
+        return noOfPigsWeaned;
+    }
+
+    public long getAveWeaningWeight(String motherId, String fatherId){
+        long sumOfWeaningWeights = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT d.value FROM groupings a, grouping_members b, animal_properties d WHERE a.id = b.grouping_id AND d.animal_id = b.animal_id AND d.property_id = 7 AND a.mother_id =? AND a.father_id = ?";
+        String[] whereArgs = new String[]{motherId, fatherId};
+        Cursor cursor = db.rawQuery(query, whereArgs);
+        while(cursor.moveToNext()){
+            sumOfWeaningWeights += cursor.getLong(0);
+        }
+        return sumOfWeaningWeights/cursor.getCount();
+    }
+
+    public long getLitterWeaningWeight(String motherId, String fatherId){
+        long sumOfWeaningWeights = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT d.value FROM groupings a, grouping_members b, animal_properties d WHERE a.id = b.grouping_id AND d.animal_id = b.animal_id AND d.property_id = 7 AND a.mother_id =? AND a.father_id = ?";
+        String[] whereArgs = new String[]{motherId, fatherId};
+        Cursor cursor = db.rawQuery(query, whereArgs);
+        while(cursor.moveToNext()){
+            sumOfWeaningWeights += cursor.getLong(0);
+        }
+        return sumOfWeaningWeights;
+    }
+
+    public long getLitterBirthWeight(String motherId, String fatherId){
+        long sumOfBirthWeights = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT d.value FROM groupings a, grouping_members b, animal_properties d WHERE a.id = b.grouping_id AND d.animal_id = b.animal_id AND d.property_id = 5 AND a.mother_id =? AND a.father_id = ?";
+        String[] whereArgs = new String[]{motherId, fatherId};
+        Cursor cursor = db.rawQuery(query, whereArgs);
+        while(cursor.moveToNext()){
+            sumOfBirthWeights += cursor.getLong(0);
+        }
+        return sumOfBirthWeights;
+    }
+
     public boolean addSowLitterRecord(String sowid, String boarid, String datebred, String datefarrow, String weandate,
                                  String pig_parity, String litterborn, String litteralive, String numWean, String aveBirth,
                                  String numMales, String numFemales, String aveWean, String stillborn, String mummified, String abnormal,
@@ -1190,16 +1278,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
-
-    public static Date addDays(Date date, int days) {
-        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(date);
-        cal.add(Calendar.DATE, days);
-
-        return cal.getTime();
-    }
-
     public boolean addGrossMorphologyData(String regId, String datecollected, String hairtype, String hairlength, String coatcolor, String colorpattern,
                                           String headshape, String skintype, String eartype, String tailtype, String back_line, String othermarks, String isSynced){
 
@@ -1269,7 +1347,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Date edf = null;
         String sowIdFromAnimal = getAnimalId(sowRegistryId);
         String boarIdFromAnimal = getAnimalId(boarRegistryId);
-        addToGroupingsDB(sowRegistryId, sowIdFromAnimal, boarIdFromAnimal, "false");
+        addToGroupingsDB(sowRegistryId, sowIdFromAnimal, boarIdFromAnimal, "0", "false");
         String idFromGroupings = getGroupingId(sowIdFromAnimal, boarIdFromAnimal);
 
         if(dateBred.equals("")) dateBred = sdf.format(date);
@@ -1409,7 +1487,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if(!(motherPedigree).equals("") && !(fatherPedigree).equals("")){
             if(motherPedigree.length() < 6) motherPedigree = padLeftZeros(motherPedigree, 6);
-            if(fatherPedigree.length() < 6) fatherPedigree = padLeftZeros(motherPedigree, 6);
+            if(fatherPedigree.length() < 6) fatherPedigree = padLeftZeros(fatherPedigree, 6);
 
             if(checkIfPigExistsInAnimalDB("F"+motherPedigree)){
 //                contentValues.put(mother_id, getAnimalId(motherPedigree));
@@ -1425,15 +1503,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if(foundsire != 1) addToAnimalPropertyDB(9, animalId, generateRegistrationId("M", fatherPedigree), "false");
 
             if(founddam == 1 || foundsire == 1){
-                String sowRegistryId = generateRegistrationId("F", motherPedigree);
-                String boarRegistryId = generateRegistrationId("M", fatherPedigree);
+                String sowRegistryId = getAnimalRegistry(motherPedigree);
+                String boarRegistryId = getAnimalRegistry(fatherPedigree);
                 String boarId = getAnimalId(boarRegistryId);
                 String sowId = getAnimalId(sowRegistryId);
-                addToGroupingsDB(sowRegistryId, sowId, boarId, "false");
-                updateMemberInGroupings(sowId, boarId);
 
                 String groupingId = getGroupingId(sowId, boarId);
-                addToGroupingMembersDB(groupingId, animalId, "false");
+                if(groupingId == null || groupingId.equals("")){                //not existing in grouping
+                    addToGroupingsDB(sowRegistryId, sowId, boarId, "1", "false");
+                    String newlyAddedGroupingId = getGroupingId(sowId, boarId);
+                    addToGroupingMembersDB(newlyAddedGroupingId, animalId, "false");
+                } else{                                                          //existing in grouping, just update members
+                    updateMemberInGroupings(sowId, boarId);
+                    addToGroupingMembersDB(groupingId, animalId, "false");
+                }
+
+                addToSowLitterDB(sowId, boarId);
 
                 if(birthdate != null) {
                     try {
@@ -1453,6 +1538,69 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
 
+    }
+
+    public void addToSowLitterDB(String sowId, String boarId){
+        String lsba, tlsb, mummified, stillborn;
+        String groupingId = getGroupingId(sowId, boarId);
+
+        int countMales = getNoOfMales(sowId, boarId);
+        int countFemales = getNoOfFemales(sowId, boarId);
+        String sexRatio = countMales+":"+countFemales;
+
+        addToGroupingsPropertyDB(51, groupingId, Integer.toString(countMales), "false");
+        addToGroupingsPropertyDB(52, groupingId, Integer.toString(countFemales), "false");
+        addToGroupingsPropertyDB(53, groupingId, sexRatio, "false");
+
+        lsba = Integer.toString(countFemales + countMales);
+
+        if(checkGroupingMembers(groupingId)) {
+            stillborn = getGroupingProperty(groupingId, 45);
+            mummified = getGroupingProperty(groupingId, 46);
+            tlsb = getGroupingProperty(groupingId, 49);
+            //lsba = dbHelper.getGroupingProperty(groupingId, 50);
+
+            if (tlsb == null || tlsb.equals("")) {
+                addToGroupingsPropertyDB(49, groupingId, stillborn + mummified + lsba, "false");
+            } else {
+                updateGroupingProperty(groupingId, 49, stillborn + mummified + lsba);
+            }
+
+            if (lsba == null || lsba.equals("")) {
+                addToGroupingsPropertyDB(50, groupingId, lsba, "false");
+            } else {
+                updateGroupingProperty(groupingId, 50, lsba);
+            }
+        }
+
+        addToGroupingsPropertyDB(56, groupingId, Long.toString(getAveBirthWeight(sowId, boarId)), "false");
+        addToGroupingsPropertyDB(55, groupingId, Long.toString(getLitterBirthWeight(sowId, boarId)), "false");
+        addToGroupingsPropertyDB(58, groupingId, Long.toString(getAveWeaningWeight(sowId, boarId)), "false");
+        addToGroupingsPropertyDB(62, groupingId, Long.toString(getLitterWeaningWeight(sowId, boarId)), "false");
+        addToGroupingsPropertyDB(57, groupingId, Long.toString(noOfPigsWeaned(sowId, boarId)), "false");
+
+    }
+
+    public boolean updateSowLitter(String sowId, String boarId, String paritySLR, String stillbornSLR, String mummifiedSLR, String abnormalitiesSLR, String isSynced){
+        String groupingId = getGroupingId(sowId, boarId);
+        addToGroupingsPropertyDB(45, groupingId, stillbornSLR, "false");
+        addToGroupingsPropertyDB(46, groupingId, mummifiedSLR, "false");
+        addToGroupingsPropertyDB(47, groupingId, abnormalitiesSLR, "false");
+        addToGroupingsPropertyDB(48, groupingId, paritySLR, "false");
+
+        return true;
+    }
+
+    public Cursor getSowLitterRecords(String sowId, String boarId){
+        String groupingId = getGroupingId(sowId, boarId);
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = {"*"};
+        String whereClause = "grouping_id = ?";
+        String[] whereArgs = new String[]{groupingId};
+        Cursor data = db.query(grouping_properties, columns, whereClause, whereArgs, null, null, null);
+
+        return data;
     }
 
 
@@ -1509,7 +1657,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    public boolean addToGroupingsDB(String regId, String motherId, String fatherId, String isSynced){
+    public boolean addToGroupingsDB(String regId, String motherId, String fatherId, String membersVal, String isSynced){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -1517,6 +1665,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(mother_id, motherId);
         contentValues.put(father_id, fatherId);
         contentValues.put(breed_id, MyApplication.id);
+        contentValues.put(members, membersVal);
         contentValues.put(is_synced, isSynced);
 
         long result = db.insert(groupings,null,contentValues);
@@ -1557,7 +1706,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    private String getAnimalId(String regId) {
+    public String getAnimalId(String regId) {
         String id = "";
         SQLiteDatabase db = this.getReadableDatabase();
         String columns[] = { "id" };
@@ -1570,7 +1719,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
-    private String getGroupingId(String sowId, String boarId) {
+    public String getGroupingProperty(String groupingId, int groupingPropId){
+        String value = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = {"value"};
+        String whereClause = "grouping_id = ? AND property_id = ?";
+        String[] whereArgs = new String[]{groupingId, Integer.toString(groupingPropId)};
+        Cursor data = db.query(grouping_properties, columns, whereClause, whereArgs, null, null, null);
+        if(data.moveToFirst()){
+            value = data.getString(data.getColumnIndex("value"));
+        }
+        return value;
+    }
+
+    public boolean checkGroupingMembers(String groupingId){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = {"members"};
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{groupingId};
+        Cursor data = db.query(groupings, columns, whereClause, whereArgs, null, null, null);
+        if(data.moveToFirst()){
+            if(data.getString(0) == null || data.getString(0).equals("")){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private String getAnimalRegistry(String regId) {
+        String id = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = { "registryid" };
+        String whereClause = "registryid LIKE ?";
+        String[] whereArgs = new String[]{"%"+regId};
+        Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
+        if(data.moveToFirst()){
+            id = data.getString(data.getColumnIndex("registryid"));
+        }
+        return id;
+    }
+
+    public String getGroupingId(String sowId, String boarId) {
         String id = "";
         SQLiteDatabase db = this.getReadableDatabase();
         String columns[] = { "*" };
@@ -2217,15 +2406,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return data;
     }
 
-    public Cursor getSowLitterProfile(String sowRegId, String boarRegId){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String columns[] = { "*" };
-        String whereClause = "sow_registration_id = ? AND boar_registration_id = ?";
-        String[] whereArgs = new String[]{sowRegId, boarRegId};
-        Cursor data = db.query("sow_litter_table", columns, whereClause , whereArgs, null, null, null);
-        return data;
-    }
-
     public Cursor generatePigList(String reg_id){
         SQLiteDatabase db = this.getWritableDatabase();
         String columns[] = {"registryid"};
@@ -2342,6 +2522,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else return true;
     }
 
+    public boolean updateGroupingProperty(String groupingId, int propertyId, String propertyValue){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(value, propertyValue);
+        String whereClause = "grouping_id = ? AND property_id = ?";
+        String[] whereArgs = new String[]{groupingId, Integer.toString(propertyId)};
+        long result = db.update(grouping_properties, contentValues, whereClause, whereArgs);
+        if(result == -1) return false;
+        else return true;
+    }
+
     private String changeToNotSpecifiedIfNull(String value) {
         if(value == null || value.isEmpty())
             return "Not specified";
@@ -2362,5 +2553,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else
             return value;
     }
+
+    public static Date addDays(Date date, int days) {
+        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days);
+
+        return cal.getTime();
+    }
+
+//    public static Date subtractDays(Date date, int days) {
+//        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+//        GregorianCalendar cal = new GregorianCalendar();
+//        cal.setTime(date);
+//        cal.add(Calendar.DATE, days);
+//
+//        return cal.getTime();
+//    }
 
 }

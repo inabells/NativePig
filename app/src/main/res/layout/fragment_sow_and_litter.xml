@@ -51,6 +51,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/TextViewSowUsed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -81,6 +82,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/TextViewBoarUsed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -111,6 +113,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/TextViewDateBred"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -172,6 +175,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/TextViewDateWeaned"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -233,6 +237,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/TextViewLSB"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -263,6 +268,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/TextViewLSBA"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -293,6 +299,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/TextViewNumberWeaned"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -323,6 +330,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/TextViewAveBirthWeight"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -353,6 +361,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/TextViewMales"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -383,6 +392,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/TextViewFemales"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -413,6 +423,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/TextViewSexRatio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
@@ -443,6 +454,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/TextViewAveWeanWeight"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-light"
