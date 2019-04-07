@@ -25,7 +25,7 @@
                 android:layout_marginTop="20dp"
                 android:gravity="center|left"
                 android:paddingLeft="20dp"
-                android:text="Individual Weighing"
+                android:text="Edit Individual Weighing Record"
                 android:textColor="@color/colorWhite"
                 android:textSize="20sp" />
 
@@ -98,9 +98,9 @@
 
                         <Spinner
                             android:id="@+id/offspring_sex"
-                            android:entries="@array/sex"
                             android:layout_width="match_parent"
                             android:layout_height="45dp"
+                            android:entries="@array/sex"
                             android:fontFamily="sans-serif-light"
                             android:textColor="#000000"
                             android:textSize="18sp" />
@@ -123,19 +123,42 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Birth Weight, KG"
+                            android:text="Date Weaned"
                             android:textColor="@color/colorPrimary"
                             android:textSize="13sp" />
 
                         <EditText
 
-                            android:id="@+id/birth_weight"
+                            android:id="@+id/date_weaned"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-light"
                             android:textColor="#000000"
                             android:textSize="18sp" />
 
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Weaning Weight, KG"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="13sp" />
+
+                        <EditText
+
+                            android:id="@+id/weaning_weight"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-light"
+                            android:textColor="#000000"
+                            android:textSize="18sp" />
 
                     </LinearLayout>
 

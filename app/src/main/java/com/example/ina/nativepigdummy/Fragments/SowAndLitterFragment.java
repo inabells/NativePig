@@ -1,7 +1,6 @@
 package com.example.ina.nativepigdummy.Fragments;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,20 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
-import com.example.ina.nativepigdummy.Dialog.MorphCharDialog;
 import com.example.ina.nativepigdummy.Dialog.SowAndLitterDialog;
 import com.example.ina.nativepigdummy.R;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
 
 public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog.ViewSowLitterListener{
 

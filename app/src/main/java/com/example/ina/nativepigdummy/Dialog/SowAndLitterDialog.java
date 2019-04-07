@@ -18,7 +18,6 @@ import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
-import com.example.ina.nativepigdummy.Fragments.BreederWeightRecordsFragment;
 import com.example.ina.nativepigdummy.Fragments.SowAndLitterFragment;
 import com.example.ina.nativepigdummy.R;
 
@@ -27,13 +26,11 @@ import java.util.List;
 public class SowAndLitterDialog extends DialogFragment {
     private static final String TAG = "SowAndLitterDialog";
 
-    //private EditText datefarrowed;
     private EditText parity;
     private EditText nostillborn;
     private EditText nomummified;
     private EditText abnormalities;
     private String sowRegId, boarRegId;
-    //private String editParity, editStillBorn, editMummified, editAbnormalities;
     private DatabaseHelper dbHelper;
     public ViewSowLitterListener onViewSowLitterListener;
 

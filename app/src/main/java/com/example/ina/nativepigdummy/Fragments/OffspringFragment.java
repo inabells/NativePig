@@ -1,26 +1,21 @@
 package com.example.ina.nativepigdummy.Fragments;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.Adapters.OffspringDataAdapter;
-import com.example.ina.nativepigdummy.Adapters.OthersDataAdapter;
 import com.example.ina.nativepigdummy.Data.OffspringData;
-import com.example.ina.nativepigdummy.Data.OthersData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
+import com.example.ina.nativepigdummy.Dialog.EditOffspringDialog;
 import com.example.ina.nativepigdummy.Dialog.GroupWeighingDialog;
 import com.example.ina.nativepigdummy.Dialog.IndividualWeighingDialog;
-import com.example.ina.nativepigdummy.Dialog.OthersDialog;
 import com.example.ina.nativepigdummy.R;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -31,9 +26,10 @@ import java.util.ArrayList;
 public class OffspringFragment extends Fragment {
 
     ListView listView;
-    DatabaseHelper myDB;
+    DatabaseHelper dbHelper;
     ArrayList<OffspringData> offspringList;
     OffspringData offspringData;
+    String sowId, sowRegId, boarRegId, boarId, groupingId;
     private FloatingActionMenu floatingActionMenu;
     private FloatingActionButton group, individual;
 
@@ -45,28 +41,28 @@ public class OffspringFragment extends Fragment {
         floatingActionMenu = view.findViewById(R.id.floating_action_menu);
         group = view.findViewById(R.id.group_weighing);
         individual = view.findViewById(R.id.individual_weighing);
-
-
-        myDB = new DatabaseHelper(getActivity());
-
+        dbHelper = new DatabaseHelper(getActivity());
         offspringList = new ArrayList<>();
-        //Cursor data  = myDB.getOffspringRecordsContent();
-        //int numRows = data.getCount();
-//        if(numRows == 0){
-//            Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
-//        }else{
-//            int i=0;
-////            while(data.moveToNext()){
-////                offspringData = new OffspringData(data.getString(1), data.getString(2),data.getString(3), data.getString(4));
-////                offspringList.add(i, offspringData);
-////                System.out.println(data.getString(1)+" "+data.getString(2)+" "+data.getString(3)+" "+data.getString(4));
-////                System.out.println(offspringList.get(i).getOffspring_id());
-////                i++;
-////            }
-//
-//            OffspringDataAdapter adapter = new OffspringDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, offspringList);
-//            listView.setAdapter(adapter);
-//        }
+
+        sowRegId = getActivity().getIntent().getStringExtra("sow_idSLR");
+        boarRegId = getActivity().getIntent().getStringExtra("boar_idSLR");
+
+        sowId = dbHelper.getAnimalId(sowRegId);
+        boarId = dbHelper.getAnimalId(boarRegId);
+        groupingId = dbHelper.getGroupingId(sowId, boarId);
+
+        local_getOffsprings();
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String offspring_id = offspringList.get(i).getOffspring_id();
+                Intent intent = new Intent(getActivity(), EditOffspringDialog.class);
+                intent.putExtra("ListClickValue", offspring_id);
+                startActivity(intent);
+            }
+        });
+
 
         group.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,22 +74,36 @@ public class OffspringFragment extends Fragment {
 
         individual.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 IndividualWeighingDialog dialog = new IndividualWeighingDialog();
-                dialog.show(getActivity().getFragmentManager(), "IndividualWeighingDialog");
+//                dialog.show(getActivity().getFragmentManager(), "IndividualWeighingDialog");
+                dialog.show(getActivity().getSupportFragmentManager(), "IndividualWeighingDialog");
             }
         });
 
         return view;
     }
 
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        return true;
-//    }
+    private void local_getOffsprings() {
+        String regId = "";
+        String sex = "";
+        String birthWeight = "";
+        String weaningWeight = "";
+        Cursor data = dbHelper.getOffspringContents(groupingId);
+        while(data.moveToNext()){
+            switch(data.getString(data.getColumnIndex("property_id"))){
+                case "4": regId = data.getString(data.getColumnIndex("value"));
+                break;
+                case "2": sex = data.getString(data.getColumnIndex("value"));
+                break;
+                case "5": birthWeight = data.getString(data.getColumnIndex("value"));
+                break;
+                case "6": weaningWeight = data.getString(data.getColumnIndex("value"));
+            }
+        }
+        offspringData = new OffspringData(regId, sex, birthWeight, weaningWeight);
+        offspringList.add(offspringData);
+        OffspringDataAdapter adapter = new OffspringDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, offspringList);
+        listView.setAdapter(adapter);
+    }
 }

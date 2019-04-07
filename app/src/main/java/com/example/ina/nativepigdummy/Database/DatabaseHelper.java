@@ -1237,6 +1237,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return false;
     }
 
+
+
     public boolean addNewPigData(String classification, String animalearnotch, String sex, String birthdate, String weaningdate,
                                  String birthweight, String weaningweight, String motherpedigree, String fatherpedigree, String sexratio,
                                  String littersizebornalive, String agefirstmating, String ageweaning, String regId, String isSynced) {
@@ -1929,6 +1931,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String whereClause = "substr(registryid, -7, 1) = ? AND status = ? AND is_synced != ?";
         String[] whereArgs = new String[]{"M", "active", "delete"};
         Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
+        return data;
+    }
+
+    public Cursor getOffspringContents(String groupingId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query =  "SELECT b.registryid, c.property_id, c.value " +
+                        "FROM grouping_members a, animals b, animal_properties c " +
+                        "where a.animal_id=b.id AND b.id=c.animal_id AND a.grouping_id ="+groupingId;
+        Cursor data = db.rawQuery(query, null);
         return data;
     }
 
