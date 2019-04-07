@@ -1231,6 +1231,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    public boolean isBlankOrNull(String text){
+        if(text == null || text.equals(""))
+            return  true;
+        return false;
+    }
+
     public boolean addNewPigData(String classification, String animalearnotch, String sex, String birthdate, String weaningdate,
                                  String birthweight, String weaningweight, String motherpedigree, String fatherpedigree, String sexratio,
                                  String littersizebornalive, String agefirstmating, String ageweaning, String regId, String isSynced) {
@@ -1244,7 +1250,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         addToAnimalPropertyDB(4, animalId, regId, "false");
         addToAnimalPropertyDB(5, animalId, changeToBlankIfNull(birthweight), "false");
         addToAnimalPropertyDB(6, animalId, changeToNotSpecifiedIfNull(weaningdate), "false");
-        addToAnimalPropertyDB(7, animalId, changeToBlankIfNull(weaningweight), "false");
+        if(!isBlankOrNull(weaningweight))
+            addToAnimalPropertyDB(7, animalId, changeToBlankIfNull(weaningweight), "false");
         addDamAndSire(motherpedigree, fatherpedigree, animalId, birthdate, weaningdate, "false");
 
         if(birthdate.equals("")){
