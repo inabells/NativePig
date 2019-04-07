@@ -1550,14 +1550,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void addToSowLitterDB(String sowId, String boarId){
         String lsba, tlsb, mummified, stillborn;
         String groupingId = getGroupingId(sowId, boarId);
-
+        int groupingIdInt = Integer.parseInt(groupingId);
         int countMales = getNoOfMales(sowId, boarId);
         int countFemales = getNoOfFemales(sowId, boarId);
         String sexRatio = countMales+":"+countFemales;
 
-        addToGroupingsPropertyDB(51, groupingId, Integer.toString(countMales), "false");
-        addToGroupingsPropertyDB(52, groupingId, Integer.toString(countFemales), "false");
-        addToGroupingsPropertyDB(53, groupingId, sexRatio, "false");
+        insertOrReplaceInGroupingsPropertyDB(51, groupingIdInt, Integer.toString(countMales), "false");
+        insertOrReplaceInGroupingsPropertyDB(52, groupingIdInt, Integer.toString(countFemales), "false");
+        insertOrReplaceInGroupingsPropertyDB(53, groupingIdInt, sexRatio, "false");
 
         lsba = Integer.toString(countFemales + countMales);
 
@@ -1565,37 +1565,66 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             stillborn = getGroupingProperty(groupingId, 45);
             mummified = getGroupingProperty(groupingId, 46);
             tlsb = getGroupingProperty(groupingId, 49);
-            //lsba = dbHelper.getGroupingProperty(groupingId, 50);
 
             if (tlsb == null || tlsb.equals("")) {
-                addToGroupingsPropertyDB(49, groupingId, stillborn + mummified + lsba, "false");
+                insertOrReplaceInGroupingsPropertyDB(49, groupingIdInt, stillborn + mummified + lsba, "false");
             } else {
                 updateGroupingProperty(groupingId, 49, stillborn + mummified + lsba);
             }
 
             if (lsba == null || lsba.equals("")) {
-                addToGroupingsPropertyDB(50, groupingId, lsba, "false");
+                insertOrReplaceInGroupingsPropertyDB(50, groupingIdInt, lsba, "false");
             } else {
                 updateGroupingProperty(groupingId, 50, lsba);
             }
         }
 
-        addToGroupingsPropertyDB(56, groupingId, Long.toString(getAveBirthWeight(sowId, boarId)), "false");
-        addToGroupingsPropertyDB(55, groupingId, Long.toString(getLitterBirthWeight(sowId, boarId)), "false");
-        addToGroupingsPropertyDB(58, groupingId, Long.toString(getAveWeaningWeight(sowId, boarId)), "false");
-        addToGroupingsPropertyDB(62, groupingId, Long.toString(getLitterWeaningWeight(sowId, boarId)), "false");
-        addToGroupingsPropertyDB(57, groupingId, Long.toString(noOfPigsWeaned(sowId, boarId)), "false");
-
+        insertOrReplaceInGroupingsPropertyDB(56, groupingIdInt, Long.toString(getAveBirthWeight(sowId, boarId)), "false");
+        insertOrReplaceInGroupingsPropertyDB(55, groupingIdInt, Long.toString(getLitterBirthWeight(sowId, boarId)), "false");
+        insertOrReplaceInGroupingsPropertyDB(58, groupingIdInt, Long.toString(getAveWeaningWeight(sowId, boarId)), "false");
+        insertOrReplaceInGroupingsPropertyDB(62, groupingIdInt, Long.toString(getLitterWeaningWeight(sowId, boarId)), "false");
+        insertOrReplaceInGroupingsPropertyDB(57, groupingIdInt, Long.toString(noOfPigsWeaned(sowId, boarId)), "false");
     }
 
     public boolean updateSowLitter(String sowId, String boarId, String paritySLR, String stillbornSLR, String mummifiedSLR, String abnormalitiesSLR, String isSynced){
         String groupingId = getGroupingId(sowId, boarId);
-        addToGroupingsPropertyDB(45, groupingId, stillbornSLR, "false");
-        addToGroupingsPropertyDB(46, groupingId, mummifiedSLR, "false");
-        addToGroupingsPropertyDB(47, groupingId, abnormalitiesSLR, "false");
-        addToGroupingsPropertyDB(48, groupingId, paritySLR, "false");
+        int groupingIdInt = Integer.parseInt(groupingId);
+        insertOrReplaceInGroupingsPropertyDB(45, groupingIdInt, stillbornSLR, "false");
+        insertOrReplaceInGroupingsPropertyDB(46, groupingIdInt, mummifiedSLR, "false");
+        insertOrReplaceInGroupingsPropertyDB(47, groupingIdInt, abnormalitiesSLR, "false");
+        insertOrReplaceInGroupingsPropertyDB(48, groupingIdInt, paritySLR, "false");
+        return true;
+    }
+
+    public boolean insertOrReplaceInGroupingsPropertyDB(int propertyId, int groupingId, String value, String isSynced){
+        int id = getPrimaryKeyInGroupingsPropertyDB(groupingId, propertyId);
+        if(id > -1) updateGroupingsPropertyDB(id, propertyId, Integer.toString(groupingId), value, "update");
+        else addToGroupingsPropertyDB(propertyId, Integer.toString(groupingId), value, "false");
 
         return true;
+    }
+
+    private void updateGroupingsPropertyDB(int id, int propertyId, String groupingId, String valueString, String isSynced) {
+        SQLiteDatabase db =  this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{Integer.toString(id)};
+
+        contentValues.put(value, valueString);
+        contentValues.put(is_synced, isSynced);
+
+        long result = db.update(grouping_properties, contentValues, whereClause, whereArgs);
+    }
+
+    public int getPrimaryKeyInGroupingsPropertyDB(int groupingId, int propertyId){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = {"id"};
+        String whereClause = "grouping_id = ? AND property_id = ?";
+        String[] whereArgs = new String[]{Integer.toString(groupingId), Integer.toString(propertyId)};
+        Cursor data = db.query(grouping_properties, columns, whereClause, whereArgs, null, null, null);
+
+        if(data.moveToFirst()) return data.getInt(0);
+        else return -1;
     }
 
     public Cursor getSowLitterRecords(String sowId, String boarId){
@@ -1609,7 +1638,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return data;
     }
-
 
     public static String padLeftZeros(String str, int n) {
         return String.format("%1$" + n + "s", str).replace(' ', '0');
