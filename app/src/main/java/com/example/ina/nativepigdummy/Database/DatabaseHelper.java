@@ -203,7 +203,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public DatabaseHelper(Context context){
-        super(context, DATABASE_NAME, null, 31);
+        super(context, DATABASE_NAME, null, 32);
     }
     //------------------------------------------------------------------------------------------
     private static final String Administrators = "CREATE TABLE " + administrators + "("
@@ -1244,14 +1244,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
         addToAnimalDB(regId, classification, "false");
         String animalId = getAnimalId(regId);
-        addToAnimalPropertyDB(1, animalId, animalearnotch, "false");
-        addToAnimalPropertyDB(2, animalId, sex, "false");
-        addToAnimalPropertyDB(3, animalId, changeToNotSpecifiedIfNull(birthdate), "false");
-        addToAnimalPropertyDB(4, animalId, regId, "false");
-        addToAnimalPropertyDB(5, animalId, changeToBlankIfNull(birthweight), "false");
-        addToAnimalPropertyDB(6, animalId, changeToNotSpecifiedIfNull(weaningdate), "false");
+        int animalIdInt = Integer.parseInt(animalId);
+        insertOrReplaceInAnimalPropertyDB(1, animalIdInt, animalearnotch, "false");
+        insertOrReplaceInAnimalPropertyDB(2, animalIdInt, sex, "false");
+        insertOrReplaceInAnimalPropertyDB(3, animalIdInt, changeToNotSpecifiedIfNull(birthdate), "false");
+        insertOrReplaceInAnimalPropertyDB(4, animalIdInt, regId, "false");
+        insertOrReplaceInAnimalPropertyDB(5, animalIdInt, changeToBlankIfNull(birthweight), "false");
+        insertOrReplaceInAnimalPropertyDB(6, animalIdInt, changeToNotSpecifiedIfNull(weaningdate), "false");
+
         if(!isBlankOrNull(weaningweight))
-            addToAnimalPropertyDB(7, animalId, changeToBlankIfNull(weaningweight), "false");
+            insertOrReplaceInAnimalPropertyDB(7, animalIdInt, changeToBlankIfNull(weaningweight), "false");
         addDamAndSire(motherpedigree, fatherpedigree, animalId, birthdate, weaningdate, "false");
 
         if(birthdate.equals("")){
@@ -1275,11 +1277,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String Date150 = sdf.format(date150);
             String Date180 = sdf.format(date180);
 
-            addToAnimalPropertyDB(37, animalId, Date45, "false");
-            addToAnimalPropertyDB(38, animalId, Date60, "false");
-            addToAnimalPropertyDB(39, animalId, Date90, "false");
-            addToAnimalPropertyDB(40, animalId, Date150, "false");
-            addToAnimalPropertyDB(41, animalId, Date180, "false");
+            insertOrReplaceInAnimalPropertyDB(37, animalIdInt, Date45, "false");
+            insertOrReplaceInAnimalPropertyDB(38, animalIdInt, Date60, "false");
+            insertOrReplaceInAnimalPropertyDB(39, animalIdInt, Date90, "false");
+            insertOrReplaceInAnimalPropertyDB(40, animalIdInt, Date150, "false");
+            insertOrReplaceInAnimalPropertyDB(41, animalIdInt, Date180, "false");
         }
 
         return true;
@@ -1289,17 +1291,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                           String headshape, String skintype, String eartype, String tailtype, String back_line, String othermarks, String isSynced){
 
         String animalId = getAnimalId(regId);
-        addToAnimalPropertyDB(10, animalId, datecollected, "false");
-        addToAnimalPropertyDB(11, animalId, hairtype, "false");
-        addToAnimalPropertyDB(12, animalId, hairlength, "false");
-        addToAnimalPropertyDB(13, animalId, coatcolor, "false");
-        addToAnimalPropertyDB(14, animalId, colorpattern, "false");
-        addToAnimalPropertyDB(15, animalId, headshape, "false");
-        addToAnimalPropertyDB(16, animalId, skintype, "false");
-        addToAnimalPropertyDB(17, animalId, eartype, "false");
-        addToAnimalPropertyDB(18, animalId, tailtype, "false");
-        addToAnimalPropertyDB(19, animalId, back_line, "false");
-        addToAnimalPropertyDB(20, animalId, othermarks, "false");
+        int animalIdInt = Integer.parseInt(animalId);
+        insertOrReplaceInAnimalPropertyDB(10, animalIdInt, datecollected, "false");
+        insertOrReplaceInAnimalPropertyDB(11, animalIdInt, hairtype, "false");
+        insertOrReplaceInAnimalPropertyDB(12, animalIdInt, hairlength, "false");
+        insertOrReplaceInAnimalPropertyDB(13, animalIdInt, coatcolor, "false");
+        insertOrReplaceInAnimalPropertyDB(14, animalIdInt, colorpattern, "false");
+        insertOrReplaceInAnimalPropertyDB(15, animalIdInt, headshape, "false");
+        insertOrReplaceInAnimalPropertyDB(16, animalIdInt, skintype, "false");
+        insertOrReplaceInAnimalPropertyDB(17, animalIdInt, eartype, "false");
+        insertOrReplaceInAnimalPropertyDB(18, animalIdInt, tailtype, "false");
+        insertOrReplaceInAnimalPropertyDB(19, animalIdInt, back_line, "false");
+        insertOrReplaceInAnimalPropertyDB(20, animalIdInt, othermarks, "false");
 
         updateGrossMorpho(regId);
 
@@ -1311,16 +1314,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                     String taillength, String heightwithers, String normalteats, String isSynced){
 
         String animalId = getAnimalId(regId);
-        addToAnimalPropertyDB(21, animalId, datecollected, "false");
-        addToAnimalPropertyDB(22, animalId, earlength, "false");
-        addToAnimalPropertyDB(23, animalId, headlength, "false");
-        addToAnimalPropertyDB(24, animalId, snoutlength, "false");
-        addToAnimalPropertyDB(25, animalId, bodylength, "false");
-        addToAnimalPropertyDB(26, animalId, heartgirth, "false");
-        addToAnimalPropertyDB(27, animalId, pelvicwidth, "false");
-        addToAnimalPropertyDB(28, animalId, taillength, "false");
-        addToAnimalPropertyDB(29, animalId, heightwithers, "false");
-        addToAnimalPropertyDB(30, animalId, normalteats, "false");
+        int animalIdInt = Integer.parseInt(animalId);
+        insertOrReplaceInAnimalPropertyDB(21, animalIdInt, datecollected, "false");
+        insertOrReplaceInAnimalPropertyDB(22, animalIdInt, earlength, "false");
+        insertOrReplaceInAnimalPropertyDB(23, animalIdInt, headlength, "false");
+        insertOrReplaceInAnimalPropertyDB(24, animalIdInt, snoutlength, "false");
+        insertOrReplaceInAnimalPropertyDB(25, animalIdInt, bodylength, "false");
+        insertOrReplaceInAnimalPropertyDB(26, animalIdInt, heartgirth, "false");
+        insertOrReplaceInAnimalPropertyDB(27, animalIdInt, pelvicwidth, "false");
+        insertOrReplaceInAnimalPropertyDB(28, animalIdInt, taillength, "false");
+        insertOrReplaceInAnimalPropertyDB(29, animalIdInt, heightwithers, "false");
+        insertOrReplaceInAnimalPropertyDB(30, animalIdInt, normalteats, "false");
 
         updateMorphChar(regId);
 
@@ -1331,16 +1335,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                     String datecollected180, String weight45, String weight60, String weight90, String weight150, String weight180, String isSynced){
 
         String animalId = getAnimalId(regId);
-        addToAnimalPropertyDB(32, animalId, weight45, "false");
-        addToAnimalPropertyDB(33, animalId, weight60, "false");
-        addToAnimalPropertyDB(34, animalId, weight90, "false");
-        addToAnimalPropertyDB(35, animalId, weight150, "false");
-        addToAnimalPropertyDB(36, animalId, weight180, "false");
-        addToAnimalPropertyDB(37, animalId, datecollected45, "false");
-        addToAnimalPropertyDB(38, animalId, datecollected60, "false");
-        addToAnimalPropertyDB(39, animalId, datecollected90, "false");
-        addToAnimalPropertyDB(40, animalId, datecollected150, "false");
-        addToAnimalPropertyDB(41, animalId, datecollected180, "false");
+        int animalIdInt = Integer.parseInt(animalId);
+        insertOrReplaceInAnimalPropertyDB(32, animalIdInt, weight45, "false");
+        insertOrReplaceInAnimalPropertyDB(33, animalIdInt, weight60, "false");
+        insertOrReplaceInAnimalPropertyDB(34, animalIdInt, weight90, "false");
+        insertOrReplaceInAnimalPropertyDB(35, animalIdInt, weight150, "false");
+        insertOrReplaceInAnimalPropertyDB(36, animalIdInt, weight180, "false");
+        insertOrReplaceInAnimalPropertyDB(37, animalIdInt, datecollected45, "false");
+        insertOrReplaceInAnimalPropertyDB(38, animalIdInt, datecollected60, "false");
+        insertOrReplaceInAnimalPropertyDB(39, animalIdInt, datecollected90, "false");
+        insertOrReplaceInAnimalPropertyDB(40, animalIdInt, datecollected150, "false");
+        insertOrReplaceInAnimalPropertyDB(41, animalIdInt, datecollected180, "false");
 
         updateWeightRecords(regId);
 
@@ -1356,6 +1361,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String boarIdFromAnimal = getAnimalId(boarRegistryId);
         addToGroupingsDB(sowRegistryId, sowIdFromAnimal, boarIdFromAnimal, "0", "false");
         String idFromGroupings = getGroupingId(sowIdFromAnimal, boarIdFromAnimal);
+        int idFromGroupingsInt = Integer.parseInt(idFromGroupings);
 
         if(dateBred.equals("")) dateBred = sdf.format(date);
 
@@ -1369,8 +1375,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Date dateFarrowed = addDays(edf, 114);
         String expectedDateFarrow = sdf.format(dateFarrowed);
 
-        addToGroupingsPropertyDB(43, idFromGroupings, expectedDateFarrow, "false");
-        addToGroupingsPropertyDB(60, idFromGroupings, "Bred", "false");
+        insertOrReplaceInGroupingsPropertyDB(43, idFromGroupingsInt, expectedDateFarrow, "false");
+        insertOrReplaceInGroupingsPropertyDB(60, idFromGroupingsInt, "Bred", "false");
 
         return true;
     }
@@ -1516,6 +1522,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String sowId = getAnimalId(sowRegistryId);
 
                 String groupingId = getGroupingId(sowId, boarId);
+                int groupingIdInt = Integer.parseInt(groupingId);
                 if(groupingId == null || groupingId.equals("")){                //not existing in grouping
                     addToGroupingsDB(sowRegistryId, sowId, boarId, "1", "false");
                     String newlyAddedGroupingId = getGroupingId(sowId, boarId);
@@ -1533,11 +1540,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         Date dateBirthdate = sdf.parse(birthdate);
                         String expectedFarrowDate = sdf.format(addDays(dateBirthdate, -114));
 
-                        addToGroupingsPropertyDB(3, groupingId, birthdate, "false");
-                        addToGroupingsPropertyDB(42, groupingId, expectedFarrowDate, "false");
-                        addToGroupingsPropertyDB(43, groupingId, birthdate, "false");
-                        addToGroupingsPropertyDB(60, groupingId, "Farrowed", "false");
-                        addToGroupingsPropertyDB(6, groupingId, changeToNotSpecifiedIfNull(weaningdate), "false");
+                        insertOrReplaceInGroupingsPropertyDB(3, groupingIdInt, birthdate, "false");
+                        insertOrReplaceInGroupingsPropertyDB(42, groupingIdInt, expectedFarrowDate, "false");
+                        insertOrReplaceInGroupingsPropertyDB(43, groupingIdInt, birthdate, "false");
+                        insertOrReplaceInGroupingsPropertyDB(60, groupingIdInt, "Farrowed", "false");
+                        insertOrReplaceInGroupingsPropertyDB(6, groupingIdInt, changeToNotSpecifiedIfNull(weaningdate), "false");
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -1604,6 +1611,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public boolean insertOrReplaceInAnimalPropertyDB(int propertyId, int animalId, String value, String isSynced){
+        int id = getPrimaryKeyInAnimalPropertyDB(animalId, propertyId);
+        if(id > -1) updateAnimalPropertyDB(id, propertyId, Integer.toString(animalId), value, "update");
+        else addToAnimalPropertyDB(propertyId, Integer.toString(animalId), value, "false");
+
+        return true;
+    }
+
     private void updateGroupingsPropertyDB(int id, int propertyId, String groupingId, String valueString, String isSynced) {
         SQLiteDatabase db =  this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -1616,12 +1631,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long result = db.update(grouping_properties, contentValues, whereClause, whereArgs);
     }
 
+    private void updateAnimalPropertyDB(int id, int propertyId, String groupingId, String valueString, String isSynced) {
+        SQLiteDatabase db =  this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{Integer.toString(id)};
+
+        contentValues.put(value, valueString);
+        contentValues.put(is_synced, isSynced);
+
+        long result = db.update(animal_properties, contentValues, whereClause, whereArgs);
+    }
+
     public int getPrimaryKeyInGroupingsPropertyDB(int groupingId, int propertyId){
         SQLiteDatabase db = this.getReadableDatabase();
         String columns[] = {"id"};
         String whereClause = "grouping_id = ? AND property_id = ?";
         String[] whereArgs = new String[]{Integer.toString(groupingId), Integer.toString(propertyId)};
         Cursor data = db.query(grouping_properties, columns, whereClause, whereArgs, null, null, null);
+
+        if(data.moveToFirst()) return data.getInt(0);
+        else return -1;
+    }
+
+    public int getPrimaryKeyInAnimalPropertyDB(int animalId, int propertyId){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = {"id"};
+        String whereClause = "animal_id = ? AND property_id = ?";
+        String[] whereArgs = new String[]{Integer.toString(animalId), Integer.toString(propertyId)};
+        Cursor data = db.query(animal_properties, columns, whereClause, whereArgs, null, null, null);
 
         if(data.moveToFirst()) return data.getInt(0);
         else return -1;

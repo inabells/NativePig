@@ -277,25 +277,34 @@ public class GrossMorphologyDialog extends DialogFragment {
         RadioButton backlineswayback = view.findViewById(R.id.backline_swayback);
         RadioButton backlinestraight = view.findViewById(R.id.backline_straight);
 
-        if(hair_type.equals("Curly")) hairtypecurly.setChecked(true);
-        else hairtypestraight.setChecked(true);
-        if(hair_length.equals("Short")) hairlengthshort.setChecked(true);
-        else hairlengthlong.setChecked(true);
-        if(coat_color.equals("Black")) coatcolorblack.setChecked(true);
-        else coatcolorothers.setChecked(true);
-        if(color_pattern.equals("Plain")) colorpatternplain.setChecked(true);
-        else colorpatternsocks.setChecked(true);
-        if(head_shape.equals("Concave")) headshapeconcave.setChecked(true);
-        else headshapestraight.setChecked(true);
-        if(skin_type.equals("Smooth")) skintypesmooth.setChecked(true);
-        else skintypewrinkled.setChecked(true);
-        if(ear_type.equals("Drooping")) eartypedrooping.setChecked(true);
-        else if (ear_type.equals("Semi-lop")) eartypesemilop.setChecked(true);
-        else eartypeerect.setChecked(true);
-        if(tail_type.equals("Curly")) tailtypecurly.setChecked(true);
-        else tailtypestraight.setChecked(true);
-        if(back_line.equals("Swayback")) backlineswayback.setChecked(true);
-        else backlinestraight.setChecked(true);
+        if(hair_type != null)
+            if(hair_type.equals("Curly")) hairtypecurly.setChecked(true);
+            else hairtypestraight.setChecked(true);
+        if(hair_length != null)
+            if(hair_length.equals("Short")) hairlengthshort.setChecked(true);
+            else hairlengthlong.setChecked(true);
+        if(coat_color != null)
+            if(coat_color.equals("Black")) coatcolorblack.setChecked(true);
+            else coatcolorothers.setChecked(true);
+        if(color_pattern != null)
+            if(color_pattern.equals("Plain")) colorpatternplain.setChecked(true);
+            else colorpatternsocks.setChecked(true);
+        if(head_shape != null)
+            if(head_shape.equals("Concave")) headshapeconcave.setChecked(true);
+            else headshapestraight.setChecked(true);
+        if(skin_type != null)
+            if(skin_type.equals("Smooth")) skintypesmooth.setChecked(true);
+            else skintypewrinkled.setChecked(true);
+        if(ear_type != null)
+            if(ear_type.equals("Drooping")) eartypedrooping.setChecked(true);
+            else if (ear_type.equals("Semi-lop")) eartypesemilop.setChecked(true);
+            else eartypeerect.setChecked(true);
+        if(tail_type != null)
+            if(tail_type.equals("Curly")) tailtypecurly.setChecked(true);
+            else tailtypestraight.setChecked(true);
+        if(back_line != null)
+            if(back_line.equals("Swayback")) backlineswayback.setChecked(true);
+            else backlinestraight.setChecked(true);
     }
 
     private String setBlankIfNull(String text) {
