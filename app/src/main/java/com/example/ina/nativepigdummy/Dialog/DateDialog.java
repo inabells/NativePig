@@ -1,5 +1,6 @@
 package com.example.ina.nativepigdummy.Dialog;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -25,6 +26,7 @@ public class DateDialog extends DialogFragment implements DatePickerDialog.OnDat
 
     }
 
+    @SuppressLint("ValidFragment")
     public DateDialog(View view){
         birthdate = (EditText) view;
         weandate = (EditText) view;

@@ -16,6 +16,7 @@ import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.EditOffspringDialog;
 import com.example.ina.nativepigdummy.Dialog.GroupWeighingDialog;
 import com.example.ina.nativepigdummy.Dialog.IndividualWeighingDialog;
+import com.example.ina.nativepigdummy.Dialog.SowAndLitterDialog;
 import com.example.ina.nativepigdummy.R;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -57,9 +58,12 @@ public class OffspringFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String offspring_id = offspringList.get(i).getOffspring_id();
-                Intent intent = new Intent(getActivity(), EditOffspringDialog.class);
-                intent.putExtra("ListClickValue", offspring_id);
-                startActivity(intent);
+                EditOffspringDialog dialog = new EditOffspringDialog();
+                Bundle data = new Bundle();
+                data.putString("OffspringRegId", offspring_id);
+                dialog.setArguments(data);
+                //dialog.setTargetFragment(OffspringFragment.this, 1);
+                dialog.show(getFragmentManager(),"EditOffspringDialog");
             }
         });
 
@@ -98,7 +102,7 @@ public class OffspringFragment extends Fragment {
                 break;
                 case "5": birthWeight = data.getString(data.getColumnIndex("value"));
                 break;
-                case "6": weaningWeight = data.getString(data.getColumnIndex("value"));
+                case "7": weaningWeight = data.getString(data.getColumnIndex("value"));
             }
         }
         offspringData = new OffspringData(regId, sex, birthWeight, weaningWeight);
