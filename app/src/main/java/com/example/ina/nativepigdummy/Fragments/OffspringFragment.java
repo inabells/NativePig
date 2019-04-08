@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.ina.nativepigdummy.Adapters.OffspringDataAdapter;
+import com.example.ina.nativepigdummy.Data.MortalityData;
 import com.example.ina.nativepigdummy.Data.OffspringData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.EditOffspringDialog;
@@ -72,7 +73,8 @@ public class OffspringFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 GroupWeighingDialog dialog = new GroupWeighingDialog();
-                dialog.show(getActivity().getFragmentManager(), "GroupWeighingDialog");
+                //dialog.show(getActivity().getFragmentManager(), "GroupWeighingDialog");
+                dialog.show(getActivity().getSupportFragmentManager(), "IndividualWeighingDialog");
             }
         });
 
@@ -96,12 +98,18 @@ public class OffspringFragment extends Fragment {
         Cursor data = dbHelper.getOffspringContents(groupingId);
         while(data.moveToNext()){
             switch(data.getString(data.getColumnIndex("property_id"))){
-                case "4": regId = data.getString(data.getColumnIndex("value"));
-                break;
+                case "4":
+                    offspringData = new OffspringData(regId, sex, birthWeight, weaningWeight);
+                    offspringList.add(offspringData);
+                    sex = "";
+                    birthWeight = "";
+                    weaningWeight = "";
+                    regId = data.getString(data.getColumnIndex("value"));
+                    break;
                 case "2": sex = data.getString(data.getColumnIndex("value"));
-                break;
+                        break;
                 case "5": birthWeight = data.getString(data.getColumnIndex("value"));
-                break;
+                        break;
                 case "7": weaningWeight = data.getString(data.getColumnIndex("value"));
             }
         }

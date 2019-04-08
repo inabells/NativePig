@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_offspring"
     tools:context=".Fragments.OffspringFragment">
 
     <LinearLayout
@@ -27,59 +28,58 @@
             android:gravity="center"
             android:text="Offspring ID"
             android:textColor="@color/colorWhite"
-            android:textSize="16dp" />
+            android:textSize="12dp" />
 
         <TextView
-            android:layout_weight="25"
             android:layout_width="match_parent"
-            android:layout_gravity="center"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
             android:layout_marginTop="10dp"
+            android:layout_weight="25"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:text="Birth Weight, KG"
+            android:textColor="@color/colorWhite"
+            android:textSize="12dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_weight="25"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
             android:text="Sex"
             android:textColor="@color/colorWhite"
-            android:textSize="16dp" />
+            android:textSize="12dp" />
 
         <TextView
-            android:layout_weight="25"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif-light"
-            android:gravity="center"
-            android:layout_marginTop="10dp"
-            android:text="Birth Weight"
-            android:textColor="@color/colorWhite"
-            android:textSize="16dp" />
-
-        <TextView
-            android:layout_weight="25"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_gravity="center"
             android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:fontFamily="sans-serif-light"
+            android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:text="Weaning Weight"
+            android:layout_weight="25"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:text="Weaning Weight, KG"
             android:textColor="@color/colorWhite"
-            android:textSize="16dp" />
+            android:textSize="12dp" />
 
     </LinearLayout>
 
     <ListView
         android:id="@+id/listview_offspring"
         android:layout_width="match_parent"
-        android:layout_height="502dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="65dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/rellay1"
         android:divider="#d1d1d1"
         android:dividerHeight="5dp" />
 

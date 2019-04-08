@@ -52,34 +52,34 @@ public class IndividualWeighingDialog extends DialogFragment {
         groupingId = dbHelper.getGroupingId(sowId, boarId);
 
         builder.setView(view)
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i){
+            .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i){
 
-                    }
-                })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        addOffspringEarnotch = offspringearnotch.getText().toString();
-                        addBirthWeight = birthweight.getText().toString();
-                        addSex = sex.getSelectedItem().toString();
-                        if(addOffspringEarnotch.equals(""))
-                            Toast.makeText(getActivity(), "Please fill out Animal Earnotch", Toast.LENGTH_SHORT).show();
-                        else if(addOffspringEarnotch.length() > 6)
-                            Toast.makeText(getActivity(), "Earnotch is too long", Toast.LENGTH_SHORT).show();
-                        else{
-                            if(!addOffspringEarnotch.equals("") && addOffspringEarnotch.length() < 6)
-                                addOffspringEarnotch = padLeftZeros(addOffspringEarnotch, 6);
+                }
+            })
+            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    addOffspringEarnotch = offspringearnotch.getText().toString();
+                    addBirthWeight = birthweight.getText().toString();
+                    addSex = sex.getSelectedItem().toString();
+                    if(addOffspringEarnotch.equals(""))
+                        Toast.makeText(getActivity(), "Please fill out Animal Earnotch", Toast.LENGTH_SHORT).show();
+                    else if(addOffspringEarnotch.length() > 6)
+                        Toast.makeText(getActivity(), "Earnotch is too long", Toast.LENGTH_SHORT).show();
+                    else{
+                        if(!addOffspringEarnotch.equals("") && addOffspringEarnotch.length() < 6)
+                            addOffspringEarnotch = padLeftZeros(addOffspringEarnotch, 6);
 
-                            if(!addOffspringEarnotch.equals("") && !addBirthWeight.equals("")){
-                                local_addOffspring();
-                            }
+                        if(!addOffspringEarnotch.equals("") && !addBirthWeight.equals("")){
+                            local_addOffspringIndividual();
                         }
                     }
+                }
 
 
-                });
+            });
 
         return builder.create();
     }
@@ -104,7 +104,7 @@ public class IndividualWeighingDialog extends DialogFragment {
         }
     }
 
-    private void local_addOffspring() {
+    private void local_addOffspringIndividual() {
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         birthdate = formatter.format(date);
@@ -121,6 +121,7 @@ public class IndividualWeighingDialog extends DialogFragment {
         dbHelper.insertOrReplaceInAnimalPropertyDB(3, animalIdInt, birthdate, "false");
         dbHelper.insertOrReplaceInAnimalPropertyDB(4, animalIdInt, regId, "false");
         dbHelper.insertOrReplaceInAnimalPropertyDB(5, animalIdInt, birthweight.getText().toString(), "false");
+        dbHelper.insertOrReplaceInAnimalPropertyDB(7, animalIdInt, "Weight unavailable", "false");
 
         dbHelper.addToGroupingMembersDB(groupingId, animalId, "false");
     }
@@ -132,7 +133,6 @@ public class IndividualWeighingDialog extends DialogFragment {
     public static String padLeftZeros(String str, int n) {
         return String.format("%1$" + n + "s", str).replace(' ', '0');
     }
-
 
     private String getYear(String dateText){
         String[] textArray = dateText.split("-");

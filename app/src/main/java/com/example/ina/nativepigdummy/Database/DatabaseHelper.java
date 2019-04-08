@@ -1714,17 +1714,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if(pig_classification.equals("Grower")){
             pig_classification = "active";
-        }else{
+        }else if(pig_classification.equals("Breeder")){
             pig_classification = "breeder";
+        }else{
+            pig_classification = "temporary";
         }
 
         contentValues.put(animaltype_id, 3);
         contentValues.put(registryid, regId);
         contentValues.put(farm_id, MyApplication.id);
         contentValues.put(breed_id, MyApplication.id);
-        contentValues.put(grossmorpho, MyApplication.id);
-        contentValues.put(morphochars, MyApplication.id);
-        contentValues.put(weightrecord, MyApplication.id);
+        contentValues.put(grossmorpho, "");
+        contentValues.put(morphochars, "");
+        contentValues.put(weightrecord, "");
         contentValues.put(status, pig_classification);
         contentValues.put(is_synced, isSynced);
 
