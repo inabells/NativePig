@@ -253,16 +253,19 @@ public class AddNewPigActivity extends AppCompatActivity {
                     if(!addAnimalEarnotchString.equals("") && addAnimalEarnotchString.length() < 6){
                         addAnimalEarnotchString = padLeftZeros(addAnimalEarnotchString, 6);
                     }
-                    requestParams.add("pig_earnotch", addAnimalEarnotchString);
-                    requestParams.add("pig_classification", radiobutton.getText().toString());
-                    requestParams.add("pig_sex", addSex.getSelectedItem().toString());
-                    requestParams.add("pig_birthdate", addBirthDate.getText().toString());
-                    requestParams.add("pig_weaningdate", addWeanDate.getText().toString());
-                    requestParams.add("pig_birthweight", addBirthWeight.getText().toString());
-                    requestParams.add("pig_weaningweight", addWeanWeight.getText().toString());
-                    requestParams.add("pig_mother_earnotch", addMotherEarnotch.getText().toString());
-                    requestParams.add("pig_father_earnotch", addFatherEarnotch.getText().toString());
-                    requestParams.add("pig_registration_id", generateRegistrationId(addAnimalEarnotchString));
+                    requestParams.add("earnotch", addAnimalEarnotchString);
+                    requestParams.add("status", radiobutton.getText().toString().toLowerCase());
+                    requestParams.add("sex", addSex.getSelectedItem().toString());
+                    requestParams.add("date_farrowed", addBirthDate.getText().toString());
+                    requestParams.add("date_weaned", addWeanDate.getText().toString());
+                    requestParams.add("birth_weight", addBirthWeight.getText().toString());
+                    requestParams.add("weaning_weight", addWeanWeight.getText().toString());
+                    requestParams.add("dam", addMotherEarnotch.getText().toString());
+                    requestParams.add("sire", addFatherEarnotch.getText().toString());
+//                    requestParams.add("pig_registration_id", generateRegistrationId(addAnimalEarnotchString));
+                    requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+                    requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+
 
                     if(ApiHelper.isInternetAvailable(getApplicationContext())) {
                         api_addPig(requestParams, radiobutton);
@@ -297,7 +300,7 @@ public class AddNewPigActivity extends AppCompatActivity {
     }
 
     private void api_addPig(RequestParams requestParams, final RadioButton radiobutton) {
-        ApiHelper.addPig("addPig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.fetchNewPigRecord("fetchNewPigRecord", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 if(radiobutton.getText().toString().equals("Breeder")){

@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
 import com.example.ina.nativepigdummy.Activities.ViewBreederActivity;
 import com.example.ina.nativepigdummy.Activities.ViewGrowerActivity;
 import com.example.ina.nativepigdummy.Activities.ViewProfileActivity;
@@ -27,6 +28,7 @@ import com.example.ina.nativepigdummy.Data.SowData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,9 +51,12 @@ public class MaleGrowerFragment extends Fragment {
         nListView = view.findViewById(R.id.listview_male_grower);
         dbHelper = new DatabaseHelper(getActivity());
         maleList = new ArrayList<>();
+        RequestParams requestParams = new RequestParams();
+        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
 
         if(ApiHelper.isInternetAvailable(getContext())) {
-            api_getMaleGrowers();
+            api_getMaleGrowers(requestParams);
         } else{
             local_getMaleGrowers();
         }
@@ -85,8 +90,8 @@ public class MaleGrowerFragment extends Fragment {
         }
     }
 
-    private void api_getMaleGrowers(){
-        ApiHelper.getAllMaleGrowers("getAllMaleGrowers", null, new BaseJsonHttpResponseHandler<Object>() {
+    private void api_getMaleGrowers(RequestParams requestParams){
+        ApiHelper.getAllMaleGrowers("getAllMaleGrowers", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("API HANDLER Success", rawJsonResponse);
@@ -106,7 +111,7 @@ public class MaleGrowerFragment extends Fragment {
                 JSONObject jsonObject;
                 for (int i = jsonArray.length() - 1; i >= 0; i--) {
                     jsonObject = (JSONObject) jsonArray.get(i);
-                    maleList.add(new MaleGrowerData(jsonObject.getString("pig_registration_id")));
+                    maleList.add(new MaleGrowerData(jsonObject.getString("registryid")));
                 }
                 return null;
             }

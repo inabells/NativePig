@@ -19,12 +19,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Data.MortalityData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.ViewBreederDialog;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -110,7 +112,7 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
 
     private RequestParams buildParams() {
         RequestParams params = new RequestParams();
-        params.add("pig_registration_id", pigRegIdHolder);
+        params.add("registry_id", pigRegIdHolder);
         return params;
     }
 
@@ -177,7 +179,7 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
     }
 
     private void api_getSinglePig(RequestParams params) {
-        ApiHelper.getSinglePig("getSinglePig", params, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getViewSowPage("getViewSowPage", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 TextViewbirthday.setText(setDefaultTextIfNull(birthday));
@@ -200,15 +202,41 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
             @Override
             protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
                 JSONObject jsonObject = new JSONObject(rawJsonData);
-                birthday = jsonObject.get("pig_birthdate").toString();
-                sex = jsonObject.get("sex_ratio").toString();
-                birthweight = jsonObject.get("pig_birthweight").toString();
-                weaningweight = jsonObject.get("pig_weaningweight").toString();
-                littersizebornweight = jsonObject.get("litter_size_born_alive").toString();
-                ageatfirstmating = jsonObject.get("age_first_mating").toString();
-                ageatweaning = jsonObject.get("age_at_weaning").toString();
-                pedigreemother = jsonObject.get("pig_mother_earnotch").toString();
-                pedigreefather = jsonObject.get("pig_father_earnotch").toString();
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                    JSONArray propertyArray = new JSONArray(jsonObject.get("properties"));
+                    JSONObject propertyObject;
+                    for(int i = propertyArray.length() - 1; i >= 0; i--) {
+                        propertyObject = (JSONObject) propertyArray.get(i);
+                        switch (propertyObject.getInt("property_id")) {
+                            case 3:
+                                birthday = propertyObject.get("value").toString();
+                                break;
+                            case 53:
+                                sex = propertyObject.get("value").toString();
+                                break;
+                            case 5:
+                                birthweight = propertyObject.get("value").toString();
+                                break;
+                            case 7:
+                                weaningweight = propertyObject.get("value").toString();
+                                break;
+                            case 55:
+                                littersizebornweight = propertyObject.get("value").toString();
+                                break;
+                            case 8:
+                                pedigreemother = propertyObject.get("value").toString();
+                                break;
+                            case 9:
+                                pedigreefather = propertyObject.get("value").toString();
+                                break;
+                        }
+                    }
+                }
+
+                ageatweaning =  jsonObject.get("ageAtWeaning").toString();
+                ageatfirstmating =  jsonObject.get("ageAtFirstMating").toString();
+
                 return null;
             }
         });

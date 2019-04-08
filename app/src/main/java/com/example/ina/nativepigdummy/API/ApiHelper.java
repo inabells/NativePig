@@ -9,7 +9,7 @@ import com.loopj.android.http.*;
 
 public class ApiHelper {
 
-    private final static String BASE_URL = "http://192.168.1.12:80/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
+    private final static String BASE_URL = "http://192.168.1.99:8080/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
     private static AsyncHttpClient client = new AsyncHttpClient();
 
     public ApiHelper(){
@@ -33,10 +33,6 @@ public class ApiHelper {
     }
 
     public static void getOthers(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void getSows(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
@@ -150,8 +146,21 @@ public class ApiHelper {
     public static void updateSowStatus(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.post(getAbsoluteUrl(url), request, responseHandler);
     }
+    //=======================================NEW API======================================================================
 
-    //URL================================================================================
+    public static void fetchNewPigRecord(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.post(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void getSows(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void getViewSowPage(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    //URL==========================================================================================================
     private static String getAbsoluteUrl(String url) {
         return BASE_URL + url;
     }
