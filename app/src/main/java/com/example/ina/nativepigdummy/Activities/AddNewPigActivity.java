@@ -242,6 +242,7 @@ public class AddNewPigActivity extends AppCompatActivity {
                 final RadioButton radiobutton = findViewById(selectedId);
                 addAnimalEarnotchString = addAnimalEarnotch.getText().toString();
 
+
                 if(addAnimalEarnotchString.equals("")){
                     Toast.makeText(AddNewPigActivity.this, "Please fill out Animal Earnotch", Toast.LENGTH_SHORT).show();
                 }else if(addAnimalEarnotchString.length() > 6){
@@ -253,8 +254,13 @@ public class AddNewPigActivity extends AppCompatActivity {
                     if(!addAnimalEarnotchString.equals("") && addAnimalEarnotchString.length() < 6){
                         addAnimalEarnotchString = padLeftZeros(addAnimalEarnotchString, 6);
                     }
+
+                    if(radiobutton.getText().toString().equals("Grower")){
+                        requestParams.add("status", "active");
+                    }else{
+                        requestParams.add("status", "breeder");
+                    }
                     requestParams.add("earnotch", addAnimalEarnotchString);
-                    requestParams.add("status", radiobutton.getText().toString().toLowerCase());
                     requestParams.add("sex", addSex.getSelectedItem().toString());
                     requestParams.add("date_farrowed", addBirthDate.getText().toString());
                     requestParams.add("date_weaned", addWeanDate.getText().toString());
@@ -262,7 +268,6 @@ public class AddNewPigActivity extends AppCompatActivity {
                     requestParams.add("weaning_weight", addWeanWeight.getText().toString());
                     requestParams.add("dam", addMotherEarnotch.getText().toString());
                     requestParams.add("sire", addFatherEarnotch.getText().toString());
-//                    requestParams.add("pig_registration_id", generateRegistrationId(addAnimalEarnotchString));
                     requestParams.add("farmable_id", Integer.toString(MyApplication.id));
                     requestParams.add("breedable_id", Integer.toString(MyApplication.id));
 

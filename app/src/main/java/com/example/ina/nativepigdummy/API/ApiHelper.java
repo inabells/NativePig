@@ -177,7 +177,28 @@ public class ApiHelper {
         client.post(getAbsoluteUrl(url), request, responseHandler);
     }
 
-    //URL==========================================================================================================
+    public static void getMortalityPage(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void getSalesPage(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void getOthersPage(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void addMortalityRecord(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.post(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void addSalesRecord(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.post(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    //URL=================================================================================================================
+
     private static String getAbsoluteUrl(String url) {
         return BASE_URL + url;
     }

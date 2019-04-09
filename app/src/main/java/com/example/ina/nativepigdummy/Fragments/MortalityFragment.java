@@ -14,6 +14,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
 import com.example.ina.nativepigdummy.Adapters.MortalityDataAdapter;
 import com.example.ina.nativepigdummy.Data.MortalityData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
@@ -21,6 +22,7 @@ import com.example.ina.nativepigdummy.Dialog.MortalityDialog;
 import com.example.ina.nativepigdummy.R;
 import com.github.clans.fab.FloatingActionButton;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,9 +48,12 @@ public class MortalityFragment extends Fragment {
         mortality = view.findViewById(R.id.floating_action_mortality);
         dbHelper = new DatabaseHelper(getContext());
         mortalityList = new ArrayList<>();
+        RequestParams requestParams = new RequestParams();
+        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
 
         if(ApiHelper.isInternetAvailable(getContext())){
-            api_getMortalityData();
+            api_getMortalityData(requestParams);
         }else{
             local_getMortalityData();
         }
@@ -79,8 +84,8 @@ public class MortalityFragment extends Fragment {
         }
     }
 
-    private void api_getMortalityData(){
-        ApiHelper.getMortality("getMortality", null, new BaseJsonHttpResponseHandler<Object>() {
+    private void api_getMortalityData(RequestParams requestParams){
+        ApiHelper.getMortalityPage("getMortalityPage", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("API HANDLER Success", rawJsonResponse);
@@ -91,7 +96,7 @@ public class MortalityFragment extends Fragment {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
                 Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                Log.d("API HANDLER FAIL", "Error occurred");
+//                Log.d("API HANDLER FAIL", "Error occurred");
             }
 
             @Override
@@ -102,9 +107,9 @@ public class MortalityFragment extends Fragment {
                 for (int i = jsonArray.length() - 1; i >= 0; i--) {
                     jsonObject = (JSONObject) jsonArray.get(i);
                     mData = new MortalityData();
-                    mData.setMortality_reg_id(jsonObject.getString("pig_registration_id"));
-                    mData.setDate_of_death(jsonObject.getString("date_removed_died"));
-                    mData.setCause_of_death(jsonObject.getString("cause_of_death"));
+                    mData.setMortality_reg_id(jsonObject.getString("registry_id"));
+                    mData.setDate_of_death(jsonObject.getString("datedied"));
+                    mData.setCause_of_death(jsonObject.getString("cause"));
                     mData.setAge(jsonObject.getString("age"));
                     mortalityList.add(mData);
                 }
@@ -112,6 +117,8 @@ public class MortalityFragment extends Fragment {
             }
         });
     }
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

@@ -116,6 +116,7 @@ public class MorphCharDialog extends DialogFragment {
 
         return builder.create();
     }
+
     @Override
     public void onDismiss(final DialogInterface dialog) {
         List<Fragment> fragList = getFragmentManager().getFragments();
@@ -129,7 +130,6 @@ public class MorphCharDialog extends DialogFragment {
         fragmentTransaction.attach(fragment);
         fragmentTransaction.commit();
     }
-
 
     private void local_updateMorphChar() {
         String editDateCollected = datecollected.getText().toString();

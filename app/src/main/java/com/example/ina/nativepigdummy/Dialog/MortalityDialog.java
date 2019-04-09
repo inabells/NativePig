@@ -8,6 +8,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -23,12 +25,15 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.MortalityAndSalesActivity;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
 import com.example.ina.nativepigdummy.Activities.SowLitterActivity;
 import com.example.ina.nativepigdummy.Adapters.AutoAdapter;
 import com.example.ina.nativepigdummy.Adapters.SalesDataAdapter;
 import com.example.ina.nativepigdummy.Data.GetAllPigsData;
 import com.example.ina.nativepigdummy.Data.SalesData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
+import com.example.ina.nativepigdummy.Fragments.MorphCharFragment;
+import com.example.ina.nativepigdummy.Fragments.MortalityFragment;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -133,7 +138,7 @@ public class MortalityDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         RequestParams requestParams = buildRequest(autoCompleteTextView);
                         if(ApiHelper.isInternetAvailable(getContext())) {
-                            deleteAddedPigFromPigTable(requestParams);
+                            //deleteAddedPigFromPigTable(requestParams);
                             api_addMortalityRecord(requestParams);
                         }else{
                             local_addMortalityData(autoCompleteTextView);
@@ -142,6 +147,20 @@ public class MortalityDialog extends DialogFragment {
                 });
 
         return builder.create();
+    }
+
+    @Override
+    public void onDismiss(final DialogInterface dialog) {
+        List<Fragment> fragList = getFragmentManager().getFragments();
+        Fragment fragment = null;
+        for(int i=0; i<fragList.size(); i++)
+            if(fragList.get(i) instanceof MortalityFragment)
+                fragment = fragList.get(i);
+
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.detach(fragment);
+        fragmentTransaction.attach(fragment);
+        fragmentTransaction.commit();
     }
 
     private void local_addMortalityData(AppCompatAutoCompleteTextView autoCompleteTextView) {
@@ -191,13 +210,15 @@ public class MortalityDialog extends DialogFragment {
         final String editdateofdeath = dateofdeath.getText().toString();
         final String editcauseofdeath = causeofdeath.getText().toString();
 
-        requestParams.add("pig_registration_id", editchoosepig);
-        requestParams.add("date_removed_died", editdateofdeath);
-        requestParams.add("cause_of_death", editcauseofdeath);
+        requestParams.add("registry_id", editchoosepig);
+        requestParams.add("date_died", editdateofdeath);
+        requestParams.add("cause_death", editcauseofdeath);
+        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
 
-        getAgeMortality(requestParams);
+        //getAgeMortality(requestParams);
 
-        requestParams.add("age", "Age unavailable");
+        //requestParams.add("age", "Age unavailable");
 
         return requestParams;
     }
@@ -223,27 +244,27 @@ public class MortalityDialog extends DialogFragment {
         return date;
     }
 
-    private void deleteAddedPigFromPigTable(RequestParams requestParams) {
-        ApiHelper.deletePig("deletePig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                //Toast.makeText(getContext(), "Pig added successfully", Toast.LENGTH_SHORT);
-                Log.d("DeletePig", "Succesfully deleted from pig table");
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                //Toast.makeText(getActivity(), "Error in deleting pig", Toast.LENGTH_SHORT);
-                Log.d("DeletePig", "Error occurred");
-            }
-
-            @Override
-            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                return null;
-            }
-        });
-    }
+//    private void deleteAddedPigFromPigTable(RequestParams requestParams) {
+//        ApiHelper.deletePig("deletePig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+//                //Toast.makeText(getContext(), "Pig added successfully", Toast.LENGTH_SHORT);
+//                Log.d("DeletePig", "Succesfully deleted from pig table");
+//
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+//                //Toast.makeText(getActivity(), "Error in deleting pig", Toast.LENGTH_SHORT);
+//                Log.d("DeletePig", "Error occurred");
+//            }
+//
+//            @Override
+//            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+//                return null;
+//            }
+//        });
+//    }
 
     private void getAgeMortality(RequestParams requestParams){
         ApiHelper.getSinglePig("getSinglePig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
@@ -274,7 +295,7 @@ public class MortalityDialog extends DialogFragment {
     }
 
     private void api_addMortalityRecord(RequestParams requestParams) {
-        ApiHelper.addPigMortalitySales("addPigMortalitySales", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.addMortalityRecord("addMortalityRecord", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("addMortality", "Succesfully added");
@@ -306,7 +327,7 @@ public class MortalityDialog extends DialogFragment {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
                     Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                    Log.d("API HANDLER FAIL", errorResponse.toString());
+//                    Log.d("API HANDLER FAIL", errorResponse.toString());
                 }
 
                 @Override
@@ -315,11 +336,12 @@ public class MortalityDialog extends DialogFragment {
                     JSONObject jsonObject;
                     for (int i = 0; i < jsonArray.length(); i++) {
                         jsonObject = (JSONObject) jsonArray.get(i);
-                        stringList.add(jsonObject.getString("pig_registration_id"));
+                        stringList.add(jsonObject.getString("registryid"));
                     }
                     return null;
                 }
             });
+
         } else{
             Cursor data = dbHelper.generatePigList(text);
             int numRows = data.getCount();

@@ -10,7 +10,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.example.ina.nativepigdummy.Data.MortalityData;
 import com.example.ina.nativepigdummy.Data.SalesData;
 import com.example.ina.nativepigdummy.R;
 
@@ -58,12 +57,12 @@ public class SalesDataAdapter extends ArrayAdapter<SalesData> {
         if(convertView == null){
             LayoutInflater inflater = LayoutInflater.from(mContext);
             convertView = inflater.inflate(mResource, parent, false);
-            holder= new SalesDataAdapter.ViewHolder();
+            holder = new SalesDataAdapter.ViewHolder();
             holder.sales_id = (TextView) convertView.findViewById(R.id.textView1);
             holder.date_sold = (TextView) convertView.findViewById(R.id.textView2);
             holder.weight = (TextView) convertView.findViewById(R.id.textView3);
-            holder.price = (TextView) convertView.findViewById(R.id.textView5);
             holder.age = (TextView) convertView.findViewById(R.id.textView4);
+            holder.price = (TextView) convertView.findViewById(R.id.textView5);
 
             result = convertView;
 

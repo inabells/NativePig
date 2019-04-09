@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -24,9 +26,12 @@ import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.MortalityAndSalesActivity;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
 import com.example.ina.nativepigdummy.Adapters.AutoAdapter;
 import com.example.ina.nativepigdummy.Data.GetAllPigsData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
+import com.example.ina.nativepigdummy.Fragments.MortalityFragment;
+import com.example.ina.nativepigdummy.Fragments.SalesFragment;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -130,8 +135,8 @@ public class SalesDialog extends DialogFragment {
                         RequestParams requestParams = buildRequest(autoCompleteTextView);
 
                         if(ApiHelper.isInternetAvailable(getContext())) {
-                            deleteAddedPigFromPigTable(requestParams);
-                            api_addMortalityRecord(requestParams);
+                            //deleteAddedPigFromPigTable(requestParams);
+                            api_addSalesRecord(requestParams);
                         }else{
                             local_addSalesData(autoCompleteTextView);
                         }
@@ -139,6 +144,20 @@ public class SalesDialog extends DialogFragment {
                 });
 
         return builder.create();
+    }
+
+    @Override
+    public void onDismiss(final DialogInterface dialog) {
+        List<Fragment> fragList = getFragmentManager().getFragments();
+        Fragment fragment = null;
+        for(int i=0; i<fragList.size(); i++)
+            if(fragList.get(i) instanceof SalesFragment)
+                fragment = fragList.get(i);
+
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.detach(fragment);
+        fragmentTransaction.attach(fragment);
+        fragmentTransaction.commit();
     }
 
     private void local_addSalesData(AppCompatAutoCompleteTextView autoCompleteTextView) {
@@ -187,12 +206,16 @@ public class SalesDialog extends DialogFragment {
         final String editchoosepig = autoCompleteTextView.getText().toString();
         String editdatesold = datesold.getText().toString();
         String editweightsold= weightsold.getText().toString();
+        String editpricesold = pricesold.getText().toString();
         String editage = "Not specified";
 
-        requestParams.add("pig_registration_id", editchoosepig);
-        requestParams.add("date_removed_died", editdatesold);
+        requestParams.add("registry_id", editchoosepig);
+        requestParams.add("date_sold", editdatesold);
         requestParams.add("weight_sold", editweightsold);
+        requestParams.add("price", editpricesold);
         requestParams.add("age", editage);
+        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
 
         return requestParams;
     }
@@ -219,11 +242,11 @@ public class SalesDialog extends DialogFragment {
         });
     }
 
-    private void api_addMortalityRecord(RequestParams requestParams) {
-        ApiHelper.addPigMortalitySales("addPigMortalitySales", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+    private void api_addSalesRecord(RequestParams requestParams) {
+        ApiHelper.addSalesRecord("addSalesRecord", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("addMortality", "Succesfully added");
+                Log.d("addMortality", "Successfully added");
 
             }
 
@@ -262,11 +285,12 @@ public class SalesDialog extends DialogFragment {
                     JSONObject jsonObject;
                     for (int i = 0; i < jsonArray.length(); i++) {
                         jsonObject = (JSONObject) jsonArray.get(i);
-                        stringList.add(jsonObject.getString("pig_registration_id"));
+                        stringList.add(jsonObject.getString("registryid"));
                     }
                     return null;
                 }
             });
+
         }else{
             Cursor data = dbHelper.generatePigList(text);
             int numRows = data.getCount();

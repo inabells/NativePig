@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
 import com.example.ina.nativepigdummy.Adapters.MortalityDataAdapter;
 import com.example.ina.nativepigdummy.Adapters.OthersDataAdapter;
 import com.example.ina.nativepigdummy.Data.MortalityData;
@@ -31,6 +32,7 @@ import com.example.ina.nativepigdummy.Dialog.OthersDialog;
 import com.example.ina.nativepigdummy.R;
 import com.github.clans.fab.FloatingActionButton;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -53,13 +55,15 @@ public class OthersFragment extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_others, container, false);
         listView = view.findViewById(R.id.listview_others);
         others = view.findViewById(R.id.floating_action_others);
-
         dbHelper = new DatabaseHelper(getActivity());
-
         otherList = new ArrayList<>();
 
+        RequestParams requestParams = new RequestParams();
+        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+
         if(ApiHelper.isInternetAvailable(getContext())) {
-            api_getOthersData();
+            api_getOthersData(requestParams);
         } else{
             local_getOthersData();
         }
@@ -90,8 +94,8 @@ public class OthersFragment extends Fragment {
         }
     }
 
-    private void api_getOthersData(){
-        ApiHelper.getOthers("getOthers", null, new BaseJsonHttpResponseHandler<Object>() {
+    private void api_getOthersData(RequestParams requestParams){
+        ApiHelper.getOthersPage("getOthersPage", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("API HANDLER Success", rawJsonResponse);
@@ -102,7 +106,7 @@ public class OthersFragment extends Fragment {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
                 Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                Log.d("API HANDLER FAIL", errorResponse.toString());
+//                Log.d("API HANDLER FAIL", errorResponse.toString());
             }
 
             @Override

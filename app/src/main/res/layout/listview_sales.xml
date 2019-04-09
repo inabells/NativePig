@@ -41,7 +41,7 @@
         android:layout_height="60dp"
         android:layout_weight="20"
         android:gravity="center"
-        android:text="TextView3"
+        android:text="TextView5"
         android:textAlignment="center"
         android:textSize="12sp" />
 
