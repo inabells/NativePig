@@ -26,6 +26,7 @@ import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -171,7 +172,7 @@ public class GrossMorphologyDialog extends DialogFragment {
     }
 
     private void api_updateGrossMorphology(RequestParams params) {
-        ApiHelper.updateGrossMorphology("updateGrossMorphology", params, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.fetchGrossMorphology("fetchGrossMorphology", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("API HANDLER Success", rawJsonResponse);
@@ -203,8 +204,8 @@ public class GrossMorphologyDialog extends DialogFragment {
         String editDateCollected = datecollected.getText().toString();
         String editOtherMarks= othermarks.getText().toString();
 
-        requestParams.add("registration_id", reg_id);
-        requestParams.add("date_collected", editDateCollected);
+        requestParams.add("registry_id", reg_id);
+        requestParams.add("date_collected_gross", editDateCollected);
         requestParams.add("hair_type", (String) ((RadioButton) hairType.findViewById(editHairType)).getText());
         requestParams.add("hair_length", (String) ((RadioButton) hairLength.findViewById(editHairLength)).getText());
         requestParams.add("coat_color", (String) ((RadioButton) coatColor.findViewById(editCoatColor)).getText());
@@ -221,9 +222,9 @@ public class GrossMorphologyDialog extends DialogFragment {
 
     private void api_getGrossMorphProfile(String id, final View view) {
         RequestParams params = new RequestParams();
-        params.add("registration_id", id);
+        params.add("registry_id", id);
 
-        ApiHelper.getGrossMorphProfile("getGrossMorphProfile", params, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getAnimalProperties("getAnimalProperties", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 datecollected.setText(setBlankIfNull(date_collected));
@@ -240,17 +241,49 @@ public class GrossMorphologyDialog extends DialogFragment {
             @Override
             protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
                 JSONObject jsonObject = new JSONObject(rawJsonData);
-                date_collected = jsonObject.get("date_collected").toString();
-                hair_type = jsonObject.get("hair_type").toString();
-                hair_length = jsonObject.get("hair_length").toString();
-                coat_color = jsonObject.get("coat_color").toString();
-                color_pattern = jsonObject.get("color_pattern").toString();
-                head_shape = jsonObject.get("head_shape").toString();
-                skin_type = jsonObject.get("skin_type").toString();
-                ear_type = jsonObject.get("ear_type").toString();
-                tail_type = jsonObject.get("tail_type").toString();
-                back_line = jsonObject.get("backline").toString();
-                other_marks = jsonObject.get("other_marks").toString();
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                    JSONArray propertyArray = jsonObject.getJSONArray("properties");
+                    JSONObject propertyObject;
+                    for (int i = propertyArray.length() - 1; i >= 0; i--) {
+                        propertyObject = (JSONObject) propertyArray.get(i);
+                        switch (propertyObject.getInt("property_id")) {
+                            case 10:
+                                date_collected = propertyObject.get("value").toString();
+                                break;
+                            case 11:
+                                hair_type = propertyObject.get("value").toString();
+                                break;
+                            case 12:
+                                hair_length = propertyObject.get("value").toString();
+                                break;
+                            case 13:
+                                coat_color = propertyObject.get("value").toString();
+                                break;
+                            case 14:
+                                color_pattern = propertyObject.get("value").toString();
+                                break;
+                            case 15:
+                                head_shape = propertyObject.get("value").toString();
+                                break;
+                            case 16:
+                                skin_type = propertyObject.get("value").toString();
+                                break;
+                            case 17:
+                                ear_type = propertyObject.get("value").toString();
+                                break;
+                            case 18:
+                                tail_type = propertyObject.get("value").toString();
+                                break;
+                            case 19:
+                                back_line = propertyObject.get("value").toString();
+                                break;
+                            case 20:
+                                other_marks = propertyObject.get("value").toString();
+                                break;
+                        }
+                    }
+                }
                 return null;
             }
         });

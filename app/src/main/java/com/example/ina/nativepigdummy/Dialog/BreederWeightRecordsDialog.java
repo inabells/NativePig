@@ -24,6 +24,7 @@ import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -156,7 +157,7 @@ public class BreederWeightRecordsDialog extends DialogFragment {
     }
 
     private void api_updateWeightRecords(RequestParams params) {
-        ApiHelper.updateWeightRecords("updateWeightRecords", params, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.fetchWeightRecords("fetchWeightRecords", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("API HANDLER Success", rawJsonResponse);
@@ -187,26 +188,26 @@ public class BreederWeightRecordsDialog extends DialogFragment {
         String editdate150 = datecollected150.getText().toString();
         String editdate180 = datecollected180.getText().toString();
 
-        requestParams.add("registration_id", reg_id);
-        requestParams.add("weight_at_45", editweight45);
-        requestParams.add("weight_at_60", editweight60);
-        requestParams.add("weight_at_90", editweight90);
-        requestParams.add("weight_at_150", editweight150);
-        requestParams.add("weight_at_180", editweight180);
-        requestParams.add("date_collected_at_45", editdate45);
-        requestParams.add("date_collected_at_60", editdate60);
-        requestParams.add("date_collected_at_90", editdate90);
-        requestParams.add("date_collected_at_150", editdate150);
-        requestParams.add("date_collected_at_180", editdate180);
+        requestParams.add("registry_id", reg_id);
+        requestParams.add("body_weight_at_45_days", editweight45);
+        requestParams.add("body_weight_at_60_days", editweight60);
+        requestParams.add("body_weight_at_90_days", editweight90);
+        requestParams.add("body_weight_at_150_days", editweight150);
+        requestParams.add("body_weight_at_180_days", editweight180);
+        requestParams.add("date_collected_45_days", editdate45);
+        requestParams.add("date_collected_60_days", editdate60);
+        requestParams.add("date_collected_90_days", editdate90);
+        requestParams.add("date_collected_150_days", editdate150);
+        requestParams.add("date_collected_180_days", editdate180);
 
         return requestParams;
     }
 
     private void getWeightProfile(String id) {
         RequestParams params = new RequestParams();
-        params.add("registration_id", id);
+        params.add("registry_id", id);
 
-        ApiHelper.getWeightProfile("getWeightProfile", params, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getAnimalProperties("getAnimalProperties", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 weightat45.setText(setBlankIfNull(editWeight45));
@@ -230,16 +231,46 @@ public class BreederWeightRecordsDialog extends DialogFragment {
             @Override
             protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
                 JSONObject jsonObject = new JSONObject(rawJsonData);
-                editWeight45 = jsonObject.get("weight_at_45").toString();
-                editWeight60 = jsonObject.get("weight_at_60").toString();
-                editWeight90 = jsonObject.get("weight_at_90").toString();
-                editWeight150 = jsonObject.get("weight_at_150").toString();
-                editWeight180 = jsonObject.get("weight_at_180").toString();
-                editDate45 = jsonObject.get("date_collected_at_45").toString();
-                editDate60 = jsonObject.get("date_collected_at_60").toString();
-                editDate90 = jsonObject.get("date_collected_at_90").toString();
-                editDate150 = jsonObject.get("date_collected_at_150").toString();
-                editDate180 = jsonObject.get("date_collected_at_180").toString();
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                    JSONArray propertyArray = jsonObject.getJSONArray("properties");
+                    JSONObject propertyObject;
+                    for (int i = propertyArray.length() - 1; i >= 0; i--) {
+                        propertyObject = (JSONObject) propertyArray.get(i);
+                        switch (propertyObject.getInt("property_id")) {
+                            case 32:
+                                editWeight45 = propertyObject.get("value").toString();
+                                break;
+                            case 33:
+                                editWeight60 = propertyObject.get("value").toString();
+                                break;
+                            case 34:
+                                editWeight90 = propertyObject.get("value").toString();
+                                break;
+                            case 35:
+                                editWeight150 = propertyObject.get("value").toString();
+                                break;
+                            case 36:
+                                editWeight180 = propertyObject.get("value").toString();
+                                break;
+                            case 37:
+                                editDate45 = propertyObject.get("value").toString();
+                                break;
+                            case 38:
+                                editDate60 = propertyObject.get("value").toString();
+                                break;
+                            case 39:
+                                editDate90 = propertyObject.get("value").toString();
+                                break;
+                            case 40:
+                                editDate150 = propertyObject.get("value").toString();
+                                break;
+                            case 41:
+                                editDate180 = propertyObject.get("value").toString();
+                                break;
+                        }
+                    }
+                }
                 return null;
             }
         });

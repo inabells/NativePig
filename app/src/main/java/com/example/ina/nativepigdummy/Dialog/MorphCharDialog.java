@@ -26,6 +26,7 @@ import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -151,7 +152,7 @@ public class MorphCharDialog extends DialogFragment {
     }
 
     private void api_updateMorphChar(RequestParams params) {
-        ApiHelper.updateMorphChar("updateMorphChar", params, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.fetchMorphometricCharacteristics("fetchMorphometricCharacteristics", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("API HANDLER Success", rawJsonResponse);
@@ -182,8 +183,8 @@ public class MorphCharDialog extends DialogFragment {
         String editHeightWithers = heightatwithers.getText().toString();
         String editNormalTeats = progressText.getText().toString();
 
-        requestParams.add("registration_id", reg_id);
-        requestParams.add("date_collected", editDateCollected);
+        requestParams.add("registry_id", reg_id);
+        requestParams.add("date_collected_morpho", editDateCollected);
         requestParams.add("ear_length", editEarLength);
         requestParams.add("head_length", editHeadLength);
         requestParams.add("snout_length", editSnoutLength);
@@ -192,16 +193,16 @@ public class MorphCharDialog extends DialogFragment {
         requestParams.add("pelvic_width", editPelvicWidth);
         requestParams.add("tail_length", editTailLength);
         requestParams.add("height_at_withers", editHeightWithers);
-        requestParams.add("normal_teats", editNormalTeats);
+        requestParams.add("number_normal_teats", editNormalTeats);
 
         return requestParams;
     }
 
     private void api_getMorphCharProfile(String id) {
         RequestParams params = new RequestParams();
-        params.add("registration_id", id);
+        params.add("registry_id", id);
 
-        ApiHelper.getMorphCharProfile("getMorphCharProfile", params, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getAnimalProperties("getAnimalProperties", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 datecollected.setText(setBlankIfNull(editDateCollected));
@@ -225,16 +226,46 @@ public class MorphCharDialog extends DialogFragment {
             @Override
             protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
                 JSONObject jsonObject = new JSONObject(rawJsonData);
-                editDateCollected = jsonObject.get("date_collected").toString();
-                editEarLength = jsonObject.get("ear_length").toString();
-                editHeadLength = jsonObject.get("head_length").toString();
-                editSnoutLength = jsonObject.get("snout_length").toString();
-                editBodyLength = jsonObject.get("body_length").toString();
-                editHeartGirth = jsonObject.get("heart_girth").toString();
-                editPelvicWidth = jsonObject.get("pelvic_width").toString();
-                editTailLength = jsonObject.get("tail_length").toString();
-                editHeightWithers = jsonObject.get("height_at_withers").toString();
-                editNormalTeats = jsonObject.get("normal_teats").toString();
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                    JSONArray propertyArray = jsonObject.getJSONArray("properties");
+                    JSONObject propertyObject;
+                    for (int i = propertyArray.length() - 1; i >= 0; i--) {
+                        propertyObject = (JSONObject) propertyArray.get(i);
+                        switch (propertyObject.getInt("property_id")) {
+                            case 21:
+                                editDateCollected = propertyObject.get("value").toString();
+                                break;
+                            case 22:
+                                editEarLength = propertyObject.get("value").toString();
+                                break;
+                            case 23:
+                                editHeadLength = propertyObject.get("value").toString();
+                                break;
+                            case 24:
+                                editSnoutLength = propertyObject.get("value").toString();
+                                break;
+                            case 25:
+                                editBodyLength = propertyObject.get("value").toString();
+                                break;
+                            case 26:
+                                editHeartGirth = propertyObject.get("value").toString();
+                                break;
+                            case 27:
+                                editPelvicWidth = propertyObject.get("value").toString();
+                                break;
+                            case 28:
+                                editTailLength = propertyObject.get("value").toString();
+                                break;
+                            case 29:
+                                editHeightWithers = propertyObject.get("value").toString();
+                                break;
+                            case 30:
+                                editNormalTeats = propertyObject.get("value").toString();
+                                break;
+                        }
+                    }
+                }
                 return null;
             }
         });

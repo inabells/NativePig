@@ -204,7 +204,7 @@ public class ViewBreederFragment extends Fragment implements ViewBreederDialog.V
                 JSONObject jsonObject = new JSONObject(rawJsonData);
 
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                    JSONArray propertyArray = new JSONArray(jsonObject.get("properties"));
+                    JSONArray propertyArray = jsonObject.getJSONArray("properties");
                     JSONObject propertyObject;
                     for(int i = propertyArray.length() - 1; i >= 0; i--) {
                         propertyObject = (JSONObject) propertyArray.get(i);

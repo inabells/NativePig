@@ -18,6 +18,7 @@ import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
@@ -79,7 +80,7 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
 
     private RequestParams buildParams() {
         RequestParams params = new RequestParams();
-        params.add("registration_id", pigRegIdHolder);
+        params.add("registry_id", pigRegIdHolder);
         return params;
     }
 
@@ -114,7 +115,7 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
     }
 
     private void api_getGrossMorphProfile(RequestParams params) {
-        ApiHelper.getGrossMorphProfile("getGrossMorphProfile", params, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getAnimalProperties("getAnimalProperties", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 TextViewDateCollected.setText(setDefaultTextIfNull(date_collected));
@@ -139,17 +140,49 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
             @Override
             protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
                 JSONObject jsonObject = new JSONObject(rawJsonData);
-                date_collected = jsonObject.get("date_collected").toString();
-                hair_type = jsonObject.get("hair_type").toString();
-                hair_length = jsonObject.get("hair_length").toString();
-                coat_color = jsonObject.get("coat_color").toString();
-                color_pattern = jsonObject.get("color_pattern").toString();
-                head_shape = jsonObject.get("head_shape").toString();
-                skin_type = jsonObject.get("skin_type").toString();
-                ear_type = jsonObject.get("ear_type").toString();
-                tail_type = jsonObject.get("tail_type").toString();
-                back_line = jsonObject.get("backline").toString();
-                other_marks = jsonObject.get("other_marks").toString();
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                    JSONArray propertyArray = jsonObject.getJSONArray("properties");
+                    JSONObject propertyObject;
+                    for (int i = propertyArray.length() - 1; i >= 0; i--) {
+                        propertyObject = (JSONObject) propertyArray.get(i);
+                        switch (propertyObject.getInt("property_id")) {
+                            case 10:
+                                date_collected = propertyObject.get("value").toString();
+                                break;
+                            case 11:
+                                hair_type = propertyObject.get("value").toString();
+                                break;
+                            case 12:
+                                hair_length = propertyObject.get("value").toString();
+                                break;
+                            case 13:
+                                coat_color = propertyObject.get("value").toString();
+                                break;
+                            case 14:
+                                color_pattern = propertyObject.get("value").toString();
+                                break;
+                            case 15:
+                                head_shape = propertyObject.get("value").toString();
+                                break;
+                            case 16:
+                                skin_type = propertyObject.get("value").toString();
+                                break;
+                            case 17:
+                                ear_type = propertyObject.get("value").toString();
+                                break;
+                            case 18:
+                                tail_type = propertyObject.get("value").toString();
+                                break;
+                            case 19:
+                                back_line = propertyObject.get("value").toString();
+                                break;
+                            case 20:
+                                other_marks = propertyObject.get("value").toString();
+                                break;
+                        }
+                    }
+                }
                 return null;
             }
         });
