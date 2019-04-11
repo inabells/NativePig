@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Adapters.OffspringDataAdapter;
 import com.example.ina.nativepigdummy.Data.MortalityData;
 import com.example.ina.nativepigdummy.Data.OffspringData;
@@ -53,7 +54,9 @@ public class OffspringFragment extends Fragment {
         boarId = dbHelper.getAnimalId(boarRegId);
         groupingId = dbHelper.getGroupingId(sowId, boarId);
 
-        local_getOffsprings();
+        if(ApiHelper.isInternetAvailable(getActivity()))
+            api_getOffSprings();
+        else local_getOffsprings();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -88,6 +91,10 @@ public class OffspringFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void api_getOffSprings() {
+
     }
 
     private void local_getOffsprings() {

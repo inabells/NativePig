@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
 import com.example.ina.nativepigdummy.Activities.ViewBreedingActivity;
 import com.example.ina.nativepigdummy.Adapters.BreedingRecordDataAdapter;
 import com.example.ina.nativepigdummy.Adapters.MortalityDataAdapter;
@@ -26,6 +27,7 @@ import com.example.ina.nativepigdummy.Dialog.BreedingRecordsDialog;
 import com.example.ina.nativepigdummy.R;
 import com.github.clans.fab.FloatingActionButton;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -54,8 +56,12 @@ public class SowBoarIDDateBredFragment extends Fragment {
 
         breedingRecordList = new ArrayList<>();
 
+        RequestParams requestParams = new RequestParams();
+        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+
         if(ApiHelper.isInternetAvailable(getContext())) {
-            api_getBreedingRecord();
+            api_getBreedingRecord(requestParams);
         } else{
             local_getBreedingRecord();
         }
@@ -97,8 +103,8 @@ public class SowBoarIDDateBredFragment extends Fragment {
         }
     }
 
-    private void api_getBreedingRecord(){
-        ApiHelper.getBreedingRecord("getBreedingRecord", null, new BaseJsonHttpResponseHandler<Object>() {
+    private void api_getBreedingRecord(RequestParams requestParams){
+        ApiHelper.getBreedingRecord("getBreedingRecord", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("API HANDLER Success", rawJsonResponse);
@@ -108,7 +114,7 @@ public class SowBoarIDDateBredFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
                 Log.d("API HANDLER FAIL", "Error occurred");
             }
 
@@ -120,9 +126,9 @@ public class SowBoarIDDateBredFragment extends Fragment {
                 for (int i = jsonArray.length() - 1; i >= 0; i--) {
                     jsonObject = (JSONObject) jsonArray.get(i);
                     mData = new BreedingRecordData();
-                    mData.setSow_id(jsonObject.getString("sow_registration_id"));
-                    mData.setBoar_id(jsonObject.getString("boar_registration_id"));
-                    mData.setDate_bred(jsonObject.getString("date_bred"));
+                    mData.setSow_id(jsonObject.getString("sow_registryid"));
+                    mData.setBoar_id(jsonObject.getString("boar_registryid"));
+                    mData.setDate_bred(jsonObject.getString("dateBred"));
                     breedingRecordList.add(mData);
                 }
                 return null;

@@ -9,7 +9,7 @@ import com.loopj.android.http.*;
 
 public class ApiHelper {
 
-    private final static String BASE_URL = "http://192.168.1.99:8080/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
+    private final static String BASE_URL = "http://192.168.1.2:8080/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
     private static AsyncHttpClient client = new AsyncHttpClient();
 
     public ApiHelper(){
@@ -196,6 +196,32 @@ public class ApiHelper {
     public static void addSalesRecord(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.post(getAbsoluteUrl(url), request, responseHandler);
     }
+
+    public static void addRemovedAnimalRecord(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.post(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void searchSows(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void searchBoars(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void getGroupingProperties(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void getAddSowLitterRecordPage(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+    public static void findGroupingId(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
+        client.get(getAbsoluteUrl(url), request, responseHandler);
+    }
+
+
 
     //URL=================================================================================================================
 

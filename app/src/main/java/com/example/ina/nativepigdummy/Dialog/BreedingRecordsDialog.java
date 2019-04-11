@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.BreedingRecordsActivity;
 import com.example.ina.nativepigdummy.Activities.MortalityAndSalesActivity;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
 import com.example.ina.nativepigdummy.Adapters.AutoAdapter;
 import com.example.ina.nativepigdummy.Adapters.BoarDataAdapter;
 import com.example.ina.nativepigdummy.Adapters.SowDataAdapter;
@@ -31,6 +34,8 @@ import com.example.ina.nativepigdummy.Data.BoarData;
 import com.example.ina.nativepigdummy.Data.GetAllPigsData;
 import com.example.ina.nativepigdummy.Data.SowData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
+import com.example.ina.nativepigdummy.Fragments.MortalityFragment;
+import com.example.ina.nativepigdummy.Fragments.SowBoarIDDateBredFragment;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -79,6 +84,10 @@ public class BreedingRecordsDialog extends DialogFragment {
         dbHelper = new DatabaseHelper(getActivity());
         sowDataList = new ArrayList<>();
         boarDataList = new ArrayList<>();
+
+        RequestParams requestParams = new RequestParams();
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
 
         //Setting up the adapter for AutoSuggest
         autoAdapter = new AutoAdapter(getActivity(), android.R.layout.simple_dropdown_item_1line);
@@ -179,9 +188,12 @@ public class BreedingRecordsDialog extends DialogFragment {
                             Toast.makeText(getActivity(),"Please fill out all the fields!",Toast.LENGTH_LONG).show();
                         }else{
                             if(ApiHelper.isInternetAvailable(getContext())) {
-                                requestParams.add("sow_registration_id", editsowid);
-                                requestParams.add("boar_registration_id", editboarid);
+                                requestParams.add("sow_id", editsowid);
+                                requestParams.add("boar_id", editboarid);
                                 requestParams.add("date_bred", editdatebred);
+                                requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+                                requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+
 
                                 ApiHelper.addBreedingRecord("addBreedingRecord", requestParams, new BaseJsonHttpResponseHandler<Object>() {
                                     @Override
@@ -192,7 +204,7 @@ public class BreedingRecordsDialog extends DialogFragment {
 
                                     @Override
                                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                                        Toast.makeText(getActivity(), "Error in adding pig", Toast.LENGTH_SHORT);
+//                                        Toast.makeText(getActivity(), "Error in adding pig", Toast.LENGTH_SHORT);
                                         Log.d("addBreedingRecord", "Error occurred");
                                     }
 
@@ -221,9 +233,23 @@ public class BreedingRecordsDialog extends DialogFragment {
         return builder.create();
     }
 
+    @Override
+    public void onDismiss(final DialogInterface dialog) {
+        List<Fragment> fragList = getFragmentManager().getFragments();
+        Fragment fragment = null;
+        for(int i=0; i<fragList.size(); i++)
+            if(fragList.get(i) instanceof SowBoarIDDateBredFragment)
+                fragment = fragList.get(i);
+
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.detach(fragment);
+        fragmentTransaction.attach(fragment);
+        fragmentTransaction.commit();
+    }
+
     private void makeApiCallSow(String text) {
         if(ApiHelper.isInternetAvailable(getContext())){
-            ApiHelper.getSows("getAllSows", null, new BaseJsonHttpResponseHandler<Object>() {
+            ApiHelper.searchSows("searchSows", null, new BaseJsonHttpResponseHandler<Object>() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                     Log.d("API HANDLER Success", rawJsonResponse);
@@ -243,11 +269,12 @@ public class BreedingRecordsDialog extends DialogFragment {
                     JSONObject jsonObject;
                     for (int i = 0; i < jsonArray.length(); i++) {
                         jsonObject = (JSONObject) jsonArray.get(i);
-                        sowStringList.add(jsonObject.getString("pig_registration_id"));
+                        sowStringList.add(jsonObject.getString("registryid"));
                     }
                     return null;
                 }
             });
+
         } else{
             Cursor data = dbHelper.generateSowList(text);
             int numRows = data.getCount();
@@ -265,7 +292,7 @@ public class BreedingRecordsDialog extends DialogFragment {
 
     private void makeApiCallBoar(String text) {
         if(ApiHelper.isInternetAvailable(getContext())){
-            ApiHelper.getBoars("getAllBoars", null, new BaseJsonHttpResponseHandler<Object>() {
+            ApiHelper.searchBoars("searchBoars", null, new BaseJsonHttpResponseHandler<Object>() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                     Log.d("API HANDLER Success", rawJsonResponse);
@@ -285,7 +312,7 @@ public class BreedingRecordsDialog extends DialogFragment {
                     JSONObject jsonObject;
                     for (int i = 0; i < jsonArray.length(); i++) {
                         jsonObject = (JSONObject) jsonArray.get(i);
-                        boarStringList.add(jsonObject.getString("pig_registration_id"));
+                        boarStringList.add(jsonObject.getString("registryid"));
                     }
                     return null;
                 }

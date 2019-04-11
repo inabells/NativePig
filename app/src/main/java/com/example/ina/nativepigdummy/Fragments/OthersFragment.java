@@ -26,6 +26,7 @@ import com.example.ina.nativepigdummy.Adapters.MortalityDataAdapter;
 import com.example.ina.nativepigdummy.Adapters.OthersDataAdapter;
 import com.example.ina.nativepigdummy.Data.MortalityData;
 import com.example.ina.nativepigdummy.Data.OthersData;
+import com.example.ina.nativepigdummy.Data.SalesData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.MortalityDialog;
 import com.example.ina.nativepigdummy.Dialog.OthersDialog;
@@ -117,9 +118,9 @@ public class OthersFragment extends Fragment {
                 for (int i = jsonArray.length() - 1; i >= 0; i--) {
                     jsonObject = (JSONObject) jsonArray.get(i);
                     mData = new OthersData();
-                    mData.setOthers_reg_id(jsonObject.getString("pig_registration_id"));
-                    mData.setDate_removed(jsonObject.getString("date_removed_died"));
-                    mData.setReason(jsonObject.getString("reason_removed"));
+                    mData.setOthers_reg_id(jsonObject.getString("registry_id"));
+                    mData.setDate_removed(jsonObject.getString("dateremoved"));
+                    mData.setReason(jsonObject.getString("reason"));
                     mData.setAge(jsonObject.getString("age"));
                     otherList.add(mData);
                 }

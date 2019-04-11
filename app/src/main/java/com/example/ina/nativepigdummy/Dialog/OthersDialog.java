@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -27,6 +29,8 @@ import com.example.ina.nativepigdummy.Activities.MortalityAndSalesActivity;
 import com.example.ina.nativepigdummy.Adapters.AutoAdapter;
 import com.example.ina.nativepigdummy.Data.GetAllPigsData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
+import com.example.ina.nativepigdummy.Fragments.MortalityFragment;
+import com.example.ina.nativepigdummy.Fragments.OthersFragment;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -128,8 +132,8 @@ public class OthersDialog extends DialogFragment {
                         RequestParams requestParams = buildRequest(autoCompleteTextView);
 
                         if(ApiHelper.isInternetAvailable(getContext())) {
-                            deleteAddedPigFromPigTable(requestParams);
-                            api_addMortalityRecord(requestParams);
+                            //deleteAddedPigFromPigTable(requestParams);
+                            api_addOthersRecord(requestParams);
                         }else{
                             local_addOthersData(autoCompleteTextView);
                         }
@@ -140,6 +144,20 @@ public class OthersDialog extends DialogFragment {
                 });
 
         return builder.create();
+    }
+
+    @Override
+    public void onDismiss(final DialogInterface dialog) {
+        List<Fragment> fragList = getFragmentManager().getFragments();
+        Fragment fragment = null;
+        for(int i=0; i<fragList.size(); i++)
+            if(fragList.get(i) instanceof OthersFragment)
+                fragment = fragList.get(i);
+
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.detach(fragment);
+        fragmentTransaction.attach(fragment);
+        fragmentTransaction.commit();
     }
 
     private void local_addOthersData(AppCompatAutoCompleteTextView autoCompleteTextView) {
@@ -218,8 +236,8 @@ public class OthersDialog extends DialogFragment {
         });
     }
 
-    private void api_addMortalityRecord(RequestParams requestParams) {
-        ApiHelper.addPigMortalitySales("addPigMortalitySales", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+    private void api_addOthersRecord(RequestParams requestParams) {
+        ApiHelper.addRemovedAnimalRecord("addRemovedAnimalRecord", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("addOthers", "Succesfully added");
@@ -261,7 +279,7 @@ public class OthersDialog extends DialogFragment {
                     JSONObject jsonObject;
                     for (int i = 0; i < jsonArray.length(); i++) {
                         jsonObject = (JSONObject) jsonArray.get(i);
-                        stringList.add(jsonObject.getString("pig_registration_id"));
+                        stringList.add(jsonObject.getString("registryid"));
                     }
                     return null;
                 }
