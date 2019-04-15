@@ -1237,7 +1237,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return false;
     }
 
+    public boolean checkIfEarnotchAlreadyExists(String earnotch){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = {"registryid"};
+        String whereClause = "animaltype_id = ? AND breed_id = ?";
+        String[] whereArgs = new String[]{"3", Integer.toString(MyApplication.id)};
+        Cursor data = db.query(animals, columns, whereClause, whereArgs, null, null, null);
 
+        while(data.moveToNext()){
+            String text = data.getString(0);
+            if(earnotch.equals(text.substring(text.length() - 6)))
+                return true;
+        }
+        return false;
+    }
 
     public boolean addNewPigData(String classification, String animalearnotch, String sex, String birthdate, String weaningdate,
                                  String birthweight, String weaningweight, String motherpedigree, String fatherpedigree, String sexratio,

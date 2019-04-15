@@ -283,6 +283,12 @@ public class AddNewPigActivity extends AppCompatActivity {
     }
 
     private void local_addPig(RadioButton radiobutton) {
+        boolean isEarnotchExisting = dbHelper.checkIfEarnotchAlreadyExists(addAnimalEarnotchString);
+        if(isEarnotchExisting){
+            Toast.makeText(AddNewPigActivity.this, "Earnotch already exists!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         boolean insertData = dbHelper.addNewPigData(
             radiobutton.getText().toString(),
             addAnimalEarnotch.getText().toString(),
