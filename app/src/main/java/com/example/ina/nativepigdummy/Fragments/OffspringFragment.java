@@ -1,9 +1,12 @@
 package com.example.ina.nativepigdummy.Fragments;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
 import com.example.ina.nativepigdummy.Adapters.OffspringDataAdapter;
 import com.example.ina.nativepigdummy.Data.MortalityData;
 import com.example.ina.nativepigdummy.Data.OffspringData;
@@ -22,8 +26,15 @@ import com.example.ina.nativepigdummy.Dialog.SowAndLitterDialog;
 import com.example.ina.nativepigdummy.R;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class OffspringFragment extends Fragment {
@@ -54,8 +65,14 @@ public class OffspringFragment extends Fragment {
         boarId = dbHelper.getAnimalId(boarRegId);
         groupingId = dbHelper.getGroupingId(sowId, boarId);
 
+        RequestParams requestParams = new RequestParams();
+        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+        requestParams.add("sow_id", sowRegId);
+        requestParams.add("boar_id", boarRegId);
+
         if(ApiHelper.isInternetAvailable(getActivity()))
-            api_getOffSprings();
+            api_getOffSprings(requestParams);
         else local_getOffsprings();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -93,10 +110,6 @@ public class OffspringFragment extends Fragment {
         return view;
     }
 
-    private void api_getOffSprings() {
-
-    }
-
     private void local_getOffsprings() {
         String regId = "";
         String sex = "";
@@ -122,7 +135,49 @@ public class OffspringFragment extends Fragment {
         }
         offspringData = new OffspringData(regId, sex, birthWeight, weaningWeight);
         offspringList.add(offspringData);
-        OffspringDataAdapter adapter = new OffspringDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, offspringList);
-        listView.setAdapter(adapter);
+
+    }
+
+    private void api_getOffSprings(RequestParams requestParams) {
+        ApiHelper.viewOffsprings("viewOffsprings", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                OffspringDataAdapter adapter = new OffspringDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, offspringList);
+                listView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("SowLitter", "Error: " + String.valueOf(statusCode));
+            }
+
+            @TargetApi(Build.VERSION_CODES.KITKAT)
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONArray jsonArray = new JSONArray(rawJsonData);
+                JSONObject jsonObject;
+                OffspringData offspringData;
+                for (int i = jsonArray.length() - 1; i >= 0; i--) {
+                    offspringData = new OffspringData();
+                    JSONArray innerJsonArray = new JSONArray(jsonArray.get(i).toString());
+                    for(int j=0; j<innerJsonArray.length(); j++){
+                        jsonObject = (JSONObject) innerJsonArray.get(j);
+                        switch(jsonObject.getString("property_id")){
+                            case "4": offspringData.setOffspring_id(jsonObject.getString("value")); break;
+                            case "2": offspringData.setSex(jsonObject.getString("value")); break;
+                            case "5": offspringData.setBirthweight(jsonObject.getString("value")); break;
+                            case "7": offspringData.setWeaningweight(setBlankIfNull(jsonObject.getString("value"))); break;
+                        }
+                    }
+                    offspringList.add(offspringData);
+                }
+                return null;
+            }
+        });
+    }
+
+    private String setBlankIfNull(String text) {
+        if(text == null) return "Weaning weight unavailable";
+        return ((text=="null" || text.isEmpty()) ? "No data available" : text);
     }
 }

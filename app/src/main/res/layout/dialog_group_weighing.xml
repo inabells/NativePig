@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/parent_linear_layout">
+
+<ScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
@@ -25,7 +30,7 @@
                 android:layout_marginTop="20dp"
                 android:gravity="center|left"
                 android:paddingLeft="20dp"
-                android:text="Individual Weighing"
+                android:text="Group Weighing"
                 android:textColor="@color/colorWhite"
                 android:textSize="20sp" />
 
@@ -69,14 +74,15 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Offspring Earnotch"
+                            android:text="Birthday"
                             android:textColor="@color/colorPrimary"
                             android:textSize="13sp" />
 
                         <EditText
-                            android:id="@+id/offspring_earnotch"
+                            android:id="@+id/dateweaned"
+                            android:entries="@array/sex"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="45dp"
                             android:fontFamily="sans-serif-light"
                             android:textColor="#000000"
                             android:textSize="18sp" />
@@ -92,27 +98,20 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Sex"
+                            android:text="Litter-size Born Alive"
                             android:textColor="@color/colorPrimary"
                             android:textSize="13sp" />
 
-                        <Spinner
-                            android:id="@+id/offspring_sex"
-                            android:entries="@array/sex"
+                        <EditText
+
+                            android:id="@+id/litter_size_born_alive"
                             android:layout_width="match_parent"
-                            android:layout_height="45dp"
+                            android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-light"
                             android:textColor="#000000"
                             android:textSize="18sp" />
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="15dp"
-                            android:background="@color/grey" />
-
                     </LinearLayout>
-
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -139,28 +138,120 @@
 
                     </LinearLayout>
 
+                    <!--<LinearLayout-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginTop="15dp"-->
+                        <!--android:orientation="vertical">-->
+
+                        <!--<TextView-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:text="Offspring Earnotch"-->
+                            <!--android:textColor="@color/colorPrimary"-->
+                            <!--android:textSize="13sp" />-->
+
+                        <!--<EditText-->
+                            <!--android:id="@+id/offspring_earnotch"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:fontFamily="sans-serif-light"-->
+                            <!--android:textColor="#000000"-->
+                            <!--android:textSize="18sp" />-->
+
+                    <!--</LinearLayout>-->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:orientation="horizontal"
+                        android:weightSum="100">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="50"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Offspring Earnotch"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="13sp" />
+
+                            <EditText
+                                android:id="@+id/offspring_earnotch"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-light"
+                                android:textColor="#000000"
+                                android:textSize="18sp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="50"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sex"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="13sp" />
+
+                            <Spinner
+                                android:id="@+id/offspring_sex"
+                                android:layout_width="match_parent"
+                                android:layout_height="45dp"
+                                android:entries="@array/sex"
+                                android:fontFamily="sans-serif-light"
+                                android:textColor="#000000"
+                                android:textSize="18sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="15dp"
+                        android:background="@color/grey" />
+
+                    <!--<EditText-->
+                        <!--android:id="@+id/number_edit_text"-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="match_parent"-->
+                        <!--android:layout_weight="5"-->
+                        <!--android:inputType="phone"/>-->
+                    <!--<Spinner-->
+                        <!--android:id="@+id/type_spinner"-->
+                        <!--android:layout_width="0dp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_weight="3"-->
+                        <!--android:entries="@array/types"-->
+                        <!--android:gravity="right" />-->
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
                         android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <Button
+                            android:id="@+id/onAddPiglet"
+                            android:layout_width="120dp"
                             android:layout_height="wrap_content"
-                            android:text="Litter-size Born Alive"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="13sp" />
-
-                        <EditText
-
-                            android:id="@+id/litter_size_born_alive"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-light"
-                            android:textColor="#000000"
-                            android:textSize="18sp" />
-
+                            android:layout_gravity="center"
+                            android:background="@color/colorPrimary"
+                            android:text=" Add piglet"
+                            android:textColor="@color/colorWhite"
+                            android:onClick="onAddPiglet"/>
 
                     </LinearLayout>
 
@@ -173,3 +264,5 @@
     </LinearLayout>
 
 </ScrollView>
+
+</LinearLayout>

@@ -6,6 +6,10 @@ public class OffspringData {
     private String birthweight;
     private String weaningweight;
 
+    public OffspringData()
+    {
+
+    }
     public OffspringData(String offspring_id, String sex, String birthweight, String weaningweight) {
         this.offspring_id = offspring_id;
         this.sex = sex;

@@ -32,13 +32,12 @@ public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog
 
     private TextView textViewdateFarrowed, textViewSowUsed, textViewBoarUsed, textViewDateBred;
     private TextView textViewParity, textViewMales, textViewFemales, textViewSexRatio, textViewLSBA, textViewNumWeaned;
-    private TextView textViewNoStillBorn, textViewAveBirthWeight, textViewAveWeanWeight;
+    private TextView textViewNoStillBorn, textViewAveBirthWeight, textViewAveWeanWeight, textViewTLSB;
     private TextView textViewNoMummified;
     private TextView textViewAbnormalities;
-    private String groupingId, editMales, editFemales, editSexRatio, editAveBirthWeight, editAveWeanWeight, editNumWeaned, editNoStillBorn, editMummified, editAbnormalities, editParity, sow_id, boar_id, date_bred;
+    private String groupingId, editLSBA, editTLSB, editMales, editFemales, editSexRatio, editAveBirthWeight, editAveWeanWeight, editNumWeaned, editNoStillBorn, editMummified, editAbnormalities, editParity, sow_id, boar_id, date_bred;
     private Button edit_profile;
     DatabaseHelper dbHelper;
-
 
     @Nullable
     @Override
@@ -65,6 +64,7 @@ public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog
         textViewAveBirthWeight = view.findViewById(R.id.TextViewAveBirthWeight);
         textViewAveWeanWeight = view.findViewById(R.id.TextViewAveWeanWeight);
         textViewNumWeaned = view.findViewById(R.id.TextViewNumberWeaned);
+        textViewTLSB = view.findViewById(R.id.TextViewLSB);
 
         sow_id = getActivity().getIntent().getStringExtra("sow_idSLR");
         boar_id = getActivity().getIntent().getStringExtra("boar_idSLR");
@@ -74,13 +74,12 @@ public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog
         textViewBoarUsed.setText(getActivity().getIntent().getStringExtra("boar_idSLR"));
         textViewDateBred.setText(getActivity().getIntent().getStringExtra("date_bredSLR"));
         textViewdateFarrowed.setText(getActivity().getIntent().getStringExtra("date_farrowSLR"));
+
         RequestParams requestParams = new RequestParams();
         requestParams.add("sow_id", sow_id);
         requestParams.add("boar_id", boar_id);
-
-        findGroupingId(requestParams);
-
-        requestParams.add("id", groupingId);
+        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
 
         if(ApiHelper.isInternetAvailable(getContext())){
             api_getSowLitterValues(requestParams);
@@ -137,6 +136,12 @@ public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog
                 case "48":
                     textViewParity.setText(data.getString(data.getColumnIndex("value")));
                     break;
+                case "49":
+                    textViewTLSB.setText(data.getString(data.getColumnIndex("value")));
+                    break;
+                case "50":
+                    textViewLSBA.setText(data.getString(data.getColumnIndex("value")));
+                    break;
             }
         }
     }
@@ -147,14 +152,17 @@ public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 textViewMales.setText(setDefaultTextIfNull(editMales));
                 textViewFemales.setText(setDefaultTextIfNull(editFemales));
-                textViewSexRatio.setText(setDefaultTextIfNull(editAveBirthWeight));
-                textViewAveBirthWeight.setText(setDefaultTextIfNull(editAveWeanWeight));
-                textViewAveWeanWeight.setText(setDefaultTextIfNull(editNumWeaned));
-                textViewNumWeaned.setText(setDefaultTextIfNull(editNoStillBorn));
-                textViewNoStillBorn.setText(setDefaultTextIfNull(editMummified));
+                textViewSexRatio.setText(setDefaultTextIfNull(editSexRatio));
+                textViewAveBirthWeight.setText(setDefaultTextIfNull(editAveBirthWeight));
+                textViewAveWeanWeight.setText(setDefaultTextIfNull(editAveWeanWeight));
+                textViewNumWeaned.setText(setDefaultTextIfNull(editNumWeaned));
+                textViewNoStillBorn.setText(setDefaultTextIfNull(editNoStillBorn));
+                textViewNoMummified.setText(setDefaultTextIfNull(editMummified));
                 textViewAbnormalities.setText(setDefaultTextIfNull(editAbnormalities));
                 textViewParity.setText(setDefaultTextIfNull(editParity));
-                Log.d("SowLitter", "Succesfully fetched count");
+                textViewTLSB.setText(setDefaultTextIfNull(editTLSB));
+                textViewLSBA.setText(setDefaultTextIfNull(editLSBA));
+                Log.d("SowLitter", "Successfully fetched count");
             }
 
             @Override
@@ -165,7 +173,6 @@ public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog
             @Override
             protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
                 JSONObject jsonObject = new JSONObject(rawJsonData);
-
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
                     JSONArray propertyArray = jsonObject.getJSONArray("properties");
                     JSONObject propertyObject;
@@ -203,37 +210,23 @@ public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog
                             case 48:
                                 editParity = propertyObject.get("value").toString();
                                 break;
+                            case 49:
+                                editTLSB = propertyObject.get("value").toString();
+                                break;
+                            case 50:
+                                editLSBA = propertyObject.get("value").toString();
+                                break;
                         }
                     }
                 }
                     return null;
             }
         });
-
     }
 
     private String setDefaultTextIfNull(String text) {
+        if(text==null) return "Not specified";
         return ((text=="null" || text.isEmpty()) ? "Not specified" : text);
-    }
-
-    private void findGroupingId(RequestParams requestParams){
-        ApiHelper.findGroupingId("findGroupingId", requestParams, new BaseJsonHttpResponseHandler<Object>() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Log.d("SowLitter", "Error: " + String.valueOf(statusCode));
-            }
-
-            @Override
-            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                groupingId = rawJsonData;
-
-                return null;
-            }
-        });
     }
 
     @Override public void applyDateFarrowed(String datefarrowed){ textViewdateFarrowed.setText(datefarrowed); }

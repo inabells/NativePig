@@ -26,7 +26,7 @@ public class GroupWeighingDialog extends DialogFragment {
 
     private static final String TAG = "GroupWeighingDialog";
 
-    private EditText offspringearnotch, litterbirthweight, littersizebornalive;
+    private EditText offspringearnotch, litterbirthweight, littersizebornalive, dateweaned;
     private Spinner sex;
     String sowId, sowRegId, boarRegId, boarId, groupingId, addOffspringEarnotch, addSex, addLSBA, addLBW, birthdate, regId;
     int birthweight;
@@ -44,6 +44,7 @@ public class GroupWeighingDialog extends DialogFragment {
         offspringearnotch = view.findViewById(R.id.offspring_earnotch);
         sex = view.findViewById(R.id.offspring_sex);
         littersizebornalive = view.findViewById(R.id.litter_size_born_alive);
+        dateweaned = view.findViewById(R.id.dateweaned);
         dbHelper = new DatabaseHelper(getActivity());
 
         sowRegId = getActivity().getIntent().getStringExtra("sow_idSLR");

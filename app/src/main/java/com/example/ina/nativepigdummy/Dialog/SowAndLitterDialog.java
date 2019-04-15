@@ -17,11 +17,19 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Fragments.SowAndLitterFragment;
 import com.example.ina.nativepigdummy.R;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 public class SowAndLitterDialog extends DialogFragment {
     private static final String TAG = "SowAndLitterDialog";
@@ -58,7 +66,25 @@ public class SowAndLitterDialog extends DialogFragment {
         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                local_updateSowLitterRecord();
+                String editparity = parity.getText().toString();
+                String editnostillborn = nostillborn.getText().toString();
+                String editnomummified = nomummified.getText().toString();
+                String editabnormalities = abnormalities.getText().toString();
+
+                RequestParams requestParams = new RequestParams();
+                requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+                requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+                requestParams.add("sow_id", sowRegId);
+                requestParams.add("boar_id", boarRegId);
+                requestParams.add("number_stillborn", editnostillborn);
+                requestParams.add("number_mummified", editnomummified);
+                requestParams.add("abnormalities", editabnormalities);
+                requestParams.add("parity", editparity);
+
+                if(ApiHelper.isInternetAvailable(getActivity()))
+                    api_updateSowLitterRecord(requestParams);
+                else
+                    local_updateSowLitterRecord();
             }
         });
 
@@ -119,6 +145,25 @@ public class SowAndLitterDialog extends DialogFragment {
 
             }
         }
+    }
+
+    private void api_updateSowLitterRecord(RequestParams requestParams){
+        ApiHelper.editSowLitterRecord("editSowLitterRecord", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("SowLitter", "Successfully fetched count");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("SowLitter", "Error: " + String.valueOf(statusCode));
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                return null;
+            }
+        });
     }
 
     private String setBlankIfNull(String text) {

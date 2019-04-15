@@ -40,7 +40,7 @@
             android:layout_weight="25"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
-            android:text="Birth Weight, KG"
+            android:text="Sex"
             android:textColor="@color/colorWhite"
             android:textSize="12dp" />
 
@@ -54,9 +54,10 @@
             android:layout_weight="25"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
-            android:text="Sex"
+            android:text="Birth Weight, KG"
             android:textColor="@color/colorWhite"
             android:textSize="12dp" />
+
 
         <TextView
             android:layout_width="match_parent"

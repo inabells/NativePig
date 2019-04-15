@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -14,13 +15,22 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Fragments.OffspringFragment;
 import com.example.ina.nativepigdummy.R;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 public class IndividualWeighingDialog extends DialogFragment {
 
@@ -73,14 +83,23 @@ public class IndividualWeighingDialog extends DialogFragment {
                             addOffspringEarnotch = padLeftZeros(addOffspringEarnotch, 6);
 
                         if(!addOffspringEarnotch.equals("") && !addBirthWeight.equals("")){
-                            local_addOffspringIndividual();
+                            RequestParams requestParams = new RequestParams();
+                            requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+                            requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+                            requestParams.add("sow_id", sowRegId);
+                            requestParams.add("boar_id", boarRegId);
+                            requestParams.add("offspring_earnotch", addOffspringEarnotch);
+                            requestParams.add("sex",addSex);
+                            requestParams.add("birth_weight", addBirthWeight);
+
+                            if(ApiHelper.isInternetAvailable(getActivity()))
+                                api_addOffspringIndividual(requestParams);
+                            else
+                                local_addOffspringIndividual();
                         }
                     }
                 }
-
-
             });
-
         return builder.create();
     }
 
@@ -102,6 +121,24 @@ public class IndividualWeighingDialog extends DialogFragment {
         if(view.requestFocus()){
             getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
+    }
+
+    private void api_addOffspringIndividual(RequestParams requestParams){
+        ApiHelper.addIndividualSowLitterRecord("addIndividualSowLitterRecord", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("SowLitter", "Error: " + String.valueOf(statusCode));
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                return null;
+            }
+        });
     }
 
     private void local_addOffspringIndividual() {

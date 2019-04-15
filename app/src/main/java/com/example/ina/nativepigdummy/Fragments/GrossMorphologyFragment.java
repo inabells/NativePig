@@ -189,6 +189,7 @@ public class GrossMorphologyFragment extends Fragment implements GrossMorphology
     }
 
     private String setDefaultTextIfNull(String text) {
+        if(text==null) return "Not specified";
         return ((text=="null" || text.isEmpty()) ? "Not specified" : text);
     }
 
