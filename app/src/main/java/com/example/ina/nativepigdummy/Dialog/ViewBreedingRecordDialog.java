@@ -1,23 +1,22 @@
-package com.example.ina.nativepigdummy.Fragments;
+package com.example.ina.nativepigdummy.Dialog;
 
-import android.app.DownloadManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.SowLitterActivity;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
-import com.example.ina.nativepigdummy.Dialog.ExpectedDateofFarrowingDialog;
-import com.example.ina.nativepigdummy.Dialog.StatusDialog;
+import com.example.ina.nativepigdummy.Fragments.EditBreedingRecordFragment;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -33,10 +32,10 @@ import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
 
+public class ViewBreedingRecordDialog extends DialogFragment {
+    private static final String TAG = "EditOffspringDialog";
 
-public class EditBreedingRecordFragment extends Fragment implements ExpectedDateofFarrowingDialog.ViewFarrowListener, StatusDialog.ViewStatusListener{
-
-    public EditBreedingRecordFragment() {
+    public ViewBreedingRecordDialog() {
         // Required empty public constructor
     }
 
@@ -48,12 +47,11 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
     private TextView farrowing;
     DatabaseHelper dbHelper;
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @ Nullable Bundle savedInstanceState) {
-
-        View view = inflater.inflate(R.layout.fragment_edit_breeding_record, container, false);
+    public Dialog onCreateDialog(Bundle savedInstanceState){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.fragment_edit_breeding_record, null);
 
         TextViewFarrow = view.findViewById(R.id.textViewFarrowing);
         TextViewStatus = view.findViewById(R.id.textViewStatus);
@@ -64,13 +62,12 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
         sow_reg_id = view.findViewById(R.id.textViewSowId);
         boar_reg_id = view.findViewById(R.id.textViewBoarId);
 
-        sowIdHolder = getActivity().getIntent().getStringExtra("sow_id");
+        sowIdHolder = getArguments().getString("sow_id");
         sow_reg_id.setText(sowIdHolder);
-        boarIdHolder = getActivity().getIntent().getStringExtra("boar_id");
+        boarIdHolder = getArguments().getString("boar_id");
         boar_reg_id.setText(boarIdHolder);
-        editDateBred = getActivity().getIntent().getStringExtra("date_bred");
+        editDateBred = getArguments().getString("date_bred");
         TextViewDate.setText(editDateBred);
-
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
         Date edf = null;
@@ -94,7 +91,7 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
             @Override
             public void onClick(View v) {
                 StatusDialog dialog = new StatusDialog(sowIdHolder, boarIdHolder, editStatus);
-                dialog.setTargetFragment(EditBreedingRecordFragment.this, 1);
+                dialog.setTargetFragment(ViewBreedingRecordDialog.this, 1);
                 dialog.show(getFragmentManager(), "StatusDialog");
             }
         });
@@ -111,7 +108,19 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
             }
         });
 
-        return view;
+        builder.setView(view).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        return builder.create();
     }
 
     private RequestParams buildParams() {
@@ -166,14 +175,4 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
 
         return cal.getTime();
     }
-
-    @Override public void applyText(String dateoffarrowing){
-        TextViewFarrow.setText(dateoffarrowing);
-    }
-
-    @Override
-    public void applyStatus(String status) {
-        TextViewStatus.setText(status);
-    }
-
 }

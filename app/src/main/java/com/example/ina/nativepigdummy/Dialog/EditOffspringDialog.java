@@ -41,8 +41,6 @@ public class EditOffspringDialog extends DialogFragment{
     String editDateWeaned;
     String editWeaningWeight, editBirthWeight;
 
-
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

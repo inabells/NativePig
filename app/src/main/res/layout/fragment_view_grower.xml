@@ -12,25 +12,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <RelativeLayout
-            android:id="@+id/rellay1"
-            android:layout_width="match_parent"
-            android:layout_height="83dp"
-            android:background="@drawable/gradientbackground"
-            android:paddingBottom="20dp">
-
-            <TextView
-                android:id="@+id/registration_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:fontFamily="sans-serif-light"
-                android:text="@string/registration_id"
-                android:textColor="@color/colorWhite"
-                android:textSize="25sp" />
-
-        </RelativeLayout>
-
         <LinearLayout
             android:id="@+id/linlay1"
             android:layout_width="match_parent"
@@ -40,8 +21,8 @@
 
 
         <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="167dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/linlay1">
 
             <LinearLayout
@@ -52,6 +33,37 @@
                 android:layout_marginRight="30dp"
                 android:layout_marginTop="20dp"
                 android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/sowId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Registration ID"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/registration_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-light"
+                        android:text="0"
+                        android:textColor="#000000"
+                        android:textSize="18sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="15dp"
+                        android:background="@color/grey" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/birthday"
@@ -66,7 +78,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:layout_width="289dp"
+                            android:layout_width="283dp"
                             android:layout_height="match_parent"
                             android:fontFamily="sans-serif-light"
                             android:text="Edit Weight Records"

@@ -24,6 +24,8 @@ import com.example.ina.nativepigdummy.Data.BreedingRecordData;
 import com.example.ina.nativepigdummy.Data.MortalityData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.BreedingRecordsDialog;
+import com.example.ina.nativepigdummy.Dialog.EditOffspringDialog;
+import com.example.ina.nativepigdummy.Dialog.ViewBreedingRecordDialog;
 import com.example.ina.nativepigdummy.R;
 import com.github.clans.fab.FloatingActionButton;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
@@ -77,11 +79,23 @@ public class SowBoarIDDateBredFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent_view_breeding = new Intent(getActivity(), ViewBreedingActivity.class);
-                intent_view_breeding.putExtra("sow_id", breedingRecordList.get(i).getSow_id());
-                intent_view_breeding.putExtra("boar_id", breedingRecordList.get(i).getBoar_id());
-                intent_view_breeding.putExtra("date_bred", breedingRecordList.get(i).getDate_bred());
-                startActivity(intent_view_breeding);
+//                Intent intent_view_breeding = new Intent(getActivity(), ViewBreedingActivity.class);
+//                intent_view_breeding.putExtra("sow_id", breedingRecordList.get(i).getSow_id());
+//                intent_view_breeding.putExtra("boar_id", breedingRecordList.get(i).getBoar_id());
+//                intent_view_breeding.putExtra("date_bred", breedingRecordList.get(i).getDate_bred());
+//                startActivity(intent_view_breeding);
+
+                String sow_id = breedingRecordList.get(i).getSow_id();
+                String boar_id = breedingRecordList.get(i).getBoar_id();
+                String date_bred = breedingRecordList.get(i).getDate_bred();
+
+                ViewBreedingRecordDialog dialog = new ViewBreedingRecordDialog();
+                Bundle data = new Bundle();
+                data.putString("sow_id", sow_id);
+                data.putString("boar_id", boar_id);
+                data.putString("date_bred", date_bred);
+                dialog.setArguments(data);
+                dialog.show(getFragmentManager(),"ViewBreedingRecordDialog");
             }
         });
 
