@@ -45,8 +45,7 @@ public class AddAsBreederPromptDialog extends DialogFragment{
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i){
-//                        Intent intent = new Intent(getActivity(), GrowerRecordsActivity.class);
-//                        startActivity(intent);
+
                     }
                 })
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -70,7 +69,7 @@ public class AddAsBreederPromptDialog extends DialogFragment{
 
     private RequestParams buildParams(){
         RequestParams params = new RequestParams();
-        params.add("pig_registration_id", reg_id);
+        params.add("registry_id", reg_id);
         return params;
     }
 

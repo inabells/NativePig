@@ -26,6 +26,7 @@ import com.example.ina.nativepigdummy.Data.FemaleGrowerData;
 import com.example.ina.nativepigdummy.Data.MaleGrowerData;
 import com.example.ina.nativepigdummy.Data.SowData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
+import com.example.ina.nativepigdummy.Dialog.GrowerDialog;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -64,10 +65,12 @@ public class MaleGrowerFragment extends Fragment {
         nListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            String listview = maleList.get(i).getMale_grower_reg_id();
-            Intent intent = new Intent(getActivity(), ViewGrowerActivity.class);
-            intent.putExtra("ListClickValue", listview);
-            startActivity(intent);
+            String listview  = maleList.get(i).getMale_grower_reg_id();
+            GrowerDialog dialog = new GrowerDialog();
+            Bundle data = new Bundle();
+            data.putString("ListClickValue", listview);
+            dialog.setArguments(data);
+            dialog.show(getFragmentManager(), "GrowerDialog");
         }
 
         });

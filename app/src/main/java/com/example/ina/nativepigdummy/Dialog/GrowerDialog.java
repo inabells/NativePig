@@ -1,44 +1,44 @@
-package com.example.ina.nativepigdummy.Fragments;
+package com.example.ina.nativepigdummy.Dialog;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.example.ina.nativepigdummy.Dialog.AddAsBreederPromptDialog;
-import com.example.ina.nativepigdummy.Dialog.ViewGrowerDialog;
+import com.example.ina.nativepigdummy.Fragments.ViewGrowerFragment;
 import com.example.ina.nativepigdummy.R;
 
+public class GrowerDialog extends DialogFragment {
+    private static final String TAG = "GrowerDialog";
 
-public class ViewGrowerFragment extends Fragment {
+    public GrowerDialog(){
 
-    public ViewGrowerFragment() {
-        // Required empty public constructor
     }
 
     private ImageView edit_profile;
     private TextView registration_id;
-    private Switch add_candidate, add_breeder;
+    private Switch add_breeder;
     private String pigRegIdHolder;
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @ Nullable Bundle savedInstanceState) {
+    public Dialog onCreateDialog(Bundle savedInstanceState){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.fragment_view_grower, null);
 
-        View view = inflater.inflate(R.layout.fragment_view_grower, container, false);
         edit_profile = view.findViewById(R.id.edit_view_grower);
 
         registration_id = view.findViewById(R.id.registration_id);
         add_breeder = view.findViewById(R.id.add_as_breeder);
 
-        pigRegIdHolder = getActivity().getIntent().getStringExtra("ListClickValue");
+        pigRegIdHolder = getArguments().getString("ListClickValue");
         registration_id.setText(pigRegIdHolder);
 
         add_breeder.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -54,17 +54,30 @@ public class ViewGrowerFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 ViewGrowerDialog growerDialog = new ViewGrowerDialog(pigRegIdHolder);
-                growerDialog.setTargetFragment(ViewGrowerFragment.this, 1);
+                growerDialog.setTargetFragment(GrowerDialog.this, 1);
                 growerDialog.show(getFragmentManager(),"ViewGrowerDialog");
             }
         });
 
-        return view;
+
+        builder.setView(view).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        return builder.create();
     }
 
     public void AddAsBreederPromptDialog(String regId){
         AddAsBreederPromptDialog dialog = new AddAsBreederPromptDialog(regId);
-        dialog.setTargetFragment(ViewGrowerFragment.this,1);
+        dialog.setTargetFragment(GrowerDialog.this,1);
         dialog.show(getFragmentManager(),"AddAsBreederPromptDialog");
     }
 }
