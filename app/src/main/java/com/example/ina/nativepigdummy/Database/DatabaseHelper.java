@@ -1976,6 +1976,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return data;
     }
 
+    // TODO: 4/20/19 double check yung pag add kasi naka specific
+    public boolean addAllUnsyncedFromLocalToServer(String tablename){
+        Cursor unsyncedData = getAllUnsyncedData(tablename);
+        RequestParams params;
+
+        while(unsyncedData.moveToNext()){
+            if((unsyncedData.getString(unsyncedData.getColumnIndex("is_synced"))).equals("false")){
+                params = buildParamsPigTable(unsyncedData);
+                addPigToServer(params);
+            }
+//            else if((unsyncedData.getString(unsyncedData.getColumnIndex("is_synced"))).equals("delete")){
+//                params = new RequestParams();
+//                params.put("pig_registration_id", unsyncedData.getString(unsyncedData.getColumnIndex("pig_registration_id")));
+//                deletePigFromServer(params);
+//            }
+        }
+        return true;
+    }
+
+
+    public boolean syncDataFromLocalToServer() {
+        boolean isSuccess = addAllUnsyncedFromLocalToServer(animals) &&
+                addAllUnsyncedFromLocalToServer(animal_properties) &&
+                addAllUnsyncedFromLocalToServer(groupings) &&
+                addAllUnsyncedFromLocalToServer(grouping_members) &&
+                addAllUnsyncedFromLocalToServer(grouping_properties) &&
+                addAllUnsyncedFromLocalToServer(mortalities) &&
+                addAllUnsyncedFromLocalToServer(removed_animals) &&
+                addAllUnsyncedFromLocalToServer(sales) &&
+                addAllUnsyncedFromLocalToServer(weight_collections);
+        return isSuccess;
+    }
+
     public boolean addAllUnsyncedFromLocalPigTableToServer() {
         Cursor unsyncedData = getAllUnsyncedData("pig_table");
         RequestParams params;
@@ -2661,6 +2694,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return cal.getTime();
     }
+
 
 //    public static Date subtractDays(Date date, int days) {
 //        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);

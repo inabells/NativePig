@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     TextView noOfMaleGrowers;
     TextView noOfSows;
     String sowNum, boarNum, femaleGrowerNum, maleGrowerNum = "-";
-    RelativeLayout rellay_sows, rellay_boars, rellay_female_growers, rellay_male_growers;
+    CardView rellay_sows, rellay_boars, rellay_female_growers, rellay_male_growers, rellay_breeders, rellay_growers, rellay_mortality;
 
 
     @Override
@@ -65,12 +66,7 @@ public class MainActivity extends AppCompatActivity {
         noOfMaleGrowers = findViewById(R.id.noOfMaleGrowers);
 
         if(ApiHelper.isInternetAvailable(getApplicationContext())) {
-            boolean isSuccess = dbHelper.addAllUnsyncedFromLocalPigTableToServer();
-            boolean isSuccess1 = dbHelper.addAllUnsyncedFromLocalGrossMorphologyTableToServer();
-            boolean isSuccess2 = dbHelper.addAllUnsyncedFromLocalMorphCharTableToServer();
-            boolean isSuccess3 = dbHelper.addAllUnsyncedFromLocalWeightRecordsTableToServer();
-            boolean isSuccess4 = dbHelper.addAllUnsyncedFromLocalMortalitySalesTableToServer();
-            if(isSuccess && isSuccess1 && isSuccess2 && isSuccess3 && isSuccess4)
+            if(dbHelper.syncDataFromLocalToServer())
                 Toast.makeText(MainActivity.this, "Local Data Added to Server", Toast.LENGTH_SHORT).show();
             else
                 Toast.makeText(MainActivity.this, "Error in adding local data to server", Toast.LENGTH_SHORT).show();
@@ -91,7 +87,9 @@ public class MainActivity extends AppCompatActivity {
         rellay_boars = findViewById(R.id.rellay_boars);
         rellay_female_growers = findViewById(R.id.rellay_female);
         rellay_male_growers = findViewById(R.id.rellay_male);
-
+        rellay_breeders = findViewById(R.id.rellay_breeders);
+        rellay_growers = findViewById(R.id.rellay_growers);
+        rellay_mortality = findViewById(R.id.rellay_mortality);
 
         rellay_sows.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,6 +100,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         rellay_boars.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, BreederRecordsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        rellay_breeders.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, BreederRecordsActivity.class);
@@ -121,6 +127,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, GrowerRecordsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        rellay_growers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, GrowerRecordsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        rellay_mortality.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MortalityAndSalesActivity.class);
                 startActivity(intent);
             }
         });

@@ -40,12 +40,22 @@
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="24dp"
-            android:src="@drawable/logo_swine_2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.509"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
+
+        <Button
+            android:layout_width="500dp"
+            android:layout_height="130dp"
+            android:layout_marginTop="900dp"
+            android:layout_marginLeft="50dp"
+            android:background="#d67601"
+            android:text="Sign in"
+            android:textAllCaps="false"
+            android:textColor="#fff"
+            android:textSize="18sp" />
         <ImageView
             android:id="@+id/imageView3"
             android:layout_width="196dp"
@@ -75,6 +85,15 @@
             app:layout_constraintStart_toEndOf="@+id/imageView3"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.218" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="123dp"
+            android:layout_height="51dp"
+            android:text="LOGIN"
+            android:textSize="24sp"
+            tools:layout_editor_absoluteX="656dp"
+            tools:layout_editor_absoluteY="61dp" />
 
 
 </android.support.constraint.ConstraintLayout>

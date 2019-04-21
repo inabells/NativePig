@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_new_login);
 
         dbHelper = new DatabaseHelper(getApplicationContext());
         // Configure Google Sign In
