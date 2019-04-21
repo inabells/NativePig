@@ -78,7 +78,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:layout_width="283dp"
+                            android:layout_width="699dp"
                             android:layout_height="match_parent"
                             android:fontFamily="sans-serif-light"
                             android:text="Edit Weight Records"

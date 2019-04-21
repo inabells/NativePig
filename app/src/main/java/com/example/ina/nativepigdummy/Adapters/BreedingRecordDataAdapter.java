@@ -14,6 +14,8 @@ import com.example.ina.nativepigdummy.Data.BreedingRecordData;
 import com.example.ina.nativepigdummy.Data.MortalityData;
 import com.example.ina.nativepigdummy.R;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 public class BreedingRecordDataAdapter extends ArrayAdapter<BreedingRecordData> {
@@ -27,6 +29,8 @@ public class BreedingRecordDataAdapter extends ArrayAdapter<BreedingRecordData> 
         TextView sow_id;
         TextView boar_id;
         TextView date_bred;
+        TextView edf;
+        TextView status;
     }
 
     public BreedingRecordDataAdapter(Context context, int resource, ArrayList<BreedingRecordData> objects) {
@@ -42,8 +46,10 @@ public class BreedingRecordDataAdapter extends ArrayAdapter<BreedingRecordData> 
         String sow_id = getItem(position).getSow_id();
         String boar_id = getItem(position).getBoar_id();
         String date_bred = getItem(position).getDate_bred();
+        String edf = getItem(position).getEdf();
+        String status = getItem(position).getStatus();
 
-        BreedingRecordData breedingrecord = new BreedingRecordData(sow_id,boar_id,date_bred);
+        BreedingRecordData breedingrecord = new BreedingRecordData(sow_id,boar_id,date_bred,edf,status);
 
         final View result;
 

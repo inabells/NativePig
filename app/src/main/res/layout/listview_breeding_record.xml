@@ -35,4 +35,24 @@
         android:textAlignment="center"
         android:textSize="14sp" />
 
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_weight="25"
+        android:gravity="center"
+        android:text="TextView4"
+        android:textAlignment="center"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_weight="25"
+        android:gravity="center"
+        android:text="TextView5"
+        android:textAlignment="center"
+        android:textSize="14sp" />
+
 </LinearLayout>

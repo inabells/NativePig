@@ -2,25 +2,19 @@ package com.example.ina.nativepigdummy.Database;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.RadioButton;
-import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
-import com.example.ina.nativepigdummy.Activities.AddNewPigActivity;
 import com.example.ina.nativepigdummy.Activities.MyApplication;
-import com.google.android.gms.flags.impl.DataUtils;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.sql.SQLInput;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -28,7 +22,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -1737,9 +1730,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(registryid, regId);
         contentValues.put(farm_id, MyApplication.id);
         contentValues.put(breed_id, MyApplication.id);
-        contentValues.put(grossmorpho, "");
-        contentValues.put(morphochars, "");
-        contentValues.put(weightrecord, "");
+        contentValues.put(grossmorpho, 0);
+        contentValues.put(morphochars, 0);
+        contentValues.put(weightrecord, 0);
         contentValues.put(status, pig_classification);
         contentValues.put(is_synced, isSynced);
 
@@ -1976,299 +1969,224 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return data;
     }
 
-    // TODO: 4/20/19 double check yung pag add kasi naka specific
-    public boolean addAllUnsyncedFromLocalToServer(String tablename){
+    public String getRegistryIdGivenAnimalId(String animalId) {
+        String registryId = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = {"registryid"};
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{animalId};
+        Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
+        if(data.moveToFirst())
+            registryId = data.getString(data.getColumnIndex("registryid"));
+        return registryId;
+    }
+
+    public String getMotherIdGivenGroupingId(String groupingId) {
+        String motherId = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = {"mother_id"};
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{groupingId};
+        Cursor data = db.query(groupings, columns, whereClause , whereArgs, null, null, null);
+        if(data.moveToFirst())
+            motherId = data.getString(data.getColumnIndex("mother_id"));
+        return motherId;
+    }
+
+    public String getFatherIdGivenGroupingId(String groupingId) {
+        String fatherId = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = {"father_id"};
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{groupingId};
+        Cursor data = db.query(groupings, columns, whereClause , whereArgs, null, null, null);
+        if(data.moveToFirst())
+            fatherId = data.getString(data.getColumnIndex("father_id"));
+        return fatherId;
+    }
+
+
+    public boolean syncAllTablesFromLocalToServer() {
+        boolean isSuccess = syncFromLocalToServer(animals) &&
+                syncFromLocalToServer(animal_properties) &&
+                syncFromLocalToServer(groupings) &&
+                syncFromLocalToServer(grouping_members) &&
+                syncFromLocalToServer(grouping_properties) &&
+                syncFromLocalToServer(mortalities) &&
+                syncFromLocalToServer(removed_animals) &&
+                syncFromLocalToServer(sales);
+        return isSuccess;
+    }
+
+    private boolean syncFromLocalToServer(String tablename){
         Cursor unsyncedData = getAllUnsyncedData(tablename);
         RequestParams params;
 
         while(unsyncedData.moveToNext()){
             if((unsyncedData.getString(unsyncedData.getColumnIndex("is_synced"))).equals("false")){
-                params = buildParamsPigTable(unsyncedData);
-                addPigToServer(params);
-            }
-//            else if((unsyncedData.getString(unsyncedData.getColumnIndex("is_synced"))).equals("delete")){
-//                params = new RequestParams();
-//                params.put("pig_registration_id", unsyncedData.getString(unsyncedData.getColumnIndex("pig_registration_id")));
-//                deletePigFromServer(params);
-//            }
-        }
-        return true;
-    }
-
-
-    public boolean syncDataFromLocalToServer() {
-        boolean isSuccess = addAllUnsyncedFromLocalToServer(animals) &&
-                addAllUnsyncedFromLocalToServer(animal_properties) &&
-                addAllUnsyncedFromLocalToServer(groupings) &&
-                addAllUnsyncedFromLocalToServer(grouping_members) &&
-                addAllUnsyncedFromLocalToServer(grouping_properties) &&
-                addAllUnsyncedFromLocalToServer(mortalities) &&
-                addAllUnsyncedFromLocalToServer(removed_animals) &&
-                addAllUnsyncedFromLocalToServer(sales) &&
-                addAllUnsyncedFromLocalToServer(weight_collections);
-        return isSuccess;
-    }
-
-    public boolean addAllUnsyncedFromLocalPigTableToServer() {
-        Cursor unsyncedData = getAllUnsyncedData("pig_table");
-        RequestParams params;
-
-        while(unsyncedData.moveToNext()){
-            if((unsyncedData.getString(unsyncedData.getColumnIndex("is_synced"))).equals("false")){
-                params = buildParamsPigTable(unsyncedData);
-                addPigToServer(params);
-            } else if((unsyncedData.getString(unsyncedData.getColumnIndex("is_synced"))).equals("delete")){
-                params = new RequestParams();
-                params.put("pig_registration_id", unsyncedData.getString(unsyncedData.getColumnIndex("pig_registration_id")));
-                deletePigFromServer(params);
+                switch (tablename) {
+                    case animals:
+                        params = buildParams_animals(unsyncedData);
+                        syncDb_addToServer("addToAnimalDb", params);
+                        break;
+                    case animal_properties:
+                        params = buildParams_animalProperties(unsyncedData);
+                        syncDb_addToServer("addToAnimalPropertiesDb", params);
+                        break;
+                    case groupings:
+                        params = buildParams_groupings(unsyncedData);
+                        syncDb_addToServer("addToGroupingDb", params);
+                        break;
+                    case grouping_members:
+                        params = buildParams_groupingMembers(unsyncedData);
+                        syncDb_addToServer("addToGroupingMembersDb", params);
+                        break;
+                    case grouping_properties:
+                        params = buildParams_groupingProperties(unsyncedData);
+                        syncDb_addToServer("addToGroupingPropertiesDb", params);
+                        break;
+                    case mortalities:
+                        params = buildParams_mortalities(unsyncedData);
+                        syncDb_addToServer("addToMortalitiesDb", params);
+                        break;
+                    case removed_animals:
+                        params = buildParams_removedAnimals(unsyncedData);
+                        syncDb_addToServer("addToRemovedAnimalsDb", params);
+                        break;
+                    case sales:
+                        params = buildParams_sales(unsyncedData);
+                        syncDb_addToServer("addToSalesDb", params);
+                        break;
+                }
             }
         }
         return true;
     }
 
-    public boolean addAllUnsyncedFromLocalGrossMorphologyTableToServer(){
-        Cursor unsyncedData = getAllUnsyncedData("breeder_gross_morphology");
-        RequestParams params;
-
-        while(unsyncedData.moveToNext()){
-            params = buildParamsGrossMorphologyTable(unsyncedData);
-            addGrossMorphologyDataToServer(params);
-        }
-        return true;
-    }
-
-    public boolean addAllUnsyncedFromLocalMortalitySalesTableToServer(){
-        Cursor unsyncedData = getAllUnsyncedData("pig_mortality_and_sales");
-        RequestParams params;
-
-        while(unsyncedData.moveToNext()){
-            params = buildParamsMortalitySalesTable(unsyncedData);
-            addMortalitySalesToServer(params);
-        }
-        return true;
-    }
-
-    public boolean addAllUnsyncedFromLocalMorphCharTableToServer(){
-        Cursor unsyncedData = getAllUnsyncedData("breeder_morphometric_characteristics");
-        RequestParams params;
-
-        while(unsyncedData.moveToNext()){
-            params = buildParamsMorphCharTable(unsyncedData);
-            addMorphCharDataToServer(params);
-        }
-        return true;
-    }
-
-    public boolean addAllUnsyncedFromLocalWeightRecordsTableToServer(){
-        Cursor unsyncedData = getAllUnsyncedData("weight_records");
-        RequestParams params;
-
-        while(unsyncedData.moveToNext()){
-            params = buildParamsWeightRecordsTable(unsyncedData);
-            addWeightRecordsDataToServer(params);
-        }
-        return true;
-    }
-
-    private RequestParams buildParamsPigTable(Cursor data){
+    private RequestParams buildParams_animals(Cursor data){
         RequestParams params = new RequestParams();
-        final String reg_id = data.getString(data.getColumnIndex("pig_registration_id"));
 
-        params.add("pig_registration_id", reg_id);
-        params.add("pig_classification", data.getString(data.getColumnIndex("pig_classification")));
-        params.add("pig_earnotch", data.getString(data.getColumnIndex("pig_earnotch")));
-        params.add("pig_sex", data.getString(data.getColumnIndex("pig_sex")));
-        params.add("pig_birthdate", data.getString(data.getColumnIndex("pig_birthdate")));
-        params.add("pig_weaningdate", data.getString(data.getColumnIndex("pig_weaningdate")));
-        params.add("pig_birthweight", data.getString(data.getColumnIndex("pig_birthweight")));
-        params.add("pig_weaningweight", data.getString(data.getColumnIndex("pig_weaningweight")));
-        params.add("pig_mother_earnotch", data.getString(data.getColumnIndex("pig_mother_earnotch")));
-        params.add("pig_father_earnotch", data.getString(data.getColumnIndex("pig_father_earnotch")));
-        params.add("sex_ratio", data.getString(data.getColumnIndex("sex_ratio")));
-        params.add("litter_size_born_alive", data.getString(data.getColumnIndex("litter_size_born_alive")));
-        params.add("age_first_mating", data.getString(data.getColumnIndex("age_first_mating")));
-        params.add("age_at_weaning", data.getString(data.getColumnIndex("age_at_weaning")));
+        params.add("registryid", data.getString(data.getColumnIndex("registryid")));
+        params.add("animaltype_id", data.getString(data.getColumnIndex("animaltype_id")));
+        params.add("farm_id", data.getString(data.getColumnIndex("farm_id")));
+        params.add("breed_id", data.getString(data.getColumnIndex("breed_id")));
+        params.add("grossmorpho", data.getString(data.getColumnIndex("grossmorpho")));
+        params.add("morphochars", data.getString(data.getColumnIndex("morphochars")));
+        params.add("weightrecord", data.getString(data.getColumnIndex("weightrecord")));
+        params.add("status", data.getString(data.getColumnIndex("status")));
 
         return params;
     }
 
-    private RequestParams buildParamsGrossMorphologyTable(Cursor data){
+    private RequestParams buildParams_animalProperties(Cursor data){
         RequestParams params = new RequestParams();
-        final String reg_id = data.getString(data.getColumnIndex("registration_id"));
+        String registryId = getRegistryIdGivenAnimalId(data.getString(data.getColumnIndex("animal_id")));
 
-        params.add("registration_id", reg_id);
-        params.add("date_collected", data.getString(data.getColumnIndex("date_collected")));
-        params.add("hair_type", data.getString(data.getColumnIndex("hair_type")));
-        params.add("hair_length", data.getString(data.getColumnIndex("hair_length")));
-        params.add("coat_color", data.getString(data.getColumnIndex("coat_color")));
-        params.add("color_pattern", data.getString(data.getColumnIndex("color_pattern")));
-        params.add("head_shape", data.getString(data.getColumnIndex("head_shape")));
-        params.add("skin_type", data.getString(data.getColumnIndex("skin_type")));
-        params.add("ear_type", data.getString(data.getColumnIndex("ear_type")));
-        params.add("tail_type", data.getString(data.getColumnIndex("tail_type")));
-        params.add("backline", data.getString(data.getColumnIndex("backline")));
-        params.add("other_marks", data.getString(data.getColumnIndex("other_marks")));
+        params.add("registryid", registryId);
+        params.add("property_id", data.getString(data.getColumnIndex("property_id")));
+        params.add("value", data.getString(data.getColumnIndex("value")));
 
         return params;
     }
 
-    private RequestParams buildParamsMorphCharTable(Cursor data){
+    private RequestParams buildParams_groupings(Cursor data){
         RequestParams params = new RequestParams();
-        final String reg_id = data.getString(data.getColumnIndex("registration_id"));
+        String mother_registryId = getRegistryIdGivenAnimalId(data.getString(data.getColumnIndex("mother_id")));
+        String father_registryId = getRegistryIdGivenAnimalId(data.getString(data.getColumnIndex("father_id")));
 
-        params.add("registration_id", reg_id);
-        params.add("date_collected", data.getString(data.getColumnIndex("date_collected")));
-        params.add("ear_length", data.getString(data.getColumnIndex("ear_length")));
-        params.add("head_length", data.getString(data.getColumnIndex("head_length")));
-        params.add("snout_length", data.getString(data.getColumnIndex("snout_length")));
-        params.add("body_length", data.getString(data.getColumnIndex("body_length")));
-        params.add("heart_girth", data.getString(data.getColumnIndex("heart_girth")));
-        params.add("pelvic_width", data.getString(data.getColumnIndex("pelvic_width")));
-        params.add("tail_length", data.getString(data.getColumnIndex("tail_length")));
-        params.add("height_at_withers", data.getString(data.getColumnIndex("height_at_withers")));
-        params.add("normal_teats", data.getString(data.getColumnIndex("normal_teats")));
+        params.add("mother_registryid", mother_registryId);
+        params.add("father_registryid", father_registryId);
+        params.add("breed_id", data.getString(data.getColumnIndex("breed_id")));
+        params.add("members", data.getString(data.getColumnIndex("members")));
 
         return params;
     }
 
-    private RequestParams buildParamsMortalitySalesTable(Cursor data){
+    private RequestParams buildParams_groupingMembers(Cursor data){
         RequestParams params = new RequestParams();
-        final String reg_id = data.getString(data.getColumnIndex("pig_registration_id"));
+        String motherId = getMotherIdGivenGroupingId(data.getString(data.getColumnIndex("grouping_id")));
+        String fatherId = getFatherIdGivenGroupingId(data.getString(data.getColumnIndex("grouping_id")));
 
-        params.add("pig_registration_id", reg_id);
-        params.add("date_removed_died", data.getString(data.getColumnIndex("date_removed_died")));
-        params.add("cause_of_death", data.getString(data.getColumnIndex("cause_of_death")));
-        params.add("weight_sold", data.getString(data.getColumnIndex("weight_sold")));
-        params.add("reason_removed", data.getString(data.getColumnIndex("reason_removed")));
+        String registryid = getRegistryIdGivenAnimalId(data.getString(data.getColumnIndex("animal_id")));
+        String mother_registryId = getRegistryIdGivenAnimalId(motherId);
+        String father_registryId = getRegistryIdGivenAnimalId(fatherId);
+
+        params.add("mother_registryid", mother_registryId);
+        params.add("father_registryid", father_registryId);
+        params.add("registryid", registryid);
+
+        return params;
+    }
+
+    private RequestParams buildParams_groupingProperties(Cursor data){
+        RequestParams params = new RequestParams();
+        String motherId = getMotherIdGivenGroupingId(data.getString(data.getColumnIndex("grouping_id")));
+        String fatherId = getFatherIdGivenGroupingId(data.getString(data.getColumnIndex("grouping_id")));
+
+        String mother_registryId = getRegistryIdGivenAnimalId(motherId);
+        String father_registryId = getRegistryIdGivenAnimalId(fatherId);
+
+        params.add("mother_registryid", mother_registryId);
+        params.add("father_registryid", father_registryId);
+        params.add("property_id", data.getString(data.getColumnIndex("property_id")));
+        params.add("value", data.getString(data.getColumnIndex("value")));
+
+        return params;
+    }
+
+    private RequestParams buildParams_mortalities(Cursor data){
+        RequestParams params = new RequestParams();
+        String registryId = getRegistryIdGivenAnimalId(data.getString(data.getColumnIndex("animal_id")));
+
+        params.add("registryid", registryId);
+        params.add("animaltype_id", data.getString(data.getColumnIndex("animaltype_id")));
+        params.add("breed_id", data.getString(data.getColumnIndex("breed_id")));
+        params.add("datedied", data.getString(data.getColumnIndex("datedied")));
+        params.add("cause", data.getString(data.getColumnIndex("cause")));
         params.add("age", data.getString(data.getColumnIndex("pig_age")));
 
         return params;
     }
 
-    private RequestParams buildParamsWeightRecordsTable(Cursor data){
+    private RequestParams buildParams_removedAnimals(Cursor data){
         RequestParams params = new RequestParams();
-        final String reg_id = data.getString(data.getColumnIndex("registration_id"));
+        String registryId = getRegistryIdGivenAnimalId(data.getString(data.getColumnIndex("animal_id")));
 
-        params.add("registration_id", reg_id);
-        params.add("date_collected_at_45", data.getString(data.getColumnIndex("date_collected_at_45")));
-        params.add("date_collected_at_60", data.getString(data.getColumnIndex("date_collected_at_60")));
-        params.add("date_collected_at_90", data.getString(data.getColumnIndex("date_collected_at_90")));
-        params.add("date_collected_at_150", data.getString(data.getColumnIndex("date_collected_at_150")));
-        params.add("date_collected_at_180", data.getString(data.getColumnIndex("date_collected_at_180")));
-        params.add("weight_at_45", data.getString(data.getColumnIndex("weight_at_45")));
-        params.add("weight_at_60", data.getString(data.getColumnIndex("weight_at_60")));
-        params.add("weight_at_90", data.getString(data.getColumnIndex("weight_at_90")));
-        params.add("weight_at_150", data.getString(data.getColumnIndex("weight_at_150")));
-        params.add("weight_at_180", data.getString(data.getColumnIndex("weight_at_180")));
+        params.add("registryid", registryId);
+        params.add("animaltype_id", data.getString(data.getColumnIndex("animaltype_id")));
+        params.add("breed_id", data.getString(data.getColumnIndex("breed_id")));
+        params.add("dateremoved", data.getString(data.getColumnIndex("dateremoved")));
+        params.add("reason", data.getString(data.getColumnIndex("reason")));
+        params.add("age", data.getString(data.getColumnIndex("pig_age")));
 
         return params;
     }
 
-    private void addPigToServer(RequestParams params) {
-        ApiHelper.addPig("addPig", params, new BaseJsonHttpResponseHandler<Object>() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("pigTableLocalToServer", "Successfully added pigs from local to server");
-            }
+    private RequestParams buildParams_sales(Cursor data){
+        RequestParams params = new RequestParams();
+        String registryId = getRegistryIdGivenAnimalId(data.getString(data.getColumnIndex("animal_id")));
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Log.d("pigTableLocalToServer", "Error in adding");
-            }
+        params.add("registryid", registryId);
+        params.add("animaltype_id", data.getString(data.getColumnIndex("animaltype_id")));
+        params.add("breed_id", data.getString(data.getColumnIndex("breed_id")));
+        params.add("datesold", data.getString(data.getColumnIndex("datesold")));
+        params.add("weight", data.getString(data.getColumnIndex("weight")));
+        params.add("price", data.getString(data.getColumnIndex("price")));
+        params.add("age", data.getString(data.getColumnIndex("pig_age")));
 
-            @Override
-            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                return null;
-            }
-        });
+        return params;
     }
 
-    private void deletePigFromServer(RequestParams params) {
-        ApiHelper.deletePig("deletePig", params, new BaseJsonHttpResponseHandler<Object>() {
+    private void syncDb_addToServer(String url, RequestParams params) {
+        ApiHelper.syncData(url, params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("deletePigFromServer", "Successfully delete pigs from server");
+                Log.d("syncDb_addToServer", "Successfully added from local to server");
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Log.d("deletePigFromServer", "Error in deleting");
-            }
-
-            @Override
-            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                return null;
-            }
-        });
-    }
-
-    private void addGrossMorphologyDataToServer(RequestParams params){
-        ApiHelper.updateGrossMorphology("updateGrossMorphology", params, new BaseJsonHttpResponseHandler<Object>() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("grossMorphLocalToServer", "Successfully added gross morphology from local to server");
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Log.d("grossMorphLocalToServer", "Error in adding");
-            }
-
-            @Override
-            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                return null;
-            }
-        });
-    }
-
-    private void addMorphCharDataToServer(RequestParams params){
-        ApiHelper.updateMorphChar("updateMorphChar", params, new BaseJsonHttpResponseHandler<Object>() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("morphCharLocalToServer", "Successfully added morph char from local to server");
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Log.d("morphCharLocalToServer", "Error occurred");
-            }
-
-            @Override
-            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                return null;
-            }
-        });
-    }
-
-    private void addWeightRecordsDataToServer(RequestParams params){
-        ApiHelper.updateWeightRecords("updateWeightRecords", params, new BaseJsonHttpResponseHandler<Object>() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("weightRecLocalToServer", "Successfully added weight records from local to server");
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Log.d("weightRecLocalToServer", "Error occurred");
-            }
-
-            @Override
-            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                return null;
-            }
-        });
-    }
-
-    private void addMortalitySalesToServer(RequestParams params){
-        ApiHelper.addPigMortalitySales("addPigMortalitySales", params, new BaseJsonHttpResponseHandler<Object>() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("addMortality", "Succesfully added");
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Log.d("addMortality", "Error occurred");
+                Log.d("syncDb_addToServer", "Error in adding");
             }
 
             @Override
@@ -2280,18 +2198,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void clearLocalDatabases() {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("DELETE FROM " + pig_table);
-        db.execSQL("DELETE FROM " + breeder_gross_morphology);
-        db.execSQL("DELETE FROM " + breeder_morphometric_characteristics);
-        db.execSQL("DELETE FROM " + weight_records);
-        db.execSQL("DELETE FROM " + pig_mortality_and_sales);
+        db.execSQL("DELETE FROM " + animals);
+        db.execSQL("DELETE FROM " + animal_properties);
+        db.execSQL("DELETE FROM " + groupings);
+        db.execSQL("DELETE FROM " + grouping_members);
+        db.execSQL("DELETE FROM " + grouping_properties);
+        db.execSQL("DELETE FROM " + mortalities);
+        db.execSQL("DELETE FROM " + removed_animals);
+        db.execSQL("DELETE FROM " + sales);
     }
 
     public void getAllDataFromServer() {
-        ApiHelper.getAllPigs("getAllPigs", null, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getAnimalDb("getAnimalDb", null, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("getAllDataFromServer", "Successfully added data to local from server pigs");
+                Log.d("getAllDataFromServer", "Successfully added data to local from server animaldb");
             }
 
             @Override
@@ -2305,30 +2226,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 JSONObject jsonObject;
                 for(int i = jsonArray.length()-1; i>=0; i--){
                     jsonObject = (JSONObject) jsonArray.get(i);
-                    addNewPigData(
-                        jsonObject.getString("pig_classification"),
-                        jsonObject.getString("pig_earnotch"),
-                        jsonObject.getString("pig_sex"),
-                        jsonObject.getString("pig_birthdate"),
-                        jsonObject.getString("pig_weaningdate"),
-                        jsonObject.getString("pig_birthweight"),
-                        jsonObject.getString("pig_weaningweight"),
-                        jsonObject.getString("pig_mother_earnotch"),
-                        jsonObject.getString("pig_father_earnotch"),
-                        jsonObject.getString("sex_ratio"),
-                        jsonObject.getString("litter_size_born_alive"),
-                        jsonObject.getString("age_first_mating"),
-                        jsonObject.getString("age_at_weaning"),
-                        jsonObject.getString("pig_registration_id"), "true");
+                    copyAnimalDb(jsonObject.getString(id),
+                        jsonObject.getString(animaltype_id),
+                        jsonObject.getString(registryid),
+                        jsonObject.getString(farm_id),
+                        jsonObject.getString(breed_id),
+                        jsonObject.getString(grossmorpho),
+                        jsonObject.getString(morphochars),
+                        jsonObject.getString(weightrecord),
+                        jsonObject.getString(status));
                 }
                 return null;
             }
         });
 
-        ApiHelper.getAllGrossMorphProfile("getAllGrossMorphProfile", null, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getAnimalPropertiesDb("getAnimalPropertiesDb", null, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("getAllDataFromServer", "Successfully added data to local from server gross");
+                Log.d("getAllDataFromServer", "Successfully added data to local from server animalpropertiesdb");
             }
 
             @Override
@@ -2342,35 +2257,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 JSONObject jsonObject;
                 for(int i = jsonArray.length()-1; i>=0; i--){
                     jsonObject = (JSONObject) jsonArray.get(i);
-                    addGrossMorphologyData(
-                        jsonObject.getString("registration_id"),
-                        jsonObject.getString("date_collected"),
-                        jsonObject.getString("hair_type"),
-                        jsonObject.getString("hair_length"),
-                        jsonObject.getString("coat_color"),
-                        jsonObject.getString("color_pattern"),
-                        jsonObject.getString("head_shape"),
-                        jsonObject.getString("skin_type"),
-                        jsonObject.getString("ear_type"),
-                        jsonObject.getString("tail_type"),
-                        jsonObject.getString("backline"),
-                        jsonObject.getString("other_marks"),
-                        "true"
-                    );
+                    copyAnimalPropertyDb(jsonObject.getString(id),
+                            jsonObject.getString(animal_id),
+                            jsonObject.getString(property_id),
+                            jsonObject.getString(value));
                 }
                 return null;
             }
         });
 
-        ApiHelper.getAllMorphCharProfile("getAllMorphCharProfile", null, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getGroupingsDb("getGroupingsDb", null, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("getAllDataFromServer", "Successfully added data to local from server morph char");
+                Log.d("getAllDataFromServer", "Successfully added data to local from server groupings");
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Log.d("getAllDataFromServer", "Failed add data to local from server morph char");
+                Log.d("getAllDataFromServer", "Error occurred");
             }
 
             @Override
@@ -2379,34 +2283,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 JSONObject jsonObject;
                 for(int i = jsonArray.length()-1; i>=0; i--){
                     jsonObject = (JSONObject) jsonArray.get(i);
-                    addMorphCharData(
-                        jsonObject.getString("registration_id"),
-                        jsonObject.getString("date_collected"),
-                        jsonObject.getString("ear_length"),
-                        jsonObject.getString("head_length"),
-                        jsonObject.getString("snout_length"),
-                        jsonObject.getString("body_length"),
-                        jsonObject.getString("heart_girth"),
-                        jsonObject.getString("pelvic_width"),
-                        jsonObject.getString("tail_length"),
-                        jsonObject.getString("height_at_withers"),
-                        jsonObject.getString("normal_teats"),
-                        "true"
-                    );
+                    copyGroupingsDb(jsonObject.getString(id),
+                            jsonObject.getString(registryid),
+                            jsonObject.getString(mother_id),
+                            jsonObject.getString(father_id),
+                            jsonObject.getString(breed_id),
+                            jsonObject.getString(members));
                 }
                 return null;
             }
         });
 
-        ApiHelper.getAllWeightProfile("getAllWeightProfile", null, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getGroupingMembersDb("getGroupingMembersDb", null, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("getAllDataFromServer", "Successfully added data to local from server weight records");
+                Log.d("getAllDataFromServer", "Successfully added data to local from server groupingmembersdb");
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Log.d("getAllDataFromServer", "Failed add data to local from server weight records");
+                Log.d("getAllDataFromServer", "Error occurred");
             }
 
             @Override
@@ -2415,34 +2311,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 JSONObject jsonObject;
                 for(int i = jsonArray.length()-1; i>=0; i--){
                     jsonObject = (JSONObject) jsonArray.get(i);
-                    addWeightRecords(
-                        jsonObject.getString("registration_id"),
-                        jsonObject.getString("date_collected_at_45"),
-                        jsonObject.getString("date_collected_at_60"),
-                        jsonObject.getString("date_collected_at_90"),
-                        jsonObject.getString("date_collected_at_150"),
-                        jsonObject.getString("date_collected_at_180"),
-                        jsonObject.getString("weight_at_45"),
-                        jsonObject.getString("weight_at_60"),
-                        jsonObject.getString("weight_at_90"),
-                        jsonObject.getString("weight_at_150"),
-                        jsonObject.getString("weight_at_180"),
-                        "true"
-                    );
+                    copyGroupingMembersDb(jsonObject.getString(id),
+                            jsonObject.getString(grouping_id),
+                            jsonObject.getString(animal_id));
                 }
                 return null;
             }
         });
 
-        ApiHelper.getAllMortalitySalesProfile("getAllMortalitySalesProfile", null, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getGroupingPropertiesDb("getGroupingPropertiesDb", null, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                Log.d("getAllDataFromServer", "Successfully added data to local from server mortality sales");
+                Log.d("getAllDataFromServer", "Successfully added data to local from server groupingpropertiesdb");
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Log.d("getAllDataFromServer", "Failed add data to local from server mortality sales");
+                Log.d("getAllDataFromServer", "Error occurred");
             }
 
             @Override
@@ -2451,15 +2336,98 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 JSONObject jsonObject;
                 for(int i = jsonArray.length()-1; i>=0; i--){
                     jsonObject = (JSONObject) jsonArray.get(i);
-                    addMortalitySalesData(
-                        jsonObject.getString("pig_registration_id"),
-                        jsonObject.getString("date_removed_died"),
-                        jsonObject.getString("cause_of_death"),
-                        jsonObject.getString("weight_sold"),
-                        jsonObject.getString("reason_removed"),
-                        jsonObject.getString("age"),
-                        "true"
-                    );
+                    copyGroupingPropertiesDb(jsonObject.getString(id),
+                            jsonObject.getString(grouping_id),
+                            jsonObject.getString(property_id),
+                            jsonObject.getString(value));
+                }
+                return null;
+            }
+        });
+
+        ApiHelper.getMortalitiesDb("getMortalitiesDb", null, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("getAllDataFromServer", "Successfully added data to local from server mortalitiesdb");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("getAllDataFromServer", "Error occurred");
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONArray jsonArray = new JSONArray(rawJsonData);
+                JSONObject jsonObject;
+                for(int i = jsonArray.length()-1; i>=0; i--){
+                    jsonObject = (JSONObject) jsonArray.get(i);
+                    copyMortalitiesDb(jsonObject.getString(id),
+                            jsonObject.getString(animal_id),
+                            jsonObject.getString(animaltype_id),
+                            jsonObject.getString(breed_id),
+                            jsonObject.getString(datedied),
+                            jsonObject.getString(cause),
+                            jsonObject.getString("age"));
+                }
+                return null;
+            }
+        });
+
+        ApiHelper.getRemovedAnimalsDb("getRemovedAnimalsDb", null, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("getAllDataFromServer", "Successfully added data to local from server removedanimalsdb");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("getAllDataFromServer", "Error occurred");
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONArray jsonArray = new JSONArray(rawJsonData);
+                JSONObject jsonObject;
+                for(int i = jsonArray.length()-1; i>=0; i--){
+                    jsonObject = (JSONObject) jsonArray.get(i);
+                    copyRemovedAnimalsDb(jsonObject.getString(id),
+                            jsonObject.getString(animal_id),
+                            jsonObject.getString(animaltype_id),
+                            jsonObject.getString(breed_id),
+                            jsonObject.getString(dateremoved),
+                            jsonObject.getString(reason),
+                            jsonObject.getString("age"));
+                }
+                return null;
+            }
+        });
+
+        ApiHelper.getSalesDb("getSalesDb", null, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("getAllDataFromServer", "Successfully added data to local from server salesdb");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("getAllDataFromServer", "Error occurred");
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONArray jsonArray = new JSONArray(rawJsonData);
+                JSONObject jsonObject;
+                for(int i = jsonArray.length()-1; i>=0; i--){
+                    jsonObject = (JSONObject) jsonArray.get(i);
+                    copySalesDb(jsonObject.getString(id),
+                            jsonObject.getString(animal_id),
+                            jsonObject.getString(animaltype_id),
+                            jsonObject.getString(breed_id),
+                            jsonObject.getString(datesold),
+                            jsonObject.getString(weight),
+                            jsonObject.getString(price),
+                            jsonObject.getString("age"));
                 }
                 return null;
             }
@@ -2704,5 +2672,122 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //
 //        return cal.getTime();
 //    }
+
+    /*
+     * functions for copying data from server to local
+     */
+    public boolean copyAnimalDb(String p_id, String p_animaltype_id, String p_registryid, String p_farm_id,
+                                String p_breed_id, String p_grossmorpho, String p_morphochars,
+                                String p_weightrecord, String p_status){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(id, p_id);
+        contentValues.put(animaltype_id, p_animaltype_id);
+        contentValues.put(registryid, p_registryid);
+        contentValues.put(farm_id, p_farm_id);
+        contentValues.put(breed_id, p_breed_id);
+        contentValues.put(grossmorpho, p_grossmorpho);
+        contentValues.put(morphochars, p_morphochars);
+        contentValues.put(weightrecord, p_weightrecord);
+        contentValues.put(status, p_status);
+        contentValues.put(is_synced, "true");
+        long result = db.insert(animals, null, contentValues);
+        return result != -1;
+    }
+
+    public boolean copyAnimalPropertyDb(String p_id, String p_animal_id, String p_property_id, String p_value){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(id, p_id);
+        contentValues.put(animal_id, p_animal_id);
+        contentValues.put(property_id, p_property_id);
+        contentValues.put(value, p_value);
+        contentValues.put(is_synced, "true");
+        long result = db.insert(animal_properties, null, contentValues);
+        return result != -1;
+    }
+
+    public boolean copyGroupingsDb(String p_id, String p_registryid, String p_mother_id,
+                                String p_father_id, String p_breed_id, String p_members){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(id, p_id);
+        contentValues.put(registryid, p_registryid);
+        contentValues.put(mother_id, p_mother_id);
+        contentValues.put(father_id, p_father_id);
+        contentValues.put(breed_id, p_breed_id);
+        contentValues.put(members, p_members);
+        long result = db.insert(groupings, null, contentValues);
+        return result != -1;
+    }
+
+    public boolean copyGroupingMembersDb(String p_id, String p_grouping_id, String p_animal_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(id, p_id);
+        contentValues.put(grouping_id, p_grouping_id);
+        contentValues.put(animal_id, p_animal_id);
+        long result = db.insert(grouping_members, null, contentValues);
+        return result != -1;
+    }
+
+    public boolean copyGroupingPropertiesDb(String p_id, String p_grouping_id, String p_property_id,
+                                            String p_value){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(id, p_id);
+        contentValues.put(grouping_id, p_grouping_id);
+        contentValues.put(property_id, p_property_id);
+        contentValues.put(value, p_value);
+        long result = db.insert(grouping_properties, null, contentValues);
+        return result != -1;
+    }
+
+    public boolean copyMortalitiesDb(String p_id, String p_animal_id, String p_animaltype_id,
+                                   String p_breed_id, String p_datedied, String p_cause, String p_age){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(id, p_id);
+        contentValues.put(animal_id, p_animal_id);
+        contentValues.put(animaltype_id, p_animaltype_id);
+        contentValues.put(breed_id, p_breed_id);
+        contentValues.put(datedied, p_datedied);
+        contentValues.put(cause, p_cause);
+        contentValues.put(age, p_age);
+        long result = db.insert(mortalities, null, contentValues);
+        return result != -1;
+    }
+
+    public boolean copyRemovedAnimalsDb(String p_id, String p_animal_id, String p_animaltype_id,
+                                     String p_breed_id, String p_dateremoved, String p_reason, String p_age){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(id, p_id);
+        contentValues.put(animal_id, p_animal_id);
+        contentValues.put(animaltype_id, p_animaltype_id);
+        contentValues.put(breed_id, p_breed_id);
+        contentValues.put(dateremoved, p_dateremoved);
+        contentValues.put(reason, p_reason);
+        contentValues.put(age, p_age);
+        long result = db.insert(removed_animals, null, contentValues);
+        return result != -1;
+    }
+
+    public boolean copySalesDb(String p_id, String p_animal_id, String p_animaltype_id,
+                                     String p_breed_id, String p_datesold, String p_weight,
+                                     String p_price, String p_age){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(id, p_id);
+        contentValues.put(animal_id, p_animal_id);
+        contentValues.put(animaltype_id, p_animaltype_id);
+        contentValues.put(breed_id, p_breed_id);
+        contentValues.put(datesold, p_datesold);
+        contentValues.put(weight, p_weight);
+        contentValues.put(price, p_price);
+        contentValues.put(age, p_age);
+        long result = db.insert(sales, null, contentValues);
+        return result != -1;
+    }
 
 }

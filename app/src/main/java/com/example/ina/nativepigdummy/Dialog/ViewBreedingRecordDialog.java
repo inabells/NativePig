@@ -54,10 +54,10 @@ public class ViewBreedingRecordDialog extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_edit_breeding_record, null);
 
         TextViewFarrow = view.findViewById(R.id.textViewFarrowing);
-        TextViewStatus = view.findViewById(R.id.textViewStatus);
+//        TextViewStatus = view.findViewById(R.id.textViewStatus);
         TextViewDate = view.findViewById(R.id.textViewDateBred);
         dbHelper = new DatabaseHelper(getActivity());
-        status = view.findViewById(R.id.edit_status);
+//        status = view.findViewById(R.id.edit_status);
         view_sow_litter_record = view.findViewById(R.id.view_sow_litter_record);
         sow_reg_id = view.findViewById(R.id.textViewSowId);
         boar_reg_id = view.findViewById(R.id.textViewBoarId);
@@ -87,14 +87,14 @@ public class ViewBreedingRecordDialog extends DialogFragment {
             local_getBreedingProfile(sowIdHolder,boarIdHolder);
         }
 
-        status.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                StatusDialog dialog = new StatusDialog(sowIdHolder, boarIdHolder, editStatus);
-                dialog.setTargetFragment(ViewBreedingRecordDialog.this, 1);
-                dialog.show(getFragmentManager(), "StatusDialog");
-            }
-        });
+//        status.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                StatusDialog dialog = new StatusDialog(sowIdHolder, boarIdHolder, editStatus);
+//                dialog.setTargetFragment(ViewBreedingRecordDialog.this, 1);
+//                dialog.show(getFragmentManager(), "StatusDialog");
+//            }
+//        });
 
         view_sow_litter_record.setOnClickListener(new View.OnClickListener() {
             @Override

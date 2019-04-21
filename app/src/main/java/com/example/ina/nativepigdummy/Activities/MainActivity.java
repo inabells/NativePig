@@ -1,12 +1,9 @@
 package com.example.ina.nativepigdummy.Activities;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,14 +62,14 @@ public class MainActivity extends AppCompatActivity {
         noOfMaleGrowers = findViewById(R.id.noOfMaleGrowers);
 
         if(ApiHelper.isInternetAvailable(getApplicationContext())) {
-//            if(dbHelper.syncDataFromLocalToServer())
-//                Toast.makeText(MainActivity.this, "Local Data Added to Server", Toast.LENGTH_SHORT).show();
-//            else
-//                Toast.makeText(MainActivity.this, "Error in adding local data to server", Toast.LENGTH_SHORT).show();
-//
-//            dbHelper.clearLocalDatabases();
-//            dbHelper.getAllDataFromServer();
-//            api_getAllCount();
+            if(dbHelper.syncAllTablesFromLocalToServer()) {
+                dbHelper.clearLocalDatabases();
+                dbHelper.getAllDataFromServer();
+                Toast.makeText(MainActivity.this, "Local Data Added to Server", Toast.LENGTH_SHORT).show();
+            } else
+                Toast.makeText(MainActivity.this, "Error in adding local data to server", Toast.LENGTH_SHORT).show();
+
+            api_getAllCount();
         } else{
             setLocalCount(dbHelper.local_getAllCount());
         }

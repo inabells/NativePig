@@ -79,12 +79,6 @@ public class SowBoarIDDateBredFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Intent intent_view_breeding = new Intent(getActivity(), ViewBreedingActivity.class);
-//                intent_view_breeding.putExtra("sow_id", breedingRecordList.get(i).getSow_id());
-//                intent_view_breeding.putExtra("boar_id", breedingRecordList.get(i).getBoar_id());
-//                intent_view_breeding.putExtra("date_bred", breedingRecordList.get(i).getDate_bred());
-//                startActivity(intent_view_breeding);
-
                 String sow_id = breedingRecordList.get(i).getSow_id();
                 String boar_id = breedingRecordList.get(i).getBoar_id();
                 String date_bred = breedingRecordList.get(i).getDate_bred();
@@ -109,7 +103,7 @@ public class SowBoarIDDateBredFragment extends Fragment {
             Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
         }else {
             while (data.moveToNext()) {
-                breedingRecordData = new BreedingRecordData(data.getString(0), data.getString(1), data.getString(2));
+                breedingRecordData = new BreedingRecordData(data.getString(0), data.getString(1), data.getString(2), data.getString(0), data.getString(1));
                 breedingRecordList.add(breedingRecordData);
             }
             BreedingRecordDataAdapter adapter = new BreedingRecordDataAdapter(getActivity(), R.layout.listview_breeding_record, breedingRecordList);
