@@ -38,16 +38,16 @@ android:background="@color/colorPrimaryDark">
 
     <Button
         android:id="@+id/button3"
-        android:layout_width="500dp"
-        android:layout_height="130dp"
-        android:layout_marginLeft="155dp"
-        android:layout_marginTop="890dp"
+        android:layout_width="400dp"
+        android:layout_height="100dp"
+        android:layout_marginLeft="210dp"
+        android:layout_marginTop="900dp"
+        android:background="@drawable/transparent_bg_bordered_button"
         android:onClick="onClickLogin"
         android:text="LOG IN WITH GOOGLE"
         android:textAllCaps="false"
-        android:background="@drawable/transparent_bg_bordered_button"
         android:textColor="#fff"
-        android:textSize="30sp"
+        android:textSize="20sp"
         android:visibility="visible" />
 
 

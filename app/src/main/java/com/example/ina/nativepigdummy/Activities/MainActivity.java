@@ -66,14 +66,14 @@ public class MainActivity extends AppCompatActivity {
         noOfMaleGrowers = findViewById(R.id.noOfMaleGrowers);
 
         if(ApiHelper.isInternetAvailable(getApplicationContext())) {
-            if(dbHelper.syncDataFromLocalToServer())
-                Toast.makeText(MainActivity.this, "Local Data Added to Server", Toast.LENGTH_SHORT).show();
-            else
-                Toast.makeText(MainActivity.this, "Error in adding local data to server", Toast.LENGTH_SHORT).show();
-
-            dbHelper.clearLocalDatabases();
-            dbHelper.getAllDataFromServer();
-            api_getAllCount();
+//            if(dbHelper.syncDataFromLocalToServer())
+//                Toast.makeText(MainActivity.this, "Local Data Added to Server", Toast.LENGTH_SHORT).show();
+//            else
+//                Toast.makeText(MainActivity.this, "Error in adding local data to server", Toast.LENGTH_SHORT).show();
+//
+//            dbHelper.clearLocalDatabases();
+//            dbHelper.getAllDataFromServer();
+//            api_getAllCount();
         } else{
             setLocalCount(dbHelper.local_getAllCount());
         }
@@ -267,11 +267,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setFragment(Fragment fragment){
-        FragmentTransaction fragment_transaction = getSupportFragmentManager().beginTransaction();
-        fragment_transaction.replace(R.id.main_frame, fragment);
-        fragment_transaction.commit();
-    }
+//    private void setFragment(Fragment fragment){
+//        FragmentTransaction fragment_transaction = getSupportFragmentManager().beginTransaction();
+//        fragment_transaction.replace(R.id.main_frame, fragment);
+//        fragment_transaction.commit();
+//    }
 
 
     @Override
