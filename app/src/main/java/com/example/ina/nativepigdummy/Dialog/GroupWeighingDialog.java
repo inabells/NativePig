@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -14,13 +15,19 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Fragments.OffspringFragment;
 import com.example.ina.nativepigdummy.R;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 public class GroupWeighingDialog extends DialogFragment {
 
@@ -28,7 +35,7 @@ public class GroupWeighingDialog extends DialogFragment {
 
     private EditText offspringearnotch, litterbirthweight, littersizebornalive, dateweaned;
     private Spinner sex;
-    String sowId, sowRegId, boarRegId, boarId, groupingId, addOffspringEarnotch, addSex, addLSBA, addLBW, birthdate, regId;
+    String sowId, sowRegId, boarRegId, boarId, groupingId, addOffspringEarnotch, addDateWeaned, addLSBA, addLBW, birthdate, regId;
     int birthweight;
 
     DatabaseHelper dbHelper;
@@ -41,8 +48,8 @@ public class GroupWeighingDialog extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_group_weighing,null);
 
         litterbirthweight = view.findViewById(R.id.litter_birth_weight);
-        offspringearnotch = view.findViewById(R.id.offspring_earnotch);
-        sex = view.findViewById(R.id.offspring_sex);
+//        offspringearnotch = view.findViewById(R.id.offspring_earnotch);
+//        sex = view.findViewById(R.id.offspring_sex);
         littersizebornalive = view.findViewById(R.id.litter_size_born_alive);
         dateweaned = view.findViewById(R.id.dateweaned);
         dbHelper = new DatabaseHelper(getActivity());
@@ -65,27 +72,38 @@ public class GroupWeighingDialog extends DialogFragment {
             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    addOffspringEarnotch = offspringearnotch.getText().toString();
-                    addSex = sex.getSelectedItem().toString();
+                    addDateWeaned = dateweaned.getText().toString();
+//                    addSex = sex.getSelectedItem().toString();
                     addLBW = litterbirthweight.getText().toString();
                     addLSBA = littersizebornalive.getText().toString();
 
-                    if(addOffspringEarnotch.equals(""))
-                        Toast.makeText(getActivity(), "Please fill out Animal Earnotch", Toast.LENGTH_SHORT).show();
-                    else if(addOffspringEarnotch.length() > 6)
-                        Toast.makeText(getActivity(), "Earnotch is too long", Toast.LENGTH_SHORT).show();
-                    else{
-                        if(!addOffspringEarnotch.equals("") && addOffspringEarnotch.length() < 6)
-                            addOffspringEarnotch = padLeftZeros(addOffspringEarnotch, 6);
+                    if(!addDateWeaned.equals("") && !addLSBA.equals("") && !addLBW.equals("")){
+                        int counter=0;
+                        String temp = "TMP";
+                        String tempEarnotch = temp + Integer.toString(counter);
+                        RequestParams requestParams = new RequestParams();
+                        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+                        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+                        requestParams.add("sow_id", sowRegId);
+                        requestParams.add("boar_id", boarRegId);
+                        requestParams.add("litter_birth_weight", addLBW);
+                        requestParams.add("lsba", addLSBA);
+                        requestParams.add("offspring_earnotch", tempEarnotch);
+                        requestParams.add("sex", "F");
 
-                        if(!addOffspringEarnotch.equals("") && !addLSBA.equals("") && !addLBW.equals("")){
-                            for(int i = 0; i < Integer.parseInt(addLSBA); i++){
+                        for(int i = 0; i < Integer.parseInt(addLSBA); i++){
+                            counter++;
+                            tempEarnotch = temp + Integer.toString(counter);
+                            requestParams.remove("offspring_earnotch");
+                            requestParams.add("offspring_earnotch", tempEarnotch);
+                            if(ApiHelper.isInternetAvailable(getActivity())) {
+                                api_addOffspringGroup(requestParams);
+                            } else
                                 local_addOffspringGroup(i);
-                            }
                         }
                     }
-                }
 
+                }
             });
 
         return builder.create();
@@ -103,6 +121,24 @@ public class GroupWeighingDialog extends DialogFragment {
         fragmentTransaction.detach(fragment);
         fragmentTransaction.attach(fragment);
         fragmentTransaction.commit();
+    }
+
+    private void api_addOffspringGroup(RequestParams requestParams){
+        ApiHelper.addGroupSowLitterRecord("addGroupSowLitterRecord", requestParams, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("SowLitter", "Error: " + String.valueOf(statusCode));
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                return null;
+            }
+        });
     }
 
     private void requestFocus (View view){

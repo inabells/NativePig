@@ -73,7 +73,7 @@ public class EditOffspringDialog extends DialogFragment{
             public void onClick(DialogInterface dialog, int which) {
                 if(ApiHelper.isInternetAvailable(getActivity()))
                     api_updateOffspringRecord();
-//                    updateRegistryId()
+//                    updateRegistryId();
                 else
                     local_updateOffspringRecord();
             }
@@ -146,7 +146,7 @@ public class EditOffspringDialog extends DialogFragment{
         params.add("new_earnotch", tempEarnotch);
         params.add("earnotch", editOffspringEarnotch);
 
-        if(!tempWeaningWeight.equals("") && !tempDateWeaned.equals("")){
+        if(tempWeaningWeight.equals("") && tempDateWeaned.equals("")){
             Toast.makeText(getActivity(), "Please fill out all fields!", Toast.LENGTH_SHORT).show();
         }else{
             updateOffspringRecord(params);
@@ -180,7 +180,7 @@ public class EditOffspringDialog extends DialogFragment{
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Log.d("MorphChar", "Error: " + String.valueOf(statusCode));
+//                Log.d("editRegistryId", "Error: " + String.valueOf(statusCode));
             }
 
             @Override
