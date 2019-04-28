@@ -207,7 +207,7 @@ public class SalesDialog extends DialogFragment {
         String editdatesold = datesold.getText().toString();
         String editweightsold= weightsold.getText().toString();
         String editpricesold = pricesold.getText().toString();
-        String editage = "Not specified";
+        String editage = "Age unavailable";
 
         requestParams.add("registry_id", editchoosepig);
         requestParams.add("date_sold", editdatesold);
@@ -339,7 +339,7 @@ public class SalesDialog extends DialogFragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus){
                 if(hasFocus){
-                    DateDialog dialog = new DateDialog(v);
+                    NewDateDialog dialog = new NewDateDialog(v);
                     dialog.show(getActivity().getFragmentManager(),"Sales Fragment");
                 }
             }

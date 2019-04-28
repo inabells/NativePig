@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
@@ -39,12 +40,10 @@ public class ViewBreedingRecordDialog extends DialogFragment {
         // Required empty public constructor
     }
 
-    private String sowIdHolder, boarIdHolder, editDateBred, editExpectedFarrowDate, editStatus, expectedDate;
-    private TextView sow_reg_id, boar_reg_id, TextViewStatus, TextViewFarrow, TextViewDate;
-    private ImageView edit_breeding_record;
+    private String sowIdHolder, boarIdHolder, editDateBred, editExpectedFarrowDate, editStatus;
+    private TextView sow_reg_id, boar_reg_id, TextViewFarrow, TextViewDate;
     private ImageView view_sow_litter_record;
-    private ImageView status;
-    private TextView farrowing;
+    private RadioButton bred, farrowed, pregnant, aborted, recycled;
     DatabaseHelper dbHelper;
 
     @Override
@@ -54,13 +53,17 @@ public class ViewBreedingRecordDialog extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_edit_breeding_record, null);
 
         TextViewFarrow = view.findViewById(R.id.textViewFarrowing);
-//        TextViewStatus = view.findViewById(R.id.textViewStatus);
         TextViewDate = view.findViewById(R.id.textViewDateBred);
         dbHelper = new DatabaseHelper(getActivity());
-//        status = view.findViewById(R.id.edit_status);
         view_sow_litter_record = view.findViewById(R.id.view_sow_litter_record);
         sow_reg_id = view.findViewById(R.id.textViewSowId);
         boar_reg_id = view.findViewById(R.id.textViewBoarId);
+        bred = view.findViewById(R.id.bred);
+        pregnant = view.findViewById(R.id.pregnant);
+        farrowed = view.findViewById(R.id.farrowed);
+        aborted = view.findViewById(R.id.aborted);
+        recycled = view.findViewById(R.id.recycled);
+
 
         sowIdHolder = getArguments().getString("sow_id");
         sow_reg_id.setText(sowIdHolder);
@@ -68,6 +71,9 @@ public class ViewBreedingRecordDialog extends DialogFragment {
         boar_reg_id.setText(boarIdHolder);
         editDateBred = getArguments().getString("date_bred");
         TextViewDate.setText(editDateBred);
+        editStatus = getArguments().getString("status");
+        setCheckedRadioButton();
+
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
         Date edf = null;
@@ -86,15 +92,6 @@ public class ViewBreedingRecordDialog extends DialogFragment {
         } else{
             local_getBreedingProfile(sowIdHolder,boarIdHolder);
         }
-
-//        status.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                StatusDialog dialog = new StatusDialog(sowIdHolder, boarIdHolder, editStatus);
-//                dialog.setTargetFragment(ViewBreedingRecordDialog.this, 1);
-//                dialog.show(getFragmentManager(), "StatusDialog");
-//            }
-//        });
 
         view_sow_litter_record.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,11 +120,36 @@ public class ViewBreedingRecordDialog extends DialogFragment {
         return builder.create();
     }
 
+
     private RequestParams buildParams() {
         RequestParams params = new RequestParams();
         params.add("sow_registration_id", sowIdHolder);
         params.add("boar_registration_id", boarIdHolder);
         return params;
+    }
+
+    private void setCheckedRadioButton() {
+        setAllButtonsUnchecked();
+        switch(editStatus){
+            case "Bred": bred.setChecked(true);
+                break;
+            case "Pregnant": pregnant.setChecked(true);
+                break;
+            case "Farrowed": farrowed.setChecked(true);
+                break;
+            case "Aborted": aborted.setChecked(true);
+                break;
+            case "Recycled": recycled.setChecked(true);
+                break;
+        }
+    }
+
+    private void setAllButtonsUnchecked() {
+        bred.setChecked(false);
+        pregnant.setChecked(false);
+        farrowed.setChecked(false);
+        aborted.setChecked(false);
+        recycled.setChecked(false);
     }
 
     private void local_getBreedingProfile(String sow_id, String boar_id) {
@@ -147,7 +169,6 @@ public class ViewBreedingRecordDialog extends DialogFragment {
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 TextViewDate.setText(editDateBred);
                 TextViewFarrow.setText(editExpectedFarrowDate);
-                TextViewStatus.setText(editStatus);
                 Log.d("BreedingRecord", "Successfully fetched count");
             }
 

@@ -196,7 +196,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public DatabaseHelper(Context context){
-        super(context, DATABASE_NAME, null, 32);
+        super(context, DATABASE_NAME, null, 36);
     }
     //------------------------------------------------------------------------------------------
     private static final String Administrators = "CREATE TABLE " + administrators + "("
@@ -1883,8 +1883,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getBreedingContents(){
+        String query = "SELECT a.registryid, c.registryid, b.value, d.value, e.value " +
+                "FROM groupings a, grouping_properties b, animals c, grouping_properties d, grouping_properties e " +
+                "WHERE a.id=b.grouping_id " +
+                "AND a.father_id=c.id " +
+                "AND b.property_id=42 " +
+                "AND d.grouping_id=a.id " +
+                "AND d.property_id=43 " +
+                "AND e.grouping_id=a.id " +
+                "AND e.property_id=60 ";
+        
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor data = db.rawQuery("SELECT a.registryid, c.registryid, b.value FROM groupings a, grouping_properties b, animals c where a.id=b.grouping_id AND a.father_id=c.id AND b.property_id=42" , null);
+//        Cursor data = db.rawQuery("SELECT a.registryid, c.registryid, b.value FROM groupings a, grouping_properties b, animals c where a.id=b.grouping_id AND a.father_id=c.id AND b.property_id=42" , null);
+        Cursor data = db.rawQuery(query, null);
         return data;
     }
 
@@ -1953,10 +1964,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public HashMap<String, Integer> local_getAllCount() {
         HashMap<String, Integer> map = new HashMap<>();
-        map.put("sowCount", getSowContents().getCount());
-        map.put("boarCount", getBoarContents().getCount());
-        map.put("femaleGrowerCount", getFemaleGrowerContents().getCount());
-        map.put("maleGrowerCount", getMaleGrowerContents().getCount());
+        int sow = getBreedingContents().getCount();
+        int gilt = getSowContents().getCount();
+        int giltCount = gilt - sow;
+        int boar = getBoarContents().getCount();
+        int femaleGrower = getFemaleGrowerContents().getCount();
+        int maleGrower = getMaleGrowerContents().getCount();
+        int breederInventory = sow + giltCount + boar;
+        int growerInventory = femaleGrower + maleGrower;
+        int mortality = getMortalityContents().getCount();
+        int sales = getSalesContents().getCount();
+        int removed = getOthersContents().getCount();
+        int mortalityInventory = mortality + sales + removed;
+
+        map.put("sowCount", sow);
+        map.put("giltCount", giltCount);
+        map.put("boarCount", boar);
+        map.put("femaleGrowerCount", femaleGrower);
+        map.put("maleGrowerCount", maleGrower);
+        map.put("breederInventory", breederInventory);
+        map.put("growerInventory", growerInventory);
+        map.put("mortalityInventory", mortalityInventory);
         return map;
     }
 

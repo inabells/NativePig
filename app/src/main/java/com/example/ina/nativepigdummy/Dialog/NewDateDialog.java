@@ -11,7 +11,7 @@ import android.widget.EditText;
 
 import java.util.Calendar;
 
-public class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener{
+public class NewDateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener{
 
     EditText birthdate;
     EditText weandate;
@@ -22,12 +22,12 @@ public class DateDialog extends DialogFragment implements DatePickerDialog.OnDat
     EditText datesold;
     EditText dateremoved;
 
-    public DateDialog(){
+    public NewDateDialog(){
 
     }
 
     @SuppressLint("ValidFragment")
-    public DateDialog(View view){
+    public NewDateDialog(View view){
         birthdate = (EditText) view;
         weandate = (EditText) view;
         datecollected = (EditText) view;
@@ -43,7 +43,12 @@ public class DateDialog extends DialogFragment implements DatePickerDialog.OnDat
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
-        return new DatePickerDialog(getActivity(), this, year, month, day);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), android.R.style.Theme_Holo_Light_Dialog, this, year, month, day);
+//         datePickerDialog.getDatePicker().setSpinnersShown(true);
+        datePickerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        datePickerDialog.getDatePicker().setCalendarViewShown(false);
+
+        return datePickerDialog;
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day){
@@ -58,3 +63,4 @@ public class DateDialog extends DialogFragment implements DatePickerDialog.OnDat
         dateremoved.setText(date);
     }
 }
+

@@ -63,6 +63,9 @@ public class BreedingRecordDataAdapter extends ArrayAdapter<BreedingRecordData> 
             holder.sow_id = (TextView) convertView.findViewById(R.id.textView1);
             holder.boar_id = (TextView) convertView.findViewById(R.id.textView2);
             holder.date_bred = (TextView) convertView.findViewById(R.id.textView3);
+            holder.edf = (TextView) convertView.findViewById(R.id.textView4);
+            holder.status = (TextView) convertView.findViewById(R.id.textView5);
+
 
             result = convertView;
 
@@ -82,6 +85,8 @@ public class BreedingRecordDataAdapter extends ArrayAdapter<BreedingRecordData> 
         holder.sow_id.setText(breedingrecord.getSow_id());
         holder.boar_id.setText(breedingrecord.getBoar_id());
         holder.date_bred.setText(breedingrecord.getDate_bred());
+        holder.edf.setText(breedingrecord.getEdf());
+        holder.status.setText(breedingrecord.getStatus());
 
         return convertView;
     }

@@ -49,6 +49,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:layout_marginTop="10dp"
                         android:id="@+id/registration_id"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -78,7 +79,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:layout_width="699dp"
+                            android:layout_width="448dp"
                             android:layout_height="match_parent"
                             android:fontFamily="sans-serif-light"
                             android:text="Edit Weight Records"

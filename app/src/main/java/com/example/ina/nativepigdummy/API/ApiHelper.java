@@ -9,7 +9,7 @@ import com.loopj.android.http.*;
 
 public class ApiHelper {
 
-    private final static String BASE_URL = "http://192.168.1.7:8080/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
+    private final static String BASE_URL = "http://192.168.1.99:8080/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
     private static AsyncHttpClient client = new AsyncHttpClient();
 
     public ApiHelper(){
@@ -148,7 +148,7 @@ public class ApiHelper {
     }
 
     public static void fetchWeightRecords(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
+        client.post(getAbsoluteUrl(url), request, responseHandler);
     }
 
     //=======================================NEW API======================================================================

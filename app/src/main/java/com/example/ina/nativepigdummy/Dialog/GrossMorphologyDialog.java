@@ -357,7 +357,7 @@ public class GrossMorphologyDialog extends DialogFragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus){
                 if(hasFocus){
-                    DateDialog dialog = new DateDialog(v);
+                    NewDateDialog dialog = new NewDateDialog(v);
                     dialog.show(getActivity().getFragmentManager(),"Gross Morphology Dialog");
                 }
             }

@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.MyApplication;
@@ -145,8 +146,12 @@ public class EditOffspringDialog extends DialogFragment{
         params.add("new_earnotch", tempEarnotch);
         params.add("earnotch", editOffspringEarnotch);
 
-        updateOffspringRecord(params);
-        updateRegistryId(params);
+        if(!tempWeaningWeight.equals("") && !tempDateWeaned.equals("")){
+            Toast.makeText(getActivity(), "Please fill out all fields!", Toast.LENGTH_SHORT).show();
+        }else{
+            updateOffspringRecord(params);
+            updateRegistryId(params);
+        }
     }
 
     private void updateOffspringRecord(RequestParams params) {
@@ -157,7 +162,7 @@ public class EditOffspringDialog extends DialogFragment{
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                Log.d("MorphChar", "Error: " + String.valueOf(statusCode));
+                Log.d("updateOffspringRecord", "Error: " + String.valueOf(statusCode));
             }
 
             @Override
@@ -257,7 +262,7 @@ public class EditOffspringDialog extends DialogFragment{
             @Override
             public void onFocusChange(View v, boolean hasFocus){
                 if(hasFocus){
-                    DateDialog dialog = new DateDialog(v);
+                    NewDateDialog dialog = new NewDateDialog(v);
                     dialog.show(getActivity().getFragmentManager(),"Birth date");
                 }
             }

@@ -2,6 +2,7 @@ package com.example.ina.nativepigdummy.Activities;
 
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
 import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -10,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.Adapters.BreedingRecordDataAdapter;
 import com.example.ina.nativepigdummy.Adapters.SowDataAdapter;
@@ -49,6 +52,8 @@ public class BreedingRecordsActivity extends AppCompatActivity {
     private PagerAdapter page_adapter;
     private TabItem tab_breeding_record;
 
+    SwipeRefreshLayout swipeRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +63,7 @@ public class BreedingRecordsActivity extends AppCompatActivity {
         tab_layout = findViewById(R.id.tab_layout);
         tab_breeding_record = findViewById(R.id.tab_breeding_record);
         view_pager = findViewById(R.id.view_pager);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
 
         page_adapter = new BreedingRecordsPageAdapter(getSupportFragmentManager(), tab_layout.getTabCount());
         view_pager.setAdapter(page_adapter);
@@ -91,7 +97,23 @@ public class BreedingRecordsActivity extends AppCompatActivity {
 
             }
         });
+
         view_pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tab_layout));
+
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Toast.makeText(BreedingRecordsActivity.this, "Refreshed", Toast.LENGTH_SHORT).show();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 2000);
+            }
+        });
 
 
         navigation_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){

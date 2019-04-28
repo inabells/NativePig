@@ -1,6 +1,5 @@
 package com.example.ina.nativepigdummy.Fragments;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,14 +16,10 @@ import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.MyApplication;
-import com.example.ina.nativepigdummy.Activities.ViewBreedingActivity;
 import com.example.ina.nativepigdummy.Adapters.BreedingRecordDataAdapter;
-import com.example.ina.nativepigdummy.Adapters.MortalityDataAdapter;
 import com.example.ina.nativepigdummy.Data.BreedingRecordData;
-import com.example.ina.nativepigdummy.Data.MortalityData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.BreedingRecordsDialog;
-import com.example.ina.nativepigdummy.Dialog.EditOffspringDialog;
 import com.example.ina.nativepigdummy.Dialog.ViewBreedingRecordDialog;
 import com.example.ina.nativepigdummy.R;
 import com.github.clans.fab.FloatingActionButton;
@@ -82,12 +77,14 @@ public class SowBoarIDDateBredFragment extends Fragment {
                 String sow_id = breedingRecordList.get(i).getSow_id();
                 String boar_id = breedingRecordList.get(i).getBoar_id();
                 String date_bred = breedingRecordList.get(i).getDate_bred();
+                String status = breedingRecordList.get(i).getStatus();
 
                 ViewBreedingRecordDialog dialog = new ViewBreedingRecordDialog();
                 Bundle data = new Bundle();
                 data.putString("sow_id", sow_id);
                 data.putString("boar_id", boar_id);
                 data.putString("date_bred", date_bred);
+                data.putString("status", status);
                 dialog.setArguments(data);
                 dialog.show(getFragmentManager(),"ViewBreedingRecordDialog");
             }
@@ -103,7 +100,7 @@ public class SowBoarIDDateBredFragment extends Fragment {
             Toast.makeText(getActivity(),"The database is empty.",Toast.LENGTH_LONG).show();
         }else {
             while (data.moveToNext()) {
-                breedingRecordData = new BreedingRecordData(data.getString(0), data.getString(1), data.getString(2), data.getString(0), data.getString(1));
+                breedingRecordData = new BreedingRecordData(data.getString(0), data.getString(1), data.getString(2), data.getString(3), data.getString(4));
                 breedingRecordList.add(breedingRecordData);
             }
             BreedingRecordDataAdapter adapter = new BreedingRecordDataAdapter(getActivity(), R.layout.listview_breeding_record, breedingRecordList);
@@ -137,6 +134,8 @@ public class SowBoarIDDateBredFragment extends Fragment {
                     mData.setSow_id(jsonObject.getString("sow_registryid"));
                     mData.setBoar_id(jsonObject.getString("boar_registryid"));
                     mData.setDate_bred(jsonObject.getString("dateBred"));
+                    mData.setEdf(jsonObject.getString("edf"));
+                    mData.setStatus(jsonObject.getString("status"));
                     breedingRecordList.add(mData);
                 }
                 return null;

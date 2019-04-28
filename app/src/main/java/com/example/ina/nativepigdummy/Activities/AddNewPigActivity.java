@@ -30,7 +30,7 @@ import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
-import com.example.ina.nativepigdummy.Dialog.DateDialog;
+import com.example.ina.nativepigdummy.Dialog.NewDateDialog;
 import com.example.ina.nativepigdummy.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -212,7 +212,7 @@ public class AddNewPigActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus){
                 if(hasFocus){
-                    DateDialog dialog = new DateDialog(v);
+                    NewDateDialog dialog = new NewDateDialog(v);
                     android.app.FragmentTransaction ft=getFragmentManager().beginTransaction();
                     dialog.show(ft,"Birth Date");
                 }
@@ -224,7 +224,7 @@ public class AddNewPigActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View v, boolean hasFocus){
                 if(hasFocus){
-                    DateDialog dialog = new DateDialog(v);
+                    NewDateDialog dialog = new NewDateDialog(v);
                     android.app.FragmentTransaction ft=getFragmentManager().beginTransaction();
                     dialog.show(ft,"Weaning Date");
                 }

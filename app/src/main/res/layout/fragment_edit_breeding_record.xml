@@ -187,45 +187,53 @@
                         android:layout_height="wrap_content"
                         android:weightSum="100">
 
-                        <RadioButton
-                            android:id="@+id/bred"
-                            android:layout_width="wrap_content"
+                        <RadioGroup
+                            android:id="@+id/radioGroupStatus"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="20"
-                            android:text="Bred"
-                            android:textSize="18sp" />
+                            android:orientation="horizontal">
 
-                        <RadioButton
-                            android:id="@+id/pregnant"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="20"
-                            android:text="Pregnant"
-                            android:textSize="18sp" />
+                            <RadioButton
+                                android:id="@+id/bred"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="20"
+                                android:text="Bred"
+                                android:textSize="18sp" />
 
-                        <RadioButton
-                            android:id="@+id/farrowed"
-                            android:layout_weight="20"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Farrowed"
-                            android:textSize="18sp" />
+                            <RadioButton
+                                android:id="@+id/pregnant"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="20"
+                                android:text="Pregnant"
+                                android:textSize="18sp" />
 
-                        <RadioButton
-                            android:id="@+id/aborted"
-                            android:layout_weight="20"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Aborted"
-                            android:textSize="18sp" />
+                            <RadioButton
+                                android:id="@+id/farrowed"
+                                android:layout_weight="20"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Farrowed"
+                                android:textSize="18sp" />
 
-                        <RadioButton
-                            android:id="@+id/recycled"
-                            android:layout_weight="20"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Recycled"
-                            android:textSize="18sp" />
+                            <RadioButton
+                                android:id="@+id/aborted"
+                                android:layout_weight="20"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Aborted"
+                                android:textSize="18sp" />
+
+                            <RadioButton
+                                android:id="@+id/recycled"
+                                android:layout_weight="20"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Recycled"
+                                android:textSize="18sp" />
+
+                        </RadioGroup>
 
                     </LinearLayout>
 

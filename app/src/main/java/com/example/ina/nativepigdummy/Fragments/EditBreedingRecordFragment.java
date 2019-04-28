@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
@@ -40,12 +42,12 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
         // Required empty public constructor
     }
 
-    private String sowIdHolder, boarIdHolder, editDateBred, editExpectedFarrowDate, editStatus, expectedDate;
+    private String sowIdHolder, boarIdHolder, editDateBred, editExpectedFarrowDate, editStatus;
     private TextView sow_reg_id, boar_reg_id, TextViewStatus, TextViewFarrow, TextViewDate;
     private ImageView edit_breeding_record;
     private ImageView view_sow_litter_record;
-    private ImageView status;
-    private TextView farrowing;
+    private RadioGroup radioGroupStatus;
+    private RadioButton bred, farrowed, pregnant, aborted, recycled;
     DatabaseHelper dbHelper;
 
     @Nullable
@@ -56,13 +58,17 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
         View view = inflater.inflate(R.layout.fragment_edit_breeding_record, container, false);
 
         TextViewFarrow = view.findViewById(R.id.textViewFarrowing);
-//        TextViewStatus = view.findViewById(R.id.textViewStatus);
         TextViewDate = view.findViewById(R.id.textViewDateBred);
         dbHelper = new DatabaseHelper(getActivity());
-//        status = view.findViewById(R.id.edit_status);
         view_sow_litter_record = view.findViewById(R.id.view_sow_litter_record);
         sow_reg_id = view.findViewById(R.id.textViewSowId);
         boar_reg_id = view.findViewById(R.id.textViewBoarId);
+        radioGroupStatus = view.findViewById(R.id.radioGroupStatus);
+        bred = view.findViewById(R.id.bred);
+        pregnant = view.findViewById(R.id.pregnant);
+        farrowed = view.findViewById(R.id.farrowed);
+        aborted = view.findViewById(R.id.aborted);
+        recycled = view.findViewById(R.id.recycled);
 
         sowIdHolder = getActivity().getIntent().getStringExtra("sow_id");
         sow_reg_id.setText(sowIdHolder);
@@ -70,6 +76,9 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
         boar_reg_id.setText(boarIdHolder);
         editDateBred = getActivity().getIntent().getStringExtra("date_bred");
         TextViewDate.setText(editDateBred);
+        editStatus = getActivity().getIntent().getStringExtra("status");
+        setCheckedRadioButton();
+
 
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -82,6 +91,8 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
 
         String exDateFarrow = sdf.format(addDays(edf, 114));
         TextViewFarrow.setText(exDateFarrow);
+
+
 
         RequestParams params = buildParams();
         if(ApiHelper.isInternetAvailable(getContext())){
@@ -112,6 +123,31 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
         });
 
         return view;
+    }
+
+    private void setCheckedRadioButton() {
+        setAllButtonsUnchecked();
+        switch(editStatus){
+            case "Bred": bred.setChecked(true);
+                break;
+            case "Pregnant": pregnant.setChecked(true);
+                break;
+            case "Farrowed": farrowed.setChecked(true);
+                break;
+            case "Aborted": aborted.setChecked(true);
+                break;
+            case "Recycled": recycled.setChecked(true);
+                break;
+        }
+
+    }
+
+    private void setAllButtonsUnchecked() {
+        bred.setChecked(false);
+        pregnant.setChecked(false);
+        farrowed.setChecked(false);
+        aborted.setChecked(false);
+        recycled.setChecked(false);
     }
 
     private RequestParams buildParams() {

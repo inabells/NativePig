@@ -22,6 +22,12 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 import cz.msebera.android.httpclient.Header;
 
 public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog.ViewSowLitterListener{
@@ -30,12 +36,12 @@ public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog
         // Required empty public constructor
     }
 
-    private TextView textViewdateFarrowed, textViewSowUsed, textViewBoarUsed, textViewDateBred;
+    private TextView textViewDateWeaned, textViewdateFarrowed, textViewSowUsed, textViewBoarUsed, textViewDateBred, textViewGestation, textViewLactation;
     private TextView textViewParity, textViewMales, textViewFemales, textViewSexRatio, textViewLSBA, textViewNumWeaned;
     private TextView textViewNoStillBorn, textViewAveBirthWeight, textViewAveWeanWeight, textViewTLSB;
     private TextView textViewNoMummified;
     private TextView textViewAbnormalities;
-    private String groupingId, editLSBA, editTLSB, editMales, editFemales, editSexRatio, editAveBirthWeight, editAveWeanWeight, editNumWeaned, editNoStillBorn, editMummified, editAbnormalities, editParity, sow_id, boar_id, date_bred;
+    private String editDateWeaned, groupingId, editLSBA, editTLSB, editMales, editFemales, editSexRatio, editAveBirthWeight, editAveWeanWeight, editNumWeaned, editNoStillBorn, editMummified, editAbnormalities, editParity, sow_id, boar_id, date_bred, date_farrowed;
     private Button edit_profile;
     DatabaseHelper dbHelper;
 
@@ -65,15 +71,22 @@ public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog
         textViewAveWeanWeight = view.findViewById(R.id.TextViewAveWeanWeight);
         textViewNumWeaned = view.findViewById(R.id.TextViewNumberWeaned);
         textViewTLSB = view.findViewById(R.id.TextViewLSB);
+        textViewGestation = view.findViewById(R.id.TextViewGestationPeriod);
+        textViewLactation = view.findViewById(R.id.TextViewLactationPeriod);
+        textViewDateWeaned = view.findViewById(R.id.TextViewDateWeaned);
 
         sow_id = getActivity().getIntent().getStringExtra("sow_idSLR");
         boar_id = getActivity().getIntent().getStringExtra("boar_idSLR");
-        date_bred = getActivity().getIntent().getStringExtra("date_farrowSLR");
+        date_bred = getActivity().getIntent().getStringExtra("date_bredSLR");
+        date_farrowed = getActivity().getIntent().getStringExtra("date_farrowSLR");
+
+        textViewGestation.setText(getNumberOfDaysBetween(date_bred, date_farrowed));
 
         textViewSowUsed.setText(getActivity().getIntent().getStringExtra("sow_idSLR"));
         textViewBoarUsed.setText(getActivity().getIntent().getStringExtra("boar_idSLR"));
         textViewDateBred.setText(getActivity().getIntent().getStringExtra("date_bredSLR"));
         textViewdateFarrowed.setText(getActivity().getIntent().getStringExtra("date_farrowSLR"));
+
 
         RequestParams requestParams = new RequestParams();
         requestParams.add("sow_id", sow_id);
@@ -99,6 +112,21 @@ public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog
         return view;
     }
 
+    private String getNumberOfDaysBetween(String fromDate, String toDate) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Date date1 = format.parse(fromDate);
+            Date date2 = format.parse(toDate);
+            long diff = date2.getTime() - date1.getTime();
+            return String.valueOf(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)) + " days";
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return "No data available";
+    }
+
     private void local_getSowLitterValues() {
         String sowId = dbHelper.getAnimalId(textViewSowUsed.getText().toString());
         String boarId = dbHelper.getAnimalId(textViewBoarUsed.getText().toString());
@@ -106,6 +134,10 @@ public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog
         Cursor data = dbHelper.getSowLitterRecords(sowId, boarId);
         while(data.moveToNext()) {
             switch (data.getString(data.getColumnIndex("property_id"))) {
+                case "6":
+                    textViewDateWeaned.setText(data.getString(data.getColumnIndex("value")));
+                    textViewLactation.setText(getNumberOfDaysBetween(textViewDateWeaned.getText().toString(), date_farrowed));
+                    break;
                 case "51":
                     textViewMales.setText(data.getString(data.getColumnIndex("value")));
                     break;
@@ -179,7 +211,6 @@ public class SowAndLitterFragment extends Fragment implements SowAndLitterDialog
                     for (int i = propertyArray.length() - 1; i >= 0; i--) {
                         propertyObject = (JSONObject) propertyArray.get(i);
                         switch (propertyObject.getInt("property_id")) {
-
                             case 51:
                                 editMales = propertyObject.get("value").toString();
                                 break;

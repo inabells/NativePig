@@ -10,6 +10,11 @@
     android:fitsSystemWindows="true"
     tools:context=".Activities.MainActivity"
     android:background="@drawable/bgapps3">
+    
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="vertical"
@@ -366,6 +371,8 @@
         </GridLayout>
 
     </LinearLayout>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

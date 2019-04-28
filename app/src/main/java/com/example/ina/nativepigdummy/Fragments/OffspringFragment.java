@@ -116,26 +116,32 @@ public class OffspringFragment extends Fragment {
         String birthWeight = "";
         String weaningWeight = "";
         Cursor data = dbHelper.getOffspringContents(groupingId);
+        int counter = 0;
         while(data.moveToNext()){
             switch(data.getString(data.getColumnIndex("property_id"))){
-                case "4":
-                    offspringData = new OffspringData(regId, sex, birthWeight, weaningWeight);
-                    offspringList.add(offspringData);
-                    sex = "";
-                    birthWeight = "";
-                    weaningWeight = "";
-                    regId = data.getString(data.getColumnIndex("value"));
-                    break;
+                case "4": regId = data.getString(data.getColumnIndex("value"));
+                        counter++;
+                        break;
                 case "2": sex = data.getString(data.getColumnIndex("value"));
+                        counter++;
                         break;
                 case "5": birthWeight = data.getString(data.getColumnIndex("value"));
+                        counter++;
                         break;
                 case "7": weaningWeight = data.getString(data.getColumnIndex("value"));
+                        counter++;
+                        break;
+            }
+
+            if(counter==4) {
+                offspringData = new OffspringData(regId, sex, birthWeight, weaningWeight);
+                offspringList.add(offspringData);
+                counter=0;
             }
         }
-        offspringData = new OffspringData(regId, sex, birthWeight, weaningWeight);
-        offspringList.add(offspringData);
 
+        OffspringDataAdapter adapter = new OffspringDataAdapter(getActivity(), R.layout.listview_mortality_sales_others, offspringList);
+        listView.setAdapter(adapter);
     }
 
     private void api_getOffSprings(RequestParams requestParams) {

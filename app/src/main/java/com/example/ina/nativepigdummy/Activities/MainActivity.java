@@ -2,9 +2,11 @@ package com.example.ina.nativepigdummy.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -42,11 +44,12 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle toggle_drawer;
     private Toolbar tool_bar;
     private NavigationView navigation_view;
+    SwipeRefreshLayout swipeRefreshLayout;
     TextView noOfBoars;
     TextView noOfFemaleGrowers;
     TextView noOfMaleGrowers;
-    TextView noOfSows;
-    String sowNum, boarNum, femaleGrowerNum, maleGrowerNum = "-";
+    TextView noOfSows, noOfGilts, noOfBreeders, noOfGrowers, noOfMortality;
+    String giltNum, breederNum, growerNum, mortalityNum, sowNum, boarNum, femaleGrowerNum, maleGrowerNum = "-";
     CardView rellay_sows, rellay_boars, rellay_female_growers, rellay_male_growers, rellay_breeders, rellay_growers, rellay_mortality;
 
 
@@ -60,6 +63,11 @@ public class MainActivity extends AppCompatActivity {
         noOfBoars = findViewById(R.id.noOfBoars);
         noOfFemaleGrowers = findViewById(R.id.noOfFemaleGrowers);
         noOfMaleGrowers = findViewById(R.id.noOfMaleGrowers);
+        noOfBreeders = findViewById(R.id.noOfBreeders);
+        noOfGilts = findViewById(R.id.noOfGilts);
+        noOfMortality = findViewById(R.id.noOfMortality);
+        noOfGrowers = findViewById(R.id.noOfGrowers);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
 
         if(ApiHelper.isInternetAvailable(getApplicationContext())) {
             if(dbHelper.syncAllTablesFromLocalToServer()) {
@@ -73,6 +81,20 @@ public class MainActivity extends AppCompatActivity {
         } else{
             setLocalCount(dbHelper.local_getAllCount());
         }
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Toast.makeText(MainActivity.this, "Refreshed", Toast.LENGTH_SHORT).show();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 2000);
+            }
+        });
 
         Calendar calendar = Calendar.getInstance();
         String currentDate =  DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
@@ -227,11 +249,20 @@ public class MainActivity extends AppCompatActivity {
         boarNum = Integer.toString(map.get("boarCount"));
         femaleGrowerNum = Integer.toString(map.get("femaleGrowerCount"));
         maleGrowerNum = Integer.toString(map.get("maleGrowerCount"));
+        giltNum = Integer.toString(map.get("giltCount"));
+        breederNum = Integer.toString(map.get("breederInventory"));
+        growerNum = Integer.toString(map.get("growerInventory"));
+        mortalityNum = Integer.toString(map.get("mortalityInventory"));
+
 
         noOfSows.setText(sowNum);
         noOfBoars.setText(boarNum);
         noOfFemaleGrowers.setText(femaleGrowerNum);
         noOfMaleGrowers.setText(maleGrowerNum);
+        noOfGilts.setText(giltNum);
+        noOfGrowers.setText(growerNum);
+        noOfMortality.setText(mortalityNum);
+        noOfBreeders.setText(breederNum);
     }
 
     private void api_getAllCount() {
@@ -242,6 +273,10 @@ public class MainActivity extends AppCompatActivity {
                 noOfBoars.setText(boarNum);
                 noOfFemaleGrowers.setText(femaleGrowerNum);
                 noOfMaleGrowers.setText(maleGrowerNum);
+                noOfGilts.setText(giltNum);
+                noOfGrowers.setText(growerNum);
+                noOfMortality.setText(mortalityNum);
+                noOfBreeders.setText(breederNum);
                 Log.d("getAllCount", "Succesfully fetched count");
 
             }
@@ -258,6 +293,10 @@ public class MainActivity extends AppCompatActivity {
                 boarNum = jsonObject.get("boarCount").toString();
                 femaleGrowerNum = jsonObject.get("femaleGrowerCount").toString();
                 maleGrowerNum = jsonObject.get("maleGrowerCount").toString();
+                giltNum = jsonObject.get("giltCount").toString();
+                breederNum = jsonObject.get("breederInventory").toString();
+                growerNum = jsonObject.get("growerInventory").toString();
+                mortalityNum = jsonObject.get("mortalityInventory").toString();
                 return null;
             }
         });

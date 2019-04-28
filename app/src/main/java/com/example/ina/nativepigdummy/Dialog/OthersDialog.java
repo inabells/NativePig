@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.MortalityAndSalesActivity;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
 import com.example.ina.nativepigdummy.Adapters.AutoAdapter;
 import com.example.ina.nativepigdummy.Data.GetAllPigsData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
@@ -204,10 +205,12 @@ public class OthersDialog extends DialogFragment {
         final String editchoosepig = autoCompleteTextView.getText().toString();
         String editdateremoved = dateremoved.getText().toString();
         String editreason= choosereason.getText().toString();
-        String editage = "0 months, 0 days";
+        String editage = "Not specified";
 
-        requestParams.add("pig_registration_id", editchoosepig);
-        requestParams.add("date_removed_died", editdateremoved);
+        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+        requestParams.add("registry_id", editchoosepig);
+        requestParams.add("date_removed", editdateremoved);
         requestParams.add("reason_removed", editreason);
         requestParams.add("age", editage);
 
@@ -313,7 +316,7 @@ public class OthersDialog extends DialogFragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus){
                 if(hasFocus){
-                    DateDialog dialog = new DateDialog(v);
+                    NewDateDialog dialog = new NewDateDialog(v);
                     dialog.show(getActivity().getFragmentManager(),"Others Fragment");
                 }
             }

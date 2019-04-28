@@ -24,6 +24,9 @@ import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import cz.msebera.android.httpclient.Header;
 
 @SuppressLint("ValidFragment")
@@ -41,6 +44,8 @@ public class ViewGrowerDialog extends DialogFragment {
     private EditText datecollected180;
     private Button editButton;
     private String reg_id;
+    private String editweight45, editweight60, editweight90, editweight150, editweight180;
+    private String editdate45, editdate60, editdate90, editdate150, editdate180;
     private ImageView exit_profile;
     DatabaseHelper dbHelper;
 
@@ -71,7 +76,7 @@ public class ViewGrowerDialog extends DialogFragment {
         dbHelper = new DatabaseHelper(getActivity());
 
         if(ApiHelper.isInternetAvailable(getContext())){
-            //getWeightProfile(reg_id);
+            getWeightProfile(reg_id);
         } else{
             local_getWeightProfile(reg_id);
         }
@@ -128,7 +133,7 @@ public class ViewGrowerDialog extends DialogFragment {
     }
 
     private void api_updateWeightRecords(RequestParams params) {
-        ApiHelper.updateWeightRecords("updateWeightRecords", params, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.fetchWeightRecords("fetchWeightRecords", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("API HANDLER Success", rawJsonResponse);
@@ -178,22 +183,97 @@ public class ViewGrowerDialog extends DialogFragment {
         String editdate150 = datecollected150.getText().toString();
         String editdate180 = datecollected180.getText().toString();
 
-        requestParams.add("registration_id", reg_id);
-        requestParams.add("weight_at_45", editweight45);
-        requestParams.add("weight_at_60", editweight60);
-        requestParams.add("weight_at_90", editweight90);
-        requestParams.add("weight_at_150", editweight150);
-        requestParams.add("weight_at_180", editweight180);
-        requestParams.add("date_collected_at_45", editdate45);
-        requestParams.add("date_collected_at_60", editdate60);
-        requestParams.add("date_collected_at_90", editdate90);
-        requestParams.add("date_collected_at_150", editdate150);
-        requestParams.add("date_collected_at_180", editdate180);
+        requestParams.add("registry_id", reg_id);
+        requestParams.add("body_weight_at_45_days", editweight45);
+        requestParams.add("body_weight_at_60_days", editweight60);
+        requestParams.add("body_weight_at_90_days", editweight90);
+        requestParams.add("body_weight_at_150_days", editweight150);
+        requestParams.add("body_weight_at_180_days", editweight180);
+        requestParams.add("date_collected_45_days", editdate45);
+        requestParams.add("date_collected_60_days", editdate60);
+        requestParams.add("date_collected_90_days", editdate90);
+        requestParams.add("date_collected_150_days", editdate150);
+        requestParams.add("date_collected_180_days", editdate180);
 
         return requestParams;
     }
 
+    private void getWeightProfile(String id) {
+        RequestParams params = new RequestParams();
+        params.add("registry_id", id);
+
+        ApiHelper.getAnimalProperties("getAnimalProperties", params, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                weightat45.setText(setBlankIfNull(editweight45));
+                weightat60.setText(setBlankIfNull(editweight60));
+                weightat90.setText(setBlankIfNull(editweight90));
+                weightat150.setText(setBlankIfNull(editweight150));
+                weightat180.setText(setBlankIfNull(editweight180));
+                datecollected45.setText(setBlankIfNull(editdate45));
+                datecollected60.setText(setBlankIfNull(editdate60));
+                datecollected90.setText(setBlankIfNull(editdate90));
+                datecollected150.setText(setBlankIfNull(editdate150));
+                datecollected180.setText(setBlankIfNull(editdate180));
+                Log.d("BreederWeightRecords", "Successfully fetched");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("BreederWeightRecords", "Error: " + String.valueOf(statusCode));
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONObject jsonObject = new JSONObject(rawJsonData);
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                    JSONArray propertyArray = jsonObject.getJSONArray("properties");
+                    JSONObject propertyObject;
+                    for (int i = propertyArray.length() - 1; i >= 0; i--) {
+                        propertyObject = (JSONObject) propertyArray.get(i);
+                        switch (propertyObject.getInt("property_id")) {
+                            case 32:
+                                editweight45 = propertyObject.get("value").toString();
+                                break;
+                            case 33:
+                                editweight60 = propertyObject.get("value").toString();
+                                break;
+                            case 34:
+                                editweight90 = propertyObject.get("value").toString();
+                                break;
+                            case 35:
+                                editweight150 = propertyObject.get("value").toString();
+                                break;
+                            case 36:
+                                editweight180 = propertyObject.get("value").toString();
+                                break;
+                            case 37:
+                                editdate45 = propertyObject.get("value").toString();
+                                break;
+                            case 38:
+                                editdate60 = propertyObject.get("value").toString();
+                                break;
+                            case 39:
+                                editdate90 = propertyObject.get("value").toString();
+                                break;
+                            case 40:
+                                editdate150 = propertyObject.get("value").toString();
+                                break;
+                            case 41:
+                                editdate180 = propertyObject.get("value").toString();
+                                break;
+                        }
+                    }
+                }
+                return null;
+            }
+        });
+    }
+
+
     private String setBlankIfNull(String text) {
+        if(text==null) return "";
         return ((text=="null" || text.isEmpty()) ? "" : text);
     }
 
@@ -203,7 +283,7 @@ public class ViewGrowerDialog extends DialogFragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus){
                 if(hasFocus){
-                    DateDialog dialog = new DateDialog(v);
+                    NewDateDialog dialog = new NewDateDialog(v);
                     dialog.show(getActivity().getFragmentManager(),"Date Collected");
                 }
             }
@@ -213,7 +293,7 @@ public class ViewGrowerDialog extends DialogFragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus){
                 if(hasFocus){
-                    DateDialog dialog = new DateDialog(v);
+                    NewDateDialog dialog = new NewDateDialog(v);
                     dialog.show(getActivity().getFragmentManager(),"Date Collected");
                 }
             }
@@ -223,7 +303,7 @@ public class ViewGrowerDialog extends DialogFragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus){
                 if(hasFocus){
-                    DateDialog dialog = new DateDialog(v);
+                    NewDateDialog dialog = new NewDateDialog(v);
                     dialog.show(getActivity().getFragmentManager(),"Date Collected");
                 }
             }
@@ -233,7 +313,7 @@ public class ViewGrowerDialog extends DialogFragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus){
                 if(hasFocus){
-                    DateDialog dialog = new DateDialog(v);
+                    NewDateDialog dialog = new NewDateDialog(v);
                     dialog.show(getActivity().getFragmentManager(),"Date Collected");
                 }
             }
@@ -243,7 +323,7 @@ public class ViewGrowerDialog extends DialogFragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus){
                 if(hasFocus){
-                    DateDialog dialog = new DateDialog(v);
+                    NewDateDialog dialog = new NewDateDialog(v);
                     dialog.show(getActivity().getFragmentManager(),"Date Collected");
                 }
             }

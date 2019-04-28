@@ -45,7 +45,7 @@
         <LinearLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
-            android:layout_height="430dp"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_marginTop="6dp"
             android:orientation="vertical">
@@ -58,6 +58,40 @@
                 android:layout_marginRight="30dp"
                 android:layout_marginTop="20dp"
                 android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="100">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:layout_weight="50"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Weaning Weight, KG"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="13sp" />
+
+                        <EditText
+                            android:id="@+id/weaningweight"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-light"
+                            android:hint="0 KG"
+                            android:inputType="numberDecimal"
+                            android:textColor="#000000"
+                            android:textSize="18sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
