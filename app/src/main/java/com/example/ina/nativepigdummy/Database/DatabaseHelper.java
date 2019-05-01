@@ -196,7 +196,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public DatabaseHelper(Context context){
-        super(context, DATABASE_NAME, null, 36);
+        super(context, DATABASE_NAME, null, 37);
     }
     //------------------------------------------------------------------------------------------
     private static final String Administrators = "CREATE TABLE " + administrators + "("
@@ -628,6 +628,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         content.put(farmable_id, 9);
         result = db.insert(users, null, content);
 
+        content.put(name, "PBL");
+        content.put(email, "inalagmaaan@gmail.com");
+        content.put(farmable_id, 10);
+        result = db.insert(users, null, content);
+
         return result != -1;
     }
 
@@ -717,6 +722,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         content.put(breedable_id, 9);
         result = db.insert(farms, null, content);
 
+        content.put(name, "Philina Lagman");
+        content.put(code, "GNDA");
+        //content.put(region, "8");
+        //content.put(province, "Marinduque");
+        //content.put(town, "Torrijos");
+        //content.put(barangay, "");
+        content.put(breedable_id, 10);
+        result = db.insert(farms, null, content);
+
         return result != -1;
     }
 
@@ -757,6 +771,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         result = db.insert(breeds, null, content);
 
         content.put(breed, "MarindukePig");
+        content.put(animaltype_id, 3);
+        result = db.insert(breeds, null, content);
+
+        content.put(breed, "PBLagman");
         content.put(animaltype_id, 3);
         result = db.insert(breeds, null, content);
 

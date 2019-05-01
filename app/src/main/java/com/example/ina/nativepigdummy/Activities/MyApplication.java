@@ -7,9 +7,9 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 
 public class MyApplication extends MultiDexApplication {
     public static Context context;
-    public static int id = 4;
-    public static String email = "berkjalapig@gmail.com";
-    public static String name = "IAS";
+    public static int id = 0;
+    public static String email = "";
+    public static String name = "";
 
     private static MyApplication mInstance;
 

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -24,8 +25,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import com.example.ina.nativepigdummy.R;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONObject;
 
 import java.util.Optional;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -35,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleApiClient mGoogleApiClient;
     private GoogleSignInClient mGoogleSignInClient;
     private boolean loggedInFlag = false;
+    String editName, editEmail, editId;
     DatabaseHelper dbHelper;
 
     private FirebaseAuth mAuth;
@@ -109,12 +117,39 @@ public class LoginActivity extends AppCompatActivity {
             loggedInFlag = true;
             firebaseAuthWithGoogle(account);
 
-//            Cursor cursor = dbHelper.getEmailInLocalDb(mAuth.getCurrentUser().getEmail());
+//            Cursor cursor = dbHelper.getEmailInLocalDb(account.getEmail());
 //            while(cursor.moveToNext()){
 //                MyApplication.id = cursor.getInt(cursor.getColumnIndex("id"));
 //                MyApplication.name = cursor.getString(cursor.getColumnIndex("name"));
 //                MyApplication.email = cursor.getString(cursor.getColumnIndex("email"));
 //            }
+            RequestParams params = new RequestParams();
+            params.add("email", account.getEmail());
+
+
+
+            ApiHelper.getEmail("getEmail", params, new BaseJsonHttpResponseHandler<Object>() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                    Log.d("getEmail", "Error: " + String.valueOf(statusCode));
+                }
+
+                @Override
+                protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                    JSONObject jsonObject = new JSONObject(rawJsonData);
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                        JSONObject jsonObjectUser = jsonObject.getJSONObject("user");
+                        MyApplication.id = jsonObjectUser.getInt("id");
+                        MyApplication.name = jsonObjectUser.getString("name");
+                        MyApplication.email = jsonObjectUser.getString("email");
+                    }
+                    return null;
+                }
+            });
 
             //proceed to dashboard
             Log.d("Google hndlSignInResult", "Proceed to Intent");
