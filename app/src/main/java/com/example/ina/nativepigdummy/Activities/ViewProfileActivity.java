@@ -1,29 +1,29 @@
 package com.example.ina.nativepigdummy.Activities;
 
-import android.app.Dialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Dialog.ViewProfileDialog;
 import com.example.ina.nativepigdummy.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -32,9 +32,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.loopj.android.http.BaseJsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+
+import cz.msebera.android.httpclient.Header;
 
 public class ViewProfileActivity extends AppCompatActivity implements ViewProfileDialog.ViewProfileListener{
 
@@ -45,14 +50,20 @@ public class ViewProfileActivity extends AppCompatActivity implements ViewProfil
     private Toolbar tool_bar;
     private NavigationView navigation_view;
     private FirebaseAuth mAuth;
+    private DatabaseHelper dbHelper;
 
-    private TextView textViewfarmname;
-    private TextView textViewcontactno;
-    private TextView textViewregion;
-    private TextView textViewprovince;
-    private TextView textViewtown;
-    private TextView textViewbarangay;
-    private TextView emailadd;
+    private TextView textViewFarmName;
+    private TextView textViewContactNo;
+    private TextView textViewRegion;
+    private TextView textViewProvince;
+    private TextView textViewTown;
+    private TextView textViewBarangay;
+    private TextView textViewEmailAdd;
+    private TextView textViewFarmId;
+    private TextView textViewBreed;
+
+    private String editFarmName, editContactNo, editRegion, editProvince, editTown, editBarangay, editFarmId, editBreed;
+
     private ImageView edit_profile;
     private ImageView imageView;
     private Bitmap bitmap_foto;
@@ -64,26 +75,39 @@ public class ViewProfileActivity extends AppCompatActivity implements ViewProfil
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_profile);
 
-        emailadd = findViewById(R.id.textViewEmaiAdd);
+        textViewEmailAdd = findViewById(R.id.textViewEmaiAdd);
+        textViewFarmName = (TextView) findViewById(R.id.farm);
+        textViewContactNo = (TextView) findViewById(R.id.textViewNumber);
+        textViewRegion = (TextView) findViewById(R.id.textViewRegion);
+        textViewProvince = (TextView) findViewById(R.id.textViewProvince);
+        textViewTown = (TextView) findViewById(R.id.textViewTown);
+        textViewBarangay = (TextView) findViewById(R.id.textViewBarangay);
+        textViewBreed = findViewById(R.id.textViewBreed);
+        textViewFarmId = findViewById(R.id.textViewFarmID);
 
         mAuth = FirebaseAuth.getInstance();
+        dbHelper = new DatabaseHelper(this);
 
         imageView = findViewById(R.id.user_image);
         bitmap_foto = BitmapFactory.decodeResource(getResources(),R.drawable.image);
         roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap_foto);
         roundedBitmapDrawable.setCircular(true);
         imageView.setImageDrawable(roundedBitmapDrawable);
-        textViewfarmname = (TextView) findViewById(R.id.farm);
-        textViewcontactno = (TextView) findViewById(R.id.textViewNumber);
-        textViewregion = (TextView) findViewById(R.id.textViewRegion);
-        textViewprovince = (TextView) findViewById(R.id.textViewProvince);
-        textViewtown = (TextView) findViewById(R.id.textViewTown);
-        textViewbarangay = (TextView) findViewById(R.id.textViewBarangay);
 
-        emailadd.setText(mAuth.getCurrentUser().getEmail());
+
+        textViewEmailAdd.setText(mAuth.getCurrentUser().getEmail());
 
         navigation_view = findViewById(R.id.nav_view);
         edit_profile = findViewById(R.id.edit_profile);
+
+        RequestParams params = new RequestParams();
+        params.add("farmable_id", Integer.toString(MyApplication.id));
+        params.add("breedable_id", Integer.toString(MyApplication.id));
+
+        if(ApiHelper.isInternetAvailable(getApplicationContext()))
+            api_getFarmProfile(params);
+        else
+            local_getFarmProfile();
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,31 +205,72 @@ public class ViewProfileActivity extends AppCompatActivity implements ViewProfil
                 openViewProfileDialog();
             }
         });
-
-//        local_getProfile();
-
     }
 
-//    private void local_getProfile(){
-//
-//    }
+    private void local_getFarmProfile() {
+        Cursor dataFromFarm = dbHelper.getFarmProfile(MyApplication.id);
+        if(dataFromFarm.moveToFirst()) {
+            textViewRegion.setText(dataFromFarm.getString(dataFromFarm.getColumnIndex("region")));
+//            textViewContactNo.setText(dataFromFarm.getString(dataFromFarm.getColumnIndex("contactno")));
+            textViewTown.setText(dataFromFarm.getString(dataFromFarm.getColumnIndex("town")));
+            textViewBarangay.setText(dataFromFarm.getString(dataFromFarm.getColumnIndex("barangay")));
+        }
+
+        Cursor dataFromUsers = dbHelper.getUserProfile(MyApplication.id);
+        if(dataFromUsers.moveToFirst()){
+//            textViewEmailAdd.setText(dataFromFarm.getString(dataFromFarm.getColumnIndex("email")));
+            textViewContactNo.setText(dataFromFarm.getString(dataFromFarm.getColumnIndex("phone")));
+        }
+    }
+
 
     public void openViewProfileDialog(){
         ViewProfileDialog viewProfileDialog = new ViewProfileDialog();
         viewProfileDialog.show(getSupportFragmentManager(),"ViewProfileDialog");
     }
 
-    @Override public void applyFarmName(String farmname){ textViewfarmname.setText(farmname); }
+    private void api_getFarmProfile(RequestParams params) {
+        ApiHelper.getFarmProfilePage("getFarmProfilePage", params, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                textViewRegion.setText(editRegion);
+                textViewBarangay.setText(editBarangay);
+                textViewContactNo.setText(editContactNo);
+                textViewTown.setText(editTown);
+                textViewFarmName.setText(editFarmName);
+                textViewFarmId.setText(editFarmId);
+                textViewBreed.setText(editBreed);
+                textViewProvince.setText(editProvince);
+                Log.d("getFarmProfile", "Successfully fetched count");
+            }
 
-    @Override public void applyContactNo(String contactno){ textViewcontactno.setText(contactno); }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("getFarmProfile", "Error: " + String.valueOf(statusCode));
+            }
 
-    @Override public void applyRegion(String region){ textViewregion.setText(region); }
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONObject jsonObject = new JSONObject(rawJsonData);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                    JSONObject jsonObjectFarm = jsonObject.getJSONObject("farm");
+                    JSONObject jsonObjectBreed = jsonObject.getJSONObject("breed");
+                    JSONObject jsonObjectUser = jsonObject.getJSONObject("user");
+                    editContactNo = jsonObjectFarm.getString("phone");
+                    editTown = jsonObjectBreed.getString("town");
+                    editBarangay = jsonObjectBreed.getString("barangay");
+                    editRegion = jsonObjectBreed.getString("region");
+                    editFarmName = jsonObjectBreed.getString("name");
+                    editBreed = jsonObjectUser.getString("breed");
+                    editFarmId = jsonObjectBreed.getString("code");
+                    editProvince = jsonObjectBreed.getString("province");
+                }
+                return null;
+            }
+        });
+    }
 
-    @Override public void applyProvince(String province){ textViewprovince.setText(province); }
 
-    @Override public void applyTown(String town){ textViewtown.setText(town); }
-
-    @Override public void applyBarangay(String barangay){ textViewbarangay.setText(barangay); }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -240,6 +305,17 @@ public class ViewProfileActivity extends AppCompatActivity implements ViewProfil
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override public void applyFarmName(String farmname){ textViewFarmName.setText(farmname); }
+
+    @Override public void applyContactNo(String contactno){ textViewContactNo.setText(contactno); }
+
+    @Override public void applyRegion(String region){ textViewRegion.setText(region); }
+
+    @Override public void applyProvince(String province){ textViewProvince.setText(province); }
+
+    @Override public void applyTown(String town){ textViewTown.setText(town); }
+
+    @Override public void applyBarangay(String barangay){ textViewBarangay.setText(barangay); }
 
 
     public ViewProfileActivity() {

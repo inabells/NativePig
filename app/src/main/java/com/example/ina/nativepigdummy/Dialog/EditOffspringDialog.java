@@ -110,7 +110,6 @@ public class EditOffspringDialog extends DialogFragment{
         }
     }
 
-
     private void local_updateOffspringRecord() {
         editOffspringEarnotch = textViewOffspring.getText().toString();
         editSex = textViewSex.getSelectedItem().toString();

@@ -1339,11 +1339,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean addWeightRecords(String regId, String datecollected45, String datecollected60, String datecollected90, String datecollected150,
+    public boolean addWeightRecords(String regId, String pig_weaningweight, String datecollected45, String datecollected60, String datecollected90, String datecollected150,
                                     String datecollected180, String weight45, String weight60, String weight90, String weight150, String weight180, String isSynced){
 
         String animalId = getAnimalId(regId);
         int animalIdInt = Integer.parseInt(animalId);
+        insertOrReplaceInAnimalPropertyDB(7, animalIdInt, pig_weaningweight, "false");
         insertOrReplaceInAnimalPropertyDB(32, animalIdInt, weight45, "false");
         insertOrReplaceInAnimalPropertyDB(33, animalIdInt, weight60, "false");
         insertOrReplaceInAnimalPropertyDB(34, animalIdInt, weight90, "false");
@@ -1473,6 +1474,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
         }
     }
+
+    public boolean addContactNoinFarmProfile(String contactNo, String isSynced){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(phone, contactNo);
+        contentValues.put(is_synced, isSynced);
+
+        long result = db.insert(users, null, contentValues);
+        return result != -1;
+    }
+
+    public boolean addFarmProfile(String farmRegion, String farmTown, String farmBarangay){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(region, farmRegion);
+        contentValues.put(town, farmTown);
+        contentValues.put(barangay, farmBarangay);
+
+        long result = db.insert(farms, null, contentValues);
+        return result != -1;
+    }
+
+    //profiledata
+//    public boolean addProfileDetails(String contactno, String region, String town, String barangay, String isSynced){
+//        SQLiteDatabase db =  this.getWritableDatabase();
+//        ContentValues contentValues = new ContentValues();
+//
+//        contentValues.put(animal_id, animalId);
+//        contentValues.put(animaltype_id, 3);
+//        contentValues.put(breed_id, MyApplication.id);
+//        contentValues.put(dateremoved, dateRemoved);
+//        contentValues.put(reason, pigReason);
+//        contentValues.put(age, pigAge);
+//        contentValues.put(is_synced, isSynced);
+//
+//        updateStatus(regId, "removed");
+//
+//        long result = db.insert(removed_animals,null,contentValues);
+//        if(result == -1){
+//            Log.d("addMortalitySalesData", "Error in adding mortality sales to local");
+//            return false;
+//        }
+//        else{
+//            boolean success = setIsSyncedFromPigTableToDelete(regId);
+//            if(success) Log.d("addMortalitySalesData", "is_synced changed to delete");
+//            else Log.d("addMortalitySalesData", "Error in changing is_synced to delete");
+//            return true;
+//        }
+//    }
 
     public boolean addMortalitySalesData(String regId, String datedied, String causeofdeath, String weightsold, String reasonremoved, String pigAge, String isSynced){
         SQLiteDatabase db =  this.getWritableDatabase();
@@ -2659,6 +2711,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long result = db.update(grouping_properties, contentValues, whereClause, whereArgs);
         if(result == -1) return false;
         else return true;
+    }
+
+    public boolean updateFarmProfile(String contactNo, String regionString, String townString, String barangayString, int farmId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValuesFarm = new ContentValues();
+        ContentValues contentValuesUser = new ContentValues();
+        String farmIdString = Integer.toString(farmId);
+
+        contentValuesUser.put(phone, contactNo); //users table
+        contentValuesFarm.put(region, regionString); //farms table
+        contentValuesFarm.put(town, townString); //farms table
+        contentValuesFarm.put(barangay, barangayString); //farms table
+
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{farmIdString};
+
+        long resultFarms = db.update(farms, contentValuesFarm, whereClause, whereArgs);
+        long resultUsers = db.update(users, contentValuesUser, whereClause, whereArgs);
+        if(resultFarms == -1 && resultUsers == -1) return false;
+        else return true;
+    }
+
+    public Cursor getFarmProfile(int farmId){
+        String farmIdString = Integer.toString(farmId);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String columns[] = { "*" };
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{farmIdString};
+        Cursor data = db.query(farms, columns, whereClause, whereArgs, null, null, null);
+        return data;
+    }
+
+    public Cursor getUserProfile(int farmId){
+        String farmIdString = Integer.toString(farmId);
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String columns[] = { "*" };
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{farmIdString};
+        Cursor data = db.query(users, columns, whereClause, whereArgs, null, null, null);
+        return data;
     }
 
     private String changeToNotSpecifiedIfNull(String value) {
