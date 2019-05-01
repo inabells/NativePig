@@ -20,6 +20,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -39,6 +41,7 @@ public class GrowerRecordsActivity extends AppCompatActivity {
     private TabLayout tab_layout;
     private ViewPager view_pager;
     private PagerAdapter page_adapter;
+    private DatabaseHelper dbHelper;
     private TabItem tab_male_growers;
     private TabItem tab_female_growers;
     SwipeRefreshLayout swipeRefreshLayout;
@@ -47,6 +50,7 @@ public class GrowerRecordsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grower_records);
+        dbHelper = new DatabaseHelper(this);
 
         navigation_view = findViewById(R.id.nav_view);
         tab_layout = findViewById(R.id.tab_layout);
@@ -93,7 +97,17 @@ public class GrowerRecordsActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Toast.makeText(GrowerRecordsActivity.this, "Refreshed", Toast.LENGTH_SHORT).show();
+                if(ApiHelper.isInternetAvailable(getApplicationContext())){
+                    if(dbHelper.syncAllTablesFromLocalToServer()){
+                        dbHelper.clearLocalDatabases();
+                        dbHelper.getAllDataFromServer();
+                        Toast.makeText(GrowerRecordsActivity.this, "Local Data Added to Server", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(GrowerRecordsActivity.this, "Error in Adding Local Data to Server", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(GrowerRecordsActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                }
 
                 new Handler().postDelayed(new Runnable() {
                     @Override

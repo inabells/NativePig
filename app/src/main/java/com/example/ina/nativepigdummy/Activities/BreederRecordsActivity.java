@@ -20,6 +20,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -36,7 +38,7 @@ public class BreederRecordsActivity extends AppCompatActivity {
     private ActionBarDrawerToggle toggle_drawer;
     private Toolbar tool_bar;
     private NavigationView navigation_view;
-
+    private DatabaseHelper dbHelper;
     private TabLayout tab_layout;
     private ViewPager view_pager;
     private PagerAdapter page_adapter;
@@ -56,6 +58,7 @@ public class BreederRecordsActivity extends AppCompatActivity {
         tab_boars = findViewById(R.id.tab_boars);
         view_pager = findViewById(R.id.view_pager);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        dbHelper = new DatabaseHelper(this);
 
         page_adapter = new BreederRecordsPageAdapter(getSupportFragmentManager(), tab_layout.getTabCount());
         view_pager.setAdapter(page_adapter);
@@ -95,7 +98,17 @@ public class BreederRecordsActivity extends AppCompatActivity {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Toast.makeText(BreederRecordsActivity.this, "Refreshed", Toast.LENGTH_SHORT).show();
+                if(ApiHelper.isInternetAvailable(getApplicationContext())){
+                    if(dbHelper.syncAllTablesFromLocalToServer()){
+                        dbHelper.clearLocalDatabases();
+                        dbHelper.getAllDataFromServer();
+                        Toast.makeText(BreederRecordsActivity.this, "Local Data Added to Server", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(BreederRecordsActivity.this, "Error in Adding Local Data to Server", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(BreederRecordsActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                }
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
