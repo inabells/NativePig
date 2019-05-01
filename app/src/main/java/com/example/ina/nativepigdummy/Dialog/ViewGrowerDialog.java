@@ -32,7 +32,7 @@ import cz.msebera.android.httpclient.Header;
 @SuppressLint("ValidFragment")
 public class ViewGrowerDialog extends DialogFragment {
     private static final String TAG = "ViewGrowerDialog";
-    private EditText weightat45;
+    private EditText weaningWeight, weightat45;
     private EditText weightat60;
     private EditText weightat90;
     private EditText weightat150;
@@ -44,7 +44,7 @@ public class ViewGrowerDialog extends DialogFragment {
     private EditText datecollected180;
     private Button editButton;
     private String reg_id;
-    private String editweight45, editweight60, editweight90, editweight150, editweight180;
+    private String editWeaningWeight, editweight45, editweight60, editweight90, editweight150, editweight180;
     private String editdate45, editdate60, editdate90, editdate150, editdate180;
     private ImageView exit_profile;
     DatabaseHelper dbHelper;
@@ -63,6 +63,7 @@ public class ViewGrowerDialog extends DialogFragment {
         //editButton = view.findViewById(R.id.edit_button);
         //exit_profile = view.findViewById(R.id.exit_dialog);
 
+        weaningWeight = view.findViewById(R.id.weaningweight);
         weightat45 = view.findViewById(R.id.weight_45_days);
         weightat60 = view.findViewById(R.id.weight_60_days);
         weightat90 = view.findViewById(R.id.weight_90_days);
@@ -108,6 +109,8 @@ public class ViewGrowerDialog extends DialogFragment {
         Cursor data = dbHelper.getSinglePig(reg_id);
         while(data.moveToNext()) {
             switch(data.getString(data.getColumnIndex("property_id"))) {
+                case "7": weaningWeight.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
+                    break;
                 case "32": weightat45.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
                     break;
                 case "33": weightat60.setText(setBlankIfNull(data.getString(data.getColumnIndex("value"))));
@@ -152,6 +155,7 @@ public class ViewGrowerDialog extends DialogFragment {
     }
 
     private void local_updateWeightRecords() {
+        String editWeaningWeight = weaningWeight.getText().toString();
         String editweight45 = weightat45.getText().toString();
         String editweight60 = weightat60.getText().toString();
         String editweight90 = weightat90.getText().toString();
@@ -163,7 +167,7 @@ public class ViewGrowerDialog extends DialogFragment {
         String editdate150 = datecollected150.getText().toString();
         String editdate180 = datecollected180.getText().toString();
 
-        boolean insertData = dbHelper.addWeightRecords(reg_id, editdate45, editdate60, editdate90, editdate150, editdate180,
+        boolean insertData = dbHelper.addWeightRecords(reg_id, editWeaningWeight, editdate45, editdate60, editdate90, editdate150, editdate180,
                 editweight45, editweight60, editweight90, editweight150, editweight180, "false");
 
         if(insertData) Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
@@ -172,6 +176,7 @@ public class ViewGrowerDialog extends DialogFragment {
 
     private RequestParams buildParams(String reg_id) {
         RequestParams requestParams = new RequestParams();
+        String editWeaningWeight = weaningWeight.getText().toString();
         String editweight45 = weightat45.getText().toString();
         String editweight60 = weightat60.getText().toString();
         String editweight90 = weightat90.getText().toString();
@@ -184,6 +189,7 @@ public class ViewGrowerDialog extends DialogFragment {
         String editdate180 = datecollected180.getText().toString();
 
         requestParams.add("registry_id", reg_id);
+        requestParams.add("weaning_weight", editWeaningWeight);
         requestParams.add("body_weight_at_45_days", editweight45);
         requestParams.add("body_weight_at_60_days", editweight60);
         requestParams.add("body_weight_at_90_days", editweight90);
@@ -205,6 +211,7 @@ public class ViewGrowerDialog extends DialogFragment {
         ApiHelper.getAnimalProperties("getAnimalProperties", params, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                weaningWeight.setText(setBlankIfNull(editWeaningWeight));
                 weightat45.setText(setBlankIfNull(editweight45));
                 weightat60.setText(setBlankIfNull(editweight60));
                 weightat90.setText(setBlankIfNull(editweight90));
@@ -233,6 +240,9 @@ public class ViewGrowerDialog extends DialogFragment {
                     for (int i = propertyArray.length() - 1; i >= 0; i--) {
                         propertyObject = (JSONObject) propertyArray.get(i);
                         switch (propertyObject.getInt("property_id")) {
+                            case 7:
+                                editWeaningWeight = propertyObject.get("value").toString();
+                                break;
                             case 32:
                                 editweight45 = propertyObject.get("value").toString();
                                 break;
