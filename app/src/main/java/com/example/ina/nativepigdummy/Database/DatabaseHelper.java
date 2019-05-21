@@ -193,10 +193,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String properties = "properties";
     private static final String fname = "fname";
     private static final String description = "description";
+    private static final String loggedInUserTable = "loggedInUserTable";
+    private static final String user_name = "user_name";
+    private static final String user_email = "user_email";
+
 
 
     public DatabaseHelper(Context context){
-        super(context, DATABASE_NAME, null, 37);
+        super(context, DATABASE_NAME, null, 38);
     }
     //------------------------------------------------------------------------------------------
     private static final String Administrators = "CREATE TABLE " + administrators + "("
@@ -204,6 +208,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String Admins = "CREATE TABLE " + admins + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)";
+
+    private static final String LoggedInUserTable = "CREATE TABLE " + loggedInUserTable + "("
+            + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + user_id + " INTEGER,"
+            + user_name + " VARCHAR(225),"
+            + user_email + " VARCHAR(225))";
 
     private static final String Animals = "CREATE TABLE " + animals + "("
             + id + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -534,12 +544,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(Sales);
         db.execSQL(Users);
         db.execSQL(Weight_Collections);
+        db.execSQL(LoggedInUserTable);
 
         populateFarms(db);
         populateAnimalTypes(db);
         populateBreeds(db);
         populateProperties(db);
-        //populateUsers();
+//        populateUsers();
     }
 
     @Override
@@ -575,6 +586,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + sales);
         db.execSQL("DROP TABLE IF EXISTS " + users);
         db.execSQL("DROP TABLE IF EXISTS " + weight_collections);
+        db.execSQL("DROP TABLE IF EXISTS " + loggedInUserTable);
 
         onCreate(db);
     }
@@ -1961,37 +1973,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "AND d.grouping_id=a.id " +
                 "AND d.property_id=43 " +
                 "AND e.grouping_id=a.id " +
-                "AND e.property_id=60 ";
-        
+                "AND e.property_id=60 " +
+                "AND a.breed_id=c.breed_id " +
+                "AND a.breed_id = ?";
+
+
         SQLiteDatabase db = this.getWritableDatabase();
 //        Cursor data = db.rawQuery("SELECT a.registryid, c.registryid, b.value FROM groupings a, grouping_properties b, animals c where a.id=b.grouping_id AND a.father_id=c.id AND b.property_id=42" , null);
-        Cursor data = db.rawQuery(query, null);
+        String[] whereArgs = new String[]{Integer.toString(MyApplication.id)};
+        Cursor data = db.rawQuery(query, whereArgs);
         return data;
     }
 
     public Cursor getMortalityContents(){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor data = db.rawQuery("SELECT b.registryid, a.* FROM mortalities a, animals b where a.animal_id=b.id ", null);
+        String[] whereArgs = new String[]{Integer.toString(MyApplication.id)};
+        Cursor data = db.rawQuery("SELECT b.registryid, a.* FROM mortalities a, animals b where a.animal_id=b.id and a.breed_id=b.breed_id and a.breed_id = ?", whereArgs);
         return data;
     }
 
     public Cursor getSalesContents(){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor data = db.rawQuery("SELECT b.registryid, a.* FROM sales a, animals b where a.animal_id=b.id ", null);
+        String[] whereArgs = new String[]{Integer.toString(MyApplication.id)};
+        Cursor data = db.rawQuery("SELECT b.registryid, a.* FROM sales a, animals b where a.animal_id=b.id and a.breed_id=b.breed_id and a.breed_id = ?", whereArgs);
         return data;
     }
 
     public Cursor getOthersContents(){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor data = db.rawQuery("SELECT b.registryid, a.* FROM removed_animals a, animals b where a.animal_id=b.id ", null);
+        String[] whereArgs = new String[]{Integer.toString(MyApplication.id)};
+        Cursor data = db.rawQuery("SELECT b.registryid, a.* FROM removed_animals a, animals b where a.animal_id=b.id and a.breed_id=b.breed_id and a.breed_id = ?", whereArgs);
         return data;
     }
 
     public Cursor getBoarContents(){
         SQLiteDatabase db = this.getWritableDatabase();
         String columns[] = { "*" };
-        String whereClause = "substr(registryid, -7, 1) = ? AND status = ? AND is_synced != ?";
-        String[] whereArgs = new String[]{"M", "breeder", "delete"};
+        String whereClause = "substr(registryid, -7, 1) = ? AND status = ? AND is_synced != ? AND breed_id = ?";
+        String[] whereArgs = new String[]{"M", "breeder", "delete", Integer.toString(MyApplication.id)};
         Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
         return data;
     }
@@ -1999,8 +2018,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Cursor getSowContents(){
         SQLiteDatabase db = this.getWritableDatabase();
         String columns[] = { "*" };
-        String whereClause = "substr(registryid, -7, 1) = ? AND status = ? AND is_synced != ?";
-        String[] whereArgs = new String[]{"F", "breeder", "delete"};
+        String whereClause = "substr(registryid, -7, 1) = ? AND status = ? AND is_synced != ? AND breed_id = ?";
+        String[] whereArgs = new String[]{"F", "breeder", "delete", Integer.toString(MyApplication.id)};
         Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
         return data;
     }
@@ -2008,8 +2027,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Cursor getFemaleGrowerContents(){
         SQLiteDatabase db = this.getWritableDatabase();
         String columns[] = { "*" };
-        String whereClause = "substr(registryid, -7, 1) = ? AND status = ? AND is_synced != ?";
-        String[] whereArgs = new String[]{"F", "active", "delete"};
+        String whereClause = "substr(registryid, -7, 1) = ? AND status = ? AND is_synced != ? AND breed_id = ?";
+        String[] whereArgs = new String[]{"F", "active", "delete", Integer.toString(MyApplication.id)};
         Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
         return data;
     }
@@ -2017,8 +2036,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Cursor getMaleGrowerContents(){
         SQLiteDatabase db = this.getWritableDatabase();
         String columns[] = { "*" };
-        String whereClause = "substr(registryid, -7, 1) = ? AND status = ? AND is_synced != ?";
-        String[] whereArgs = new String[]{"M", "active", "delete"};
+        String whereClause = "substr(registryid, -7, 1) = ? AND status = ? AND is_synced != ? AND breed_id = ?";
+        String[] whereArgs = new String[]{"M", "active", "delete", Integer.toString(MyApplication.id)};
         Cursor data = db.query(animals, columns, whereClause , whereArgs, null, null, null);
         return data;
     }
@@ -2928,6 +2947,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(age, p_age);
         long result = db.insert(sales, null, contentValues);
         return result != -1;
+    }
+
+    public boolean insertToLoggedInUserTable(int userId, String userName, String userEmail){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("user_id", userId);
+        contentValues.put("user_name", userName);
+        contentValues.put("user_email", userEmail);
+        long result = db.insert(loggedInUserTable, null, contentValues);
+        return result != -1;
+    }
+
+    public void clearLoggedInUserTable(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(loggedInUserTable, null, null);
+    }
+
+    public Cursor getLoggedInUserTable(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String columns[] = { "*" };
+        Cursor data = db.query(loggedInUserTable, columns, null, null, null, null, null);
+        return data;
     }
 
 }

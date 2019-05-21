@@ -1,6 +1,7 @@
 package com.example.ina.nativepigdummy.Activities;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -18,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Adapters.MortalityDataAdapter;
+import com.example.ina.nativepigdummy.Data.MortalityData;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -70,9 +73,12 @@ public class MainActivity extends AppCompatActivity {
         noOfGrowers = findViewById(R.id.noOfGrowers);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
 
+        getLogInCredentials();
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                getLogInCredentials();
                 if(ApiHelper.isInternetAvailable(getApplicationContext())){
                     if(dbHelper.syncAllTablesFromLocalToServer()){
                         dbHelper.clearLocalDatabases();
@@ -244,6 +250,15 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Dashboard");
     }
 
+    private void getLogInCredentials() {
+        Cursor data = dbHelper.getLoggedInUserTable();
+        if(data.moveToLast()){
+            MyApplication.id = data.getInt(data.getColumnIndex("user_id"));
+            MyApplication.email = data.getString(data.getColumnIndex("user_email"));
+            MyApplication.name = data.getString(data.getColumnIndex("user_name"));
+        }
+    }
+
     private void setLocalCount(HashMap<String, Integer> map) {
         sowNum = Integer.toString(map.get("sowCount"));
         boarNum = Integer.toString(map.get("boarCount"));
@@ -253,7 +268,6 @@ public class MainActivity extends AppCompatActivity {
         breederNum = Integer.toString(map.get("breederInventory"));
         growerNum = Integer.toString(map.get("growerInventory"));
         mortalityNum = Integer.toString(map.get("mortalityInventory"));
-
 
         noOfSows.setText(sowNum);
         noOfBoars.setText(boarNum);

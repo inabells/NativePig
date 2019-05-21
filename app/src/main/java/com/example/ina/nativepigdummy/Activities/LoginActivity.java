@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
@@ -28,6 +29,7 @@ import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Optional;
@@ -117,39 +119,12 @@ public class LoginActivity extends AppCompatActivity {
             loggedInFlag = true;
             firebaseAuthWithGoogle(account);
 
-//            Cursor cursor = dbHelper.getEmailInLocalDb(account.getEmail());
-//            while(cursor.moveToNext()){
-//                MyApplication.id = cursor.getInt(cursor.getColumnIndex("id"));
-//                MyApplication.name = cursor.getString(cursor.getColumnIndex("name"));
-//                MyApplication.email = cursor.getString(cursor.getColumnIndex("email"));
-//            }
             RequestParams params = new RequestParams();
             params.add("email", account.getEmail());
 
-
-
-            ApiHelper.getEmail("getEmail", params, new BaseJsonHttpResponseHandler<Object>() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
-                    Log.d("getEmail", "Error: " + String.valueOf(statusCode));
-                }
-
-                @Override
-                protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
-                    JSONObject jsonObject = new JSONObject(rawJsonData);
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                        JSONObject jsonObjectUser = jsonObject.getJSONObject("user");
-                        MyApplication.id = jsonObjectUser.getInt("id");
-                        MyApplication.name = jsonObjectUser.getString("name");
-                        MyApplication.email = jsonObjectUser.getString("email");
-                    }
-                    return null;
-                }
-            });
+            api_checkEmailInDb(params);
+            dbHelper.clearLoggedInUserTable();
+            local_insertToLoggedInUserDb(account.getEmail());
 
             //proceed to dashboard
             Log.d("Google hndlSignInResult", "Proceed to Intent");
@@ -161,7 +136,77 @@ public class LoginActivity extends AppCompatActivity {
         } catch (ApiException e) {
             Log.w("Google Login", "signInResult:failed code=" + e.getStatusCode());
 //            Toast.makeText(this, "Error logging in", Toast.LENGTH_SHORT).show();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+    }
+
+    private void local_insertToLoggedInUserDb(String accountEmail) {
+        if(accountEmail.equals("baibppig@gmail.com")){
+            MyApplication.id = 1;
+            MyApplication.name = "BAI";
+        }else if(accountEmail.equals("benguetpig@gmai.com")){
+            MyApplication.id = 2;
+            MyApplication.name = "BSU";
+        }else if(accountEmail.equals("siniranganpig@gmail.com")){
+            MyApplication.id = 3;
+            MyApplication.name = "ESSU";
+        }else if(accountEmail.equals("berkjalapig@gmail.com")){
+            MyApplication.id = 4;
+            MyApplication.name = "IAS";
+        }else if(accountEmail.equals("isabelaisupig@gmail.com")){
+            MyApplication.id = 5;
+            MyApplication.name = "ISU";
+        }else if(accountEmail.equals("yookahpig@gmail.com")){
+            MyApplication.id = 6;
+            MyApplication.name = "KSU";
+        }else if(accountEmail.equals("marindukepig@gmail.com")){
+            MyApplication.id = 7;
+            MyApplication.name = "MSC";
+        }else if(accountEmail.equals("nuevaviscayapig@gmail.com")){
+            MyApplication.id = 8;
+            MyApplication.name = "NVSU";
+        }else if(accountEmail.equals("marmscpig@gmail.com")){
+            MyApplication.id = 9;
+            MyApplication.name = "MSC2";
+        }else if(accountEmail.equals("inalagmaaan@gmail.com")){
+            MyApplication.id = 10;
+            MyApplication.name = "PBL";
+        }
+
+        MyApplication.email = accountEmail;
+        boolean insertData = dbHelper.insertToLoggedInUserTable(MyApplication.id, MyApplication.name, accountEmail);
+
+        if(insertData)
+            Toast.makeText(LoginActivity.this, "Logged in successfully", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(LoginActivity.this, "Error in adding log in credentials", Toast.LENGTH_SHORT).show();
+    }
+
+    private void api_checkEmailInDb(RequestParams params) throws JSONException {
+        ApiHelper.getEmail("getEmail", params, new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("getEmail", "Success");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("getEmail", "Error: " + String.valueOf(statusCode));
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                JSONObject jsonObject = new JSONObject(rawJsonData);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                    JSONObject jsonObjectUser = jsonObject.getJSONObject("user");
+                    MyApplication.id = jsonObjectUser.getInt("id");
+                    MyApplication.name = jsonObjectUser.getString("name");
+                    MyApplication.email = jsonObjectUser.getString("email");
+                }
+                return null;
+            }
+        });
     }
 
     private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {

@@ -85,7 +85,7 @@ public class BreedingRecordsDialog extends DialogFragment {
         sowDataList = new ArrayList<>();
         boarDataList = new ArrayList<>();
 
-        RequestParams requestParams = new RequestParams();
+        final RequestParams requestParams = new RequestParams();
         requestParams.add("breedable_id", Integer.toString(MyApplication.id));
         requestParams.add("farmable_id", Integer.toString(MyApplication.id));
 
@@ -150,10 +150,10 @@ public class BreedingRecordsDialog extends DialogFragment {
             public boolean handleMessage(Message msg) {
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(sowid.getText())) {
-                        makeApiCallSow(sowid.getText().toString());
+                        makeApiCallSow(sowid.getText().toString(), requestParams);
                     }
                     if (!TextUtils.isEmpty(boarid.getText())) {
-                        makeApiCallBoar(boarid.getText().toString());
+                        makeApiCallBoar(boarid.getText().toString(), requestParams);
                     }
 
                 }
@@ -247,9 +247,9 @@ public class BreedingRecordsDialog extends DialogFragment {
         fragmentTransaction.commit();
     }
 
-    private void makeApiCallSow(String text) {
+    private void makeApiCallSow(String text, RequestParams requestParams) {
         if(ApiHelper.isInternetAvailable(getContext())){
-            ApiHelper.searchSows("searchSows", null, new BaseJsonHttpResponseHandler<Object>() {
+            ApiHelper.searchSows("searchSows", requestParams, new BaseJsonHttpResponseHandler<Object>() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                     Log.d("API HANDLER Success", rawJsonResponse);
@@ -260,7 +260,7 @@ public class BreedingRecordsDialog extends DialogFragment {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
                     Toast.makeText(getActivity(), "Error in parsing data", Toast.LENGTH_SHORT).show();
-                    Log.d("API HANDLER FAIL", errorResponse.toString());
+//                    Log.d("API HANDLER FAIL", errorResponse.toString());
                 }
 
                 @Override
@@ -290,9 +290,9 @@ public class BreedingRecordsDialog extends DialogFragment {
         }
     }
 
-    private void makeApiCallBoar(String text) {
+    private void makeApiCallBoar(String text, RequestParams requestParams) {
         if(ApiHelper.isInternetAvailable(getContext())){
-            ApiHelper.searchBoars("searchBoars", null, new BaseJsonHttpResponseHandler<Object>() {
+            ApiHelper.searchBoars("searchBoars", requestParams, new BaseJsonHttpResponseHandler<Object>() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                     Log.d("API HANDLER Success", rawJsonResponse);
