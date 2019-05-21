@@ -83,7 +83,10 @@ public class ViewBreedingRecordDialog extends DialogFragment {
             e.printStackTrace();
         }
 
-        String exDateFarrow = sdf.format(addDays(edf, 114));
+        String exDateFarrow = "";
+        if(edf != null) {
+            exDateFarrow = sdf.format(addDays(edf, 114));
+        }
         TextViewFarrow.setText(exDateFarrow);
 
         RequestParams params = buildParams();
