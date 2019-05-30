@@ -200,7 +200,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     public DatabaseHelper(Context context){
-        super(context, DATABASE_NAME, null, 38);
+        super(context, DATABASE_NAME, null, 40);
     }
     //------------------------------------------------------------------------------------------
     private static final String Administrators = "CREATE TABLE " + administrators + "("
@@ -2326,7 +2326,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void getAllDataFromServer() {
-        ApiHelper.getAnimalDb("getAnimalDb", null, new BaseJsonHttpResponseHandler<Object>() {
+        RequestParams requestParams = new RequestParams();
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+
+        ApiHelper.getAnimalDb("getAnimalDb", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("getAllDataFromServer", "Successfully added data to local from server animaldb");
@@ -2357,7 +2360,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         });
 
-        ApiHelper.getAnimalPropertiesDb("getAnimalPropertiesDb", null, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getAnimalPropertiesDb("getAnimalPropertiesDb", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("getAllDataFromServer", "Successfully added data to local from server animalpropertiesdb");
@@ -2383,7 +2386,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         });
 
-        ApiHelper.getGroupingsDb("getGroupingsDb", null, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getGroupingsDb("getGroupingsDb", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("getAllDataFromServer", "Successfully added data to local from server groupings");
@@ -2411,7 +2414,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         });
 
-        ApiHelper.getGroupingMembersDb("getGroupingMembersDb", null, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getGroupingMembersDb("getGroupingMembersDb", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("getAllDataFromServer", "Successfully added data to local from server groupingmembersdb");
@@ -2436,7 +2439,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         });
 
-        ApiHelper.getGroupingPropertiesDb("getGroupingPropertiesDb", null, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getGroupingPropertiesDb("getGroupingPropertiesDb", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("getAllDataFromServer", "Successfully added data to local from server groupingpropertiesdb");
@@ -2462,7 +2465,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         });
 
-        ApiHelper.getMortalitiesDb("getMortalitiesDb", null, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getMortalitiesDb("getMortalitiesDb", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("getAllDataFromServer", "Successfully added data to local from server mortalitiesdb");
@@ -2491,7 +2494,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         });
 
-        ApiHelper.getRemovedAnimalsDb("getRemovedAnimalsDb", null, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getRemovedAnimalsDb("getRemovedAnimalsDb", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("getAllDataFromServer", "Successfully added data to local from server removedanimalsdb");
@@ -2520,7 +2523,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         });
 
-        ApiHelper.getSalesDb("getSalesDb", null, new BaseJsonHttpResponseHandler<Object>() {
+        ApiHelper.getSalesDb("getSalesDb", requestParams, new BaseJsonHttpResponseHandler<Object>() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
                 Log.d("getAllDataFromServer", "Successfully added data to local from server salesdb");

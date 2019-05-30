@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
             }else{
                 Toast.makeText(MainActivity.this, "Error in Adding Local Data to Server", Toast.LENGTH_SHORT).show();
             }
-
             api_getAllCount();
         } else{
             setLocalCount(dbHelper.local_getAllCount());

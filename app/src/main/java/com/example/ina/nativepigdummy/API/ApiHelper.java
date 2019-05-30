@@ -9,7 +9,7 @@ import com.loopj.android.http.*;
 
 public class ApiHelper {
 
-    private final static String BASE_URL = "http://192.168.1.10:8080/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
+    private final static String BASE_URL = "http://nativepigs.pab-is.cf/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
     private static AsyncHttpClient client = new AsyncHttpClient();
 
     public ApiHelper(){
