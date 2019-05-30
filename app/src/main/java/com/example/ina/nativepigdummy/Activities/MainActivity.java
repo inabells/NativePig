@@ -74,6 +74,19 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
 
         getLogInCredentials();
+        if(ApiHelper.isInternetAvailable(getApplicationContext())){
+            if(dbHelper.syncAllTablesFromLocalToServer()){
+                dbHelper.clearLocalDatabases();
+                dbHelper.getAllDataFromServer();
+                Toast.makeText(MainActivity.this, "Local Data Added to Server", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(MainActivity.this, "Error in Adding Local Data to Server", Toast.LENGTH_SHORT).show();
+            }
+
+            api_getAllCount();
+        } else{
+            setLocalCount(dbHelper.local_getAllCount());
+        }
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

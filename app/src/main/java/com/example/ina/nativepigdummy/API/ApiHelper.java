@@ -9,7 +9,7 @@ import com.loopj.android.http.*;
 
 public class ApiHelper {
 
-    private final static String BASE_URL = "http://192.168.1.6:8080/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
+    private final static String BASE_URL = "http://192.168.1.10:8080/api/"; // try 80 port, find appropriate port nasa cloud yung web app GRRRRRR
     private static AsyncHttpClient client = new AsyncHttpClient();
 
     public ApiHelper(){
@@ -20,23 +20,7 @@ public class ApiHelper {
         client.post(getAbsoluteUrl(url), request, responseHandler);
     }
 
-    public static void getAllPigs(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
     public static void searchPig(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void getMortality(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void getSales(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void getOthers(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
@@ -60,48 +44,12 @@ public class ApiHelper {
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
-    public static void getGrossMorphProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void getMorphCharProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void getAllGrossMorphProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void getAllMorphCharProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void getAllWeightProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void getAllMortalitySalesProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void getWeightProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
     public static void getBreedingProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
     //POST/ADD FUNCTIONS------------------------------------------------------------------
-    public static void addPig(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.post(getAbsoluteUrl(url), request, responseHandler);
-    }
-
     public static void addBreedingRecord(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.post(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void addPigMortalitySales(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.post(getAbsoluteUrl(url), request, responseHandler);
     }
 
@@ -124,18 +72,6 @@ public class ApiHelper {
 
     //UPDATE FUNCTION====================================================================
     public static void updateBreederPigProfile(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.post(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void updateGrossMorphology(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.post(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void updateMorphChar(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.post(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void updateWeightRecords(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.post(getAbsoluteUrl(url), request, responseHandler);
     }
 
@@ -210,10 +146,6 @@ public class ApiHelper {
     }
 
     public static void searchBoars(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
-        client.get(getAbsoluteUrl(url), request, responseHandler);
-    }
-
-    public static void getGroupingProperties(String url, RequestParams request, AsyncHttpResponseHandler responseHandler){
         client.get(getAbsoluteUrl(url), request, responseHandler);
     }
 
