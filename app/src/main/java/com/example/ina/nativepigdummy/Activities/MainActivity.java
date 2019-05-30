@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     TextView noOfMaleGrowers;
     TextView noOfSows, noOfGilts, noOfBreeders, noOfGrowers, noOfMortality;
     String giltNum, breederNum, growerNum, mortalityNum, sowNum, boarNum, femaleGrowerNum, maleGrowerNum = "-";
-    CardView rellay_sows, rellay_boars, rellay_female_growers, rellay_male_growers, rellay_breeders, rellay_growers, rellay_mortality;
+    CardView rellay_sows, rellay_gilts, rellay_boars, rellay_female_growers, rellay_male_growers, rellay_breeders, rellay_growers, rellay_mortality;
 
 
     @Override
@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         textViewDate.setText(currentDate);
 
         rellay_sows = findViewById(R.id.rellay_sows);
+        rellay_gilts = findViewById(R.id.rellay_gilts);
         rellay_boars = findViewById(R.id.rellay_boars);
         rellay_female_growers = findViewById(R.id.rellay_female);
         rellay_male_growers = findViewById(R.id.rellay_male);
@@ -128,6 +129,14 @@ public class MainActivity extends AppCompatActivity {
         rellay_mortality = findViewById(R.id.rellay_mortality);
 
         rellay_sows.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, BreederRecordsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        rellay_gilts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, BreederRecordsActivity.class);

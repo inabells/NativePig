@@ -1985,6 +1985,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return data;
     }
 
+    public Cursor getGilts(){
+        String query = "SELECT id " +
+                "FROM animals " +
+                "WHERE substr(registryid, -7, 1) = ? " +
+                "AND status = ? " +
+                "AND breed_id = ? " +
+                "AND id NOT IN (SELECT mother_id FROM groupings)";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] whereArgs = new String[]{"F", "breeder", Integer.toString(MyApplication.id)};
+        Cursor data = db.rawQuery(query, whereArgs);
+        return data;
+    }
+
     public Cursor getMortalityContents(){
         SQLiteDatabase db = this.getWritableDatabase();
         String[] whereArgs = new String[]{Integer.toString(MyApplication.id)};
@@ -2053,13 +2067,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public HashMap<String, Integer> local_getAllCount() {
         HashMap<String, Integer> map = new HashMap<>();
-        int sow = getBreedingContents().getCount();
-        int gilt = getSowContents().getCount();
-        int giltCount = gilt - sow;
+
+
+        int gilt = getGilts().getCount();
+        int sow = getSowContents().getCount() - gilt;
         int boar = getBoarContents().getCount();
         int femaleGrower = getFemaleGrowerContents().getCount();
         int maleGrower = getMaleGrowerContents().getCount();
-        int breederInventory = sow + giltCount + boar;
+        int breederInventory = sow + gilt + boar;
         int growerInventory = femaleGrower + maleGrower;
         int mortality = getMortalityContents().getCount();
         int sales = getSalesContents().getCount();
@@ -2067,7 +2082,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int mortalityInventory = mortality + sales + removed;
 
         map.put("sowCount", sow);
-        map.put("giltCount", giltCount);
+        map.put("giltCount", gilt);
         map.put("boarCount", boar);
         map.put("femaleGrowerCount", femaleGrower);
         map.put("maleGrowerCount", maleGrower);
