@@ -34,12 +34,12 @@ public class EditOffspringDialog extends DialogFragment{
     private static final String TAG = "EditOffspringDialog";
 
     String offspringRegId;
-    EditText textViewOffspring, textViewDateWeaned, textViewWeaningWeight, textViewBirthWeight;
+    EditText textViewOffspring, textViewDateWeaned, textViewWeaningWeight, textViewBirthDate, textViewBirthWeight;
     Spinner textViewSex;
     DatabaseHelper dbHelper;
     String editOffspringEarnotch;
     String editSex;
-    String editDateWeaned;
+    String editDateFarrowed, editDateWeaned;
     String editWeaningWeight, editBirthWeight;
 
     @Override
@@ -51,9 +51,7 @@ public class EditOffspringDialog extends DialogFragment{
         offspringRegId = getArguments().getString("OffspringRegId");
         textViewOffspring = view.findViewById(R.id.offspring_earnotch);
         textViewSex = view.findViewById(R.id.offspring_sex);
-        textViewDateWeaned = view.findViewById(R.id.date_weaned);
         textViewWeaningWeight = view.findViewById(R.id.weaning_weight);
-        textViewBirthWeight = view.findViewById(R.id.birth_weight);
 
         dbHelper = new DatabaseHelper(getActivity());
 
@@ -102,6 +100,8 @@ public class EditOffspringDialog extends DialogFragment{
             switch(data.getString(data.getColumnIndex("property_id"))) {
                 case "1": textViewOffspring.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
                     break;
+                case "3": editDateFarrowed = data.getString(data.getColumnIndex("value"));
+                    break;
                 case "6": textViewDateWeaned.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
                     break;
                 case "7": textViewWeaningWeight.setText(setDefaultTextIfNull(data.getString(data.getColumnIndex("value"))));
@@ -113,15 +113,17 @@ public class EditOffspringDialog extends DialogFragment{
     private void local_updateOffspringRecord() {
         editOffspringEarnotch = textViewOffspring.getText().toString();
         editSex = textViewSex.getSelectedItem().toString();
-        editDateWeaned = textViewDateWeaned.getText().toString();
         editWeaningWeight = textViewWeaningWeight.getText().toString();
 
         String animalId = dbHelper.getAnimalId(offspringRegId);
         int animalIdInt = Integer.parseInt(animalId);
 
+        String newRegistryId = generateRegistrationId(editOffspringEarnotch, editDateFarrowed, editSex);
+
+        dbHelper.updateRegistryIdInAnimalDb(animalIdInt, newRegistryId);
         dbHelper.insertOrReplaceInAnimalPropertyDB(1, animalIdInt, editOffspringEarnotch, "false");
         dbHelper.insertOrReplaceInAnimalPropertyDB(2, animalIdInt, editSex, "false");
-        dbHelper.insertOrReplaceInAnimalPropertyDB(6, animalIdInt, editDateWeaned, "false");
+        dbHelper.insertOrReplaceInAnimalPropertyDB(4, animalIdInt, newRegistryId, "false");
         dbHelper.insertOrReplaceInAnimalPropertyDB(7, animalIdInt, editWeaningWeight, "false");
     }
 
@@ -224,12 +226,6 @@ public class EditOffspringDialog extends DialogFragment{
                             case 2:
                                 editSex = propertyObject.get("value").toString();
                                 break;
-                            case 5:
-                                editBirthWeight = propertyObject.get("value").toString();
-                                break;
-                            case 6:
-                                editDateWeaned = propertyObject.get("value").toString();
-                                break;
                             case 7:
                                 editWeaningWeight = propertyObject.get("value").toString();
                                 break;
@@ -239,6 +235,10 @@ public class EditOffspringDialog extends DialogFragment{
                 return null;
             }
         });
+    }
+
+    private String generateRegistrationId(String addAnimalEarnotchString, String addBirthDate, String addSex) {
+        return dbHelper.getFarmCode() + dbHelper.getFarmBreed() +"-"+ getYear(addBirthDate) + addSex + addAnimalEarnotchString;
     }
 
     private int getIndex(Spinner spinner, String myString){
@@ -255,16 +255,8 @@ public class EditOffspringDialog extends DialogFragment{
         return ((text=="null" || text.isEmpty()) ? "Not specified" : text);
     }
 
-    public void onStart(){
-        super.onStart();
-        textViewDateWeaned.setOnFocusChangeListener(new View.OnFocusChangeListener(){
-            @Override
-            public void onFocusChange(View v, boolean hasFocus){
-                if(hasFocus){
-                    NewDateDialog dialog = new NewDateDialog(v);
-                    dialog.show(getActivity().getFragmentManager(),"Birth date");
-                }
-            }
-        });
+    private String getYear(String dateText){
+        String[] textArray = dateText.split("-");
+        return textArray[0];
     }
 }

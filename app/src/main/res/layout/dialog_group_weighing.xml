@@ -74,30 +74,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Birthday"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="13sp" />
-
-                        <EditText
-                            android:id="@+id/dateweaned"
-                            android:entries="@array/sex"
-                            android:layout_width="match_parent"
-                            android:layout_height="45dp"
-                            android:fontFamily="sans-serif-light"
-                            android:textColor="#000000"
-                            android:textSize="18sp" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:text="Litter-size Born Alive"
                             android:textColor="@color/colorPrimary"
                             android:textSize="13sp" />
@@ -135,6 +111,60 @@
                             android:textColor="#000000"
                             android:textSize="18sp" />
 
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Offspring Earnotch"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="13sp" />
+
+                        <EditText
+                            android:id="@+id/offspring_earnotch"
+                            android:entries="@array/sex"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:fontFamily="sans-serif-light"
+                            android:textColor="#000000"
+                            android:textSize="18sp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sex"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="13sp" />
+
+                        <Spinner
+                            android:id="@+id/offspring_sex"
+                            android:entries="@array/sex"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:fontFamily="sans-serif-light"
+                            android:textColor="#000000"
+                            android:textSize="18sp" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="15dp"
+                            android:background="@color/grey" />
 
                     </LinearLayout>
 

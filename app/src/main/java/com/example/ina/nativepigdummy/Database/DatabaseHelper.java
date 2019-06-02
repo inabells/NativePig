@@ -1420,6 +1420,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public boolean updateStatusInBreedingRecords(String sowRegistryId, String boarRegistryId, String value, String isSynced){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = java.util.Calendar.getInstance().getTime();
+
+        Date edf = null;
+        String sowIdFromAnimal = getAnimalId(sowRegistryId);
+        String boarIdFromAnimal = getAnimalId(boarRegistryId);
+        addToGroupingsDB(sowRegistryId, sowIdFromAnimal, boarIdFromAnimal, "0", "false");
+        String idFromGroupings = getGroupingId(sowIdFromAnimal, boarIdFromAnimal);
+        int idFromGroupingsInt = Integer.parseInt(idFromGroupings);
+
+        insertOrReplaceInGroupingsPropertyDB(60, idFromGroupingsInt, value, "false");
+
+        return true;
+    }
+
     public boolean addToMortalitiesDB(String regId, String dateDied, String causeofDeath, String pigAge, String isSynced){
         String animalId = getAnimalId(regId);
         SQLiteDatabase db =  this.getWritableDatabase();
@@ -1822,6 +1838,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    public boolean updateRegistryIdInAnimalDb(int animalId, String regId){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(registryid, regId);
+        String whereClause = "id = ?";
+        String[] whereArgs = new String[]{String.valueOf(animalId)};
+
+        int success = db.update(animals, contentValues, whereClause, whereArgs);
+
+        if(success==1) return true;
+        else return  false;
+    }
+
+
     public boolean addToGroupingsDB(String regId, String motherId, String fatherId, String membersVal, String isSynced){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -2060,7 +2090,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String query =  "SELECT b.registryid, c.property_id, c.value " +
                         "FROM grouping_members a, animals b, animal_properties c " +
-                        "where a.animal_id=b.id AND b.id=c.animal_id AND a.grouping_id ="+groupingId;
+                        "where a.animal_id=b.id AND b.id=c.animal_id AND a.grouping_id = "+ groupingId;
         Cursor data = db.rawQuery(query, null);
         return data;
     }

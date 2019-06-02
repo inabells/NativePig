@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
+import com.example.ina.nativepigdummy.Activities.BreedingRecordsActivity;
 import com.example.ina.nativepigdummy.Activities.SowLitterActivity;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Fragments.EditBreedingRecordFragment;
@@ -120,11 +121,35 @@ public class ViewBreedingRecordDialog extends DialogFragment {
         }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                local_updateStatus();
             }
         });
 
         return builder.create();
+    }
+
+    private void local_updateStatus() {
+        String val = "";
+        if(bred.isChecked())
+            val = "Bred";
+        else if(pregnant.isChecked())
+            val = "Pregnant";
+        else if(farrowed.isChecked())
+            val = "Farrowed";
+        else if(aborted.isChecked())
+            val = "Aborted";
+        else if(recycled.isChecked())
+            val = "Recycled";
+
+        boolean insertData = dbHelper.updateStatusInBreedingRecords(sowIdHolder, boarIdHolder, val, "false");
+
+        if(insertData){
+            Toast.makeText(getContext(), "Data successfully inserted locally", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getActivity(), BreedingRecordsActivity.class);
+            startActivity(intent);
+        }else{
+            Toast.makeText(getContext(), "Local insert error", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -148,6 +173,7 @@ public class ViewBreedingRecordDialog extends DialogFragment {
                         }
                 break;
             case "Pregnant": pregnant.setChecked(true);
+                        bred.setEnabled(false);
                         if(checkIfDateBredPlusNDaysIsLessThanCurrentDate(editDateBred, 109))
                             farrowed.setEnabled(true);
                         else farrowed.setEnabled(false);

@@ -33,9 +33,9 @@ public class GroupWeighingDialog extends DialogFragment {
 
     private static final String TAG = "GroupWeighingDialog";
 
-    private EditText offspringearnotch, litterbirthweight, littersizebornalive, dateweaned;
+    private EditText offspringearnotch, litterbirthweight, littersizebornalive;
     private Spinner sex;
-    String sowId, sowRegId, boarRegId, boarId, groupingId, addOffspringEarnotch, addDateWeaned, addLSBA, addLBW, birthdate, regId;
+    String sowId, sowRegId, boarRegId, boarId, birthdate, groupingId, addOffspringEarnotch, addSex, addLSBA, addLBW, regId;
     int birthweight;
 
     DatabaseHelper dbHelper;
@@ -48,10 +48,9 @@ public class GroupWeighingDialog extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_group_weighing,null);
 
         litterbirthweight = view.findViewById(R.id.litter_birth_weight);
-//        offspringearnotch = view.findViewById(R.id.offspring_earnotch);
-//        sex = view.findViewById(R.id.offspring_sex);
+        offspringearnotch = view.findViewById(R.id.offspring_earnotch);
+        sex = view.findViewById(R.id.offspring_sex);
         littersizebornalive = view.findViewById(R.id.litter_size_born_alive);
-        dateweaned = view.findViewById(R.id.dateweaned);
         dbHelper = new DatabaseHelper(getActivity());
 
         sowRegId = getActivity().getIntent().getStringExtra("sow_idSLR");
@@ -72,37 +71,34 @@ public class GroupWeighingDialog extends DialogFragment {
             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    addDateWeaned = dateweaned.getText().toString();
-//                    addSex = sex.getSelectedItem().toString();
+                    addOffspringEarnotch = offspringearnotch.getText().toString();
                     addLBW = litterbirthweight.getText().toString();
                     addLSBA = littersizebornalive.getText().toString();
+                    addSex = sex.getSelectedItem().toString();
+                    if(addOffspringEarnotch.equals(""))
+                        Toast.makeText(getActivity(), "Please fill out Animal Earnotch", Toast.LENGTH_SHORT).show();
+                    else if(addOffspringEarnotch.length() > 6)
+                        Toast.makeText(getActivity(), "Earnotch is too long", Toast.LENGTH_SHORT).show();
+                    else{
+                        if(!addOffspringEarnotch.equals("") && addOffspringEarnotch.length() < 6)
+                            addOffspringEarnotch = padLeftZeros(addOffspringEarnotch, 6);
 
-                    if(!addDateWeaned.equals("") && !addLSBA.equals("") && !addLBW.equals("")){
-                        int counter=0;
-                        String temp = "TMP";
-                        String tempEarnotch = temp + Integer.toString(counter);
-                        RequestParams requestParams = new RequestParams();
-                        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
-                        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
-                        requestParams.add("sow_id", sowRegId);
-                        requestParams.add("boar_id", boarRegId);
-                        requestParams.add("litter_birth_weight", addLBW);
-                        requestParams.add("lsba", addLSBA);
-                        requestParams.add("offspring_earnotch", tempEarnotch);
-                        requestParams.add("sex", "F");
+                        if(!addOffspringEarnotch.equals("") && !addLSBA.equals("") && !addLBW.equals("")){
+                            RequestParams requestParams = new RequestParams();
+                            requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+                            requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+                            requestParams.add("sow_id", sowRegId);
+                            requestParams.add("boar_id", boarRegId);
+                            requestParams.add("offspring_earnotch", addOffspringEarnotch);
+                            requestParams.add("sex",addSex);
+                            requestParams.add("birth_weight", Integer.toString(birthweight));
 
-                        for(int i = 0; i < Integer.parseInt(addLSBA); i++){
-                            counter++;
-                            tempEarnotch = temp + Integer.toString(counter);
-                            requestParams.remove("offspring_earnotch");
-                            requestParams.add("offspring_earnotch", tempEarnotch);
-                            if(ApiHelper.isInternetAvailable(getActivity())) {
+                            if(ApiHelper.isInternetAvailable(getActivity()))
                                 api_addOffspringGroup(requestParams);
-                            } else
-                                local_addOffspringGroup(i);
+                            else
+                                local_addOffspringGroup();
                         }
                     }
-
                 }
             });
 
@@ -147,7 +143,7 @@ public class GroupWeighingDialog extends DialogFragment {
         }
     }
 
-    private void local_addOffspringGroup(int counter) {
+    private void local_addOffspringGroup() {
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         birthdate = formatter.format(date);
@@ -162,16 +158,17 @@ public class GroupWeighingDialog extends DialogFragment {
         if(addLSBA != null || !addLSBA.equals(""))
             dbHelper.insertOrReplaceInGroupingsPropertyDB(50, groupingIdInt, addLSBA, "false");
 
+
         dbHelper.addToAnimalDB(regId, "Temporary", "false");
 
         String animalId = dbHelper.getAnimalId(regId);
         int animalIdInt = Integer.parseInt(animalId);
-        animalIdInt += counter;
 
-        dbHelper.insertOrReplaceInAnimalPropertyDB(4, animalIdInt, regId, "false");
-        dbHelper.insertOrReplaceInAnimalPropertyDB(3, animalIdInt,  birthdate, "false");
+        dbHelper.insertOrReplaceInAnimalPropertyDB(1, animalIdInt, addOffspringEarnotch, "false");
         dbHelper.insertOrReplaceInAnimalPropertyDB(2, animalIdInt, sex.getSelectedItem().toString(), "false");
-        dbHelper.insertOrReplaceInAnimalPropertyDB(5, animalIdInt, Long.toString(Math.round(Double.parseDouble(addLBW)/Double.parseDouble(addLSBA))), "false");
+        dbHelper.insertOrReplaceInAnimalPropertyDB(3, animalIdInt, birthdate, "false");
+        dbHelper.insertOrReplaceInAnimalPropertyDB(4, animalIdInt, regId, "false");
+        dbHelper.insertOrReplaceInAnimalPropertyDB(5, animalIdInt, Double.toString(Double.parseDouble(addLBW)/Double.parseDouble(addLSBA)), "false");
         dbHelper.insertOrReplaceInAnimalPropertyDB(7, animalIdInt, "Weight unavailable", "false");
 
         dbHelper.addToGroupingMembersDB(groupingId, animalId, "false");
@@ -179,6 +176,7 @@ public class GroupWeighingDialog extends DialogFragment {
         dbHelper.insertOrReplaceInGroupingsPropertyDB(3, groupingIdInt, birthdate, "false");
         dbHelper.insertOrReplaceInGroupingsPropertyDB(60, groupingIdInt, "Farrowed", "false");
     }
+
 
     private String generateRegistrationId(String addOffspringEarnotch) {
         return dbHelper.getFarmCode() + dbHelper.getFarmBreed() +"-"+ getYear(birthdate) + sex.getSelectedItem().toString() + addOffspringEarnotch;
