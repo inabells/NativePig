@@ -74,7 +74,6 @@ public class ViewBreedingRecordDialog extends DialogFragment {
         editStatus = getArguments().getString("status");
         setCheckedRadioButton();
 
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
         Date edf = null;
         try {
@@ -135,16 +134,65 @@ public class ViewBreedingRecordDialog extends DialogFragment {
         setAllButtonsUnchecked();
         switch(editStatus){
             case "Bred": bred.setChecked(true);
+                        if(checkIfDateBredPlusNDaysIsLessThanCurrentDate(editDateBred, 18)) {
+                            pregnant.setEnabled(true);
+                            recycled.setEnabled(true);
+                        }else{
+                            pregnant.setEnabled(false);
+                            recycled.setEnabled(false);
+                        }
                 break;
             case "Pregnant": pregnant.setChecked(true);
+                        if(checkIfDateBredPlusNDaysIsLessThanCurrentDate(editDateBred, 109))
+                            farrowed.setEnabled(true);
+                        else farrowed.setEnabled(false);
+
+                        if(checkIfDateBredPlusNDaysIsLessThanCurrentDate(editDateBred,21))
+                            aborted.setEnabled(true);
+                        else aborted.setEnabled(false);
                 break;
             case "Farrowed": farrowed.setChecked(true);
+                        bred.setEnabled(false);
+                        pregnant.setEnabled(false);
+                        aborted.setEnabled(false);
+                        recycled.setEnabled(false);
                 break;
             case "Aborted": aborted.setChecked(true);
+                        bred.setEnabled(false);
+                        pregnant.setEnabled(false);
+                        farrowed.setEnabled(false);
+                        recycled.setEnabled(false);
                 break;
             case "Recycled": recycled.setChecked(true);
+                        bred.setEnabled(false);
+                        pregnant.setEnabled(false);
+                        farrowed.setEnabled(false);
+                        aborted.setEnabled(false);
                 break;
         }
+    }
+
+    private boolean checkIfDateBredPlusNDaysIsLessThanCurrentDate(String dateString, int noOfDays) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        String currentDate = "";
+        Date edf = null;
+
+        currentDate = sdf.format(new Date());
+
+        try {
+            edf = sdf.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String addedDate = "";
+        if(edf != null) {
+            addedDate = sdf.format(addDays(edf, noOfDays));
+        }
+
+        if(addedDate.compareTo(currentDate) < 0) return true;
+
+        return false;
     }
 
     private void setAllButtonsUnchecked() {

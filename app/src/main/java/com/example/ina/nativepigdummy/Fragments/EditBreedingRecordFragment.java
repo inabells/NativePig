@@ -139,7 +139,6 @@ public class EditBreedingRecordFragment extends Fragment implements ExpectedDate
             case "Recycled": recycled.setChecked(true);
                 break;
         }
-
     }
 
     private void setAllButtonsUnchecked() {
