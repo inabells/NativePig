@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.SowLitterActivity;
@@ -98,12 +99,16 @@ public class ViewBreedingRecordDialog extends DialogFragment {
         view_sow_litter_record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent_sow_litter = new Intent(getActivity(), SowLitterActivity.class);
-                intent_sow_litter.putExtra("sow_idSLR", sowIdHolder);
-                intent_sow_litter.putExtra("boar_idSLR", boarIdHolder);
-                intent_sow_litter.putExtra("date_bredSLR", TextViewDate.getText().toString());
-                intent_sow_litter.putExtra("date_farrowSLR", TextViewFarrow.getText().toString());
-                startActivity(intent_sow_litter);
+                if(editStatus.equals("Bred") || editStatus.equals("Recycled") || editStatus.equals("Aborted")){
+                    Toast.makeText(getActivity(), "Sow and Litter Record cannot be viewed", Toast.LENGTH_SHORT).show();
+                }else{
+                    Intent intent_sow_litter = new Intent(getActivity(), SowLitterActivity.class);
+                    intent_sow_litter.putExtra("sow_idSLR", sowIdHolder);
+                    intent_sow_litter.putExtra("boar_idSLR", boarIdHolder);
+                    intent_sow_litter.putExtra("date_bredSLR", TextViewDate.getText().toString());
+                    intent_sow_litter.putExtra("date_farrowSLR", TextViewFarrow.getText().toString());
+                    startActivity(intent_sow_litter);
+                }
             }
         });
 
