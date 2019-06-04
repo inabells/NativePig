@@ -83,6 +83,18 @@ public class MortalityDialog extends DialogFragment {
         dbHelper = new DatabaseHelper(getActivity());
         pigList = new ArrayList<>();
 
+        final RequestParams requestParams = new RequestParams();
+        final String editchoosepig = autoCompleteTextView.getText().toString();
+        final String editdateofdeath = dateofdeath.getText().toString();
+        final String editcauseofdeath = causeofdeath.getText().toString();
+
+        requestParams.add("registry_id", editchoosepig);
+        requestParams.add("date_died", editdateofdeath);
+        requestParams.add("cause_death", editcauseofdeath);
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+
+
         //Setting up the adapter for AutoSuggest
         autoAdapter = new AutoAdapter(getActivity(), android.R.layout.simple_dropdown_item_1line);
         autoCompleteTextView.setThreshold(2);
@@ -119,7 +131,7 @@ public class MortalityDialog extends DialogFragment {
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(autoCompleteTextView.getText())) {
                         stringList.clear();
-                        generateAutocompletePigList(autoCompleteTextView.getText().toString());
+                        generateAutocompletePigList(autoCompleteTextView.getText().toString(), requestParams);
                     }
                 }
                 return false;
@@ -216,10 +228,6 @@ public class MortalityDialog extends DialogFragment {
         requestParams.add("farmable_id", Integer.toString(MyApplication.id));
         requestParams.add("breedable_id", Integer.toString(MyApplication.id));
 
-        //getAgeMortality(requestParams);
-
-        //requestParams.add("age", "Age unavailable");
-
         return requestParams;
     }
 
@@ -313,9 +321,9 @@ public class MortalityDialog extends DialogFragment {
         });
     }
 
-    private void generateAutocompletePigList(String text) {
+    private void generateAutocompletePigList(String text, RequestParams requestParams) {
         if(ApiHelper.isInternetAvailable(getContext())) {
-            ApiHelper.searchPig("searchPig", null, new BaseJsonHttpResponseHandler<Object>() {
+            ApiHelper.searchPig("searchPig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
