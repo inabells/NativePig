@@ -78,6 +78,19 @@ public class OthersDialog extends DialogFragment {
         dbHelper = new DatabaseHelper(getActivity());
         pigList = new ArrayList<>();
 
+        final String editchoosepig = autoCompleteTextView.getText().toString();
+        String editdateremoved = dateremoved.getText().toString();
+        String editreason= choosereason.getText().toString();
+        String editage = "Not specified";
+
+        final RequestParams requestParams = new RequestParams();
+        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+        requestParams.add("registry_id", editchoosepig);
+        requestParams.add("date_removed", editdateremoved);
+        requestParams.add("reason_removed", editreason);
+        requestParams.add("age", editage);
+
         //Setting up the adapter for AutoSuggest
         autoAdapter = new AutoAdapter(getActivity(), android.R.layout.simple_dropdown_item_1line);
         autoCompleteTextView.setThreshold(2);
@@ -113,7 +126,7 @@ public class OthersDialog extends DialogFragment {
             public boolean handleMessage(Message msg) {
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(autoCompleteTextView.getText())) {
-                        generateAutocompletePigList(autoCompleteTextView.getText().toString());
+                        generateAutocompletePigList(autoCompleteTextView.getText().toString(), requestParams);
                     }
                 }
                 return false;
@@ -259,9 +272,9 @@ public class OthersDialog extends DialogFragment {
         });
     }
 
-    private void generateAutocompletePigList(String text) {
+    private void generateAutocompletePigList(String text, RequestParams requestParams) {
         if(ApiHelper.isInternetAvailable(getContext())){
-            ApiHelper.searchPig("searchPig", null, new BaseJsonHttpResponseHandler<Object>() {
+            ApiHelper.searchPig("searchPig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {

@@ -79,6 +79,22 @@ public class SalesDialog extends DialogFragment {
         pigList = new ArrayList<>();
         dbHelper = new DatabaseHelper(getActivity());
 
+        final String editchoosepig = autoCompleteTextView.getText().toString();
+        String editdatesold = datesold.getText().toString();
+        String editweightsold= weightsold.getText().toString();
+        String editpricesold = pricesold.getText().toString();
+        String editage = "Age unavailable";
+
+        final RequestParams requestParams = new RequestParams();
+        requestParams.add("registry_id", editchoosepig);
+        requestParams.add("date_sold", editdatesold);
+        requestParams.add("weight_sold", editweightsold);
+        requestParams.add("price", editpricesold);
+        requestParams.add("age", editage);
+        requestParams.add("farmable_id", Integer.toString(MyApplication.id));
+        requestParams.add("breedable_id", Integer.toString(MyApplication.id));
+
+
         //Setting up the adapter for AutoSuggest
         autoAdapter = new AutoAdapter(getActivity(), android.R.layout.simple_dropdown_item_1line);
         autoCompleteTextView.setThreshold(2);
@@ -114,7 +130,7 @@ public class SalesDialog extends DialogFragment {
             public boolean handleMessage(Message msg) {
                 if (msg.what == TRIGGER_AUTO_COMPLETE) {
                     if (!TextUtils.isEmpty(autoCompleteTextView.getText())) {
-                        generateAutocompletePigList(autoCompleteTextView.getText().toString());
+                        generateAutocompletePigList(autoCompleteTextView.getText().toString(), requestParams);
                     }
                 }
                 return false;
@@ -262,9 +278,9 @@ public class SalesDialog extends DialogFragment {
         });
     }
 
-    private void generateAutocompletePigList(String text) {
+    private void generateAutocompletePigList(String text, RequestParams requestParams) {
         if(ApiHelper.isInternetAvailable(getContext())){
-            ApiHelper.searchPig("searchPig", null, new BaseJsonHttpResponseHandler<Object>() {
+            ApiHelper.searchPig("searchPig", requestParams, new BaseJsonHttpResponseHandler<Object>() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
