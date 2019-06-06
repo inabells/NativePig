@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +19,12 @@ import android.widget.Toast;
 
 import com.example.ina.nativepigdummy.API.ApiHelper;
 import com.example.ina.nativepigdummy.Activities.BreedingRecordsActivity;
+import com.example.ina.nativepigdummy.Activities.MyApplication;
 import com.example.ina.nativepigdummy.Activities.SowLitterActivity;
 import com.example.ina.nativepigdummy.Database.DatabaseHelper;
 import com.example.ina.nativepigdummy.Fragments.EditBreedingRecordFragment;
+import com.example.ina.nativepigdummy.Fragments.GrossMorphologyFragment;
+import com.example.ina.nativepigdummy.Fragments.SowBoarIDDateBredFragment;
 import com.example.ina.nativepigdummy.R;
 import com.loopj.android.http.BaseJsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -31,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
@@ -121,11 +127,71 @@ public class ViewBreedingRecordDialog extends DialogFragment {
         }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                local_updateStatus();
+                if(ApiHelper.isInternetAvailable(getContext()))
+                    api_updateStatus();
+                else
+                    local_updateStatus();
             }
         });
 
         return builder.create();
+    }
+
+    @Override
+    public void onDismiss(final DialogInterface dialog) {
+        List<Fragment> fragList = getFragmentManager().getFragments();
+        Fragment fragment = null;
+        for(int i=0; i<fragList.size(); i++)
+            if(fragList.get(i) instanceof SowBoarIDDateBredFragment)
+                fragment = fragList.get(i);
+
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.detach(fragment);
+        fragmentTransaction.attach(fragment);
+        fragmentTransaction.commit();
+    }
+
+    private RequestParams buildParamsStatus(){
+        RequestParams params = new RequestParams();
+
+        String val = "";
+        if(bred.isChecked())
+            val = "Bred";
+        else if(pregnant.isChecked())
+            val = "Pregnant";
+        else if(farrowed.isChecked())
+            val = "Farrowed";
+        else if(aborted.isChecked())
+            val = "Aborted";
+        else if(recycled.isChecked())
+            val = "Recycled";
+
+        params.add("breedable_id", String.valueOf(MyApplication.id));
+        params.add("farmable_id", String.valueOf(MyApplication.id));
+        params.add("sow_id", sowIdHolder);
+        params.add("boar_id", boarIdHolder);
+        params.add("status", val);
+
+        return params;
+    }
+
+    private void api_updateStatus() {
+        ApiHelper.updateStatus("updateStatus", buildParamsStatus(), new BaseJsonHttpResponseHandler<Object>() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String rawJsonResponse, Object response) {
+                Log.d("updateStatus", "updateStatus success");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String rawJsonData, Object errorResponse) {
+                Log.d("updateStatus", "updateStatus fail: ");
+            }
+
+            @Override
+            protected Object parseResponse(String rawJsonData, boolean isFailure) throws Throwable {
+                return null;
+            }
+        });
     }
 
     private void local_updateStatus() {

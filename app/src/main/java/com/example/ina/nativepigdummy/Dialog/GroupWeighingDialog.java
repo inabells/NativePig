@@ -168,7 +168,8 @@ public class GroupWeighingDialog extends DialogFragment {
         dbHelper.insertOrReplaceInAnimalPropertyDB(2, animalIdInt, sex.getSelectedItem().toString(), "false");
         dbHelper.insertOrReplaceInAnimalPropertyDB(3, animalIdInt, birthdate, "false");
         dbHelper.insertOrReplaceInAnimalPropertyDB(4, animalIdInt, regId, "false");
-        dbHelper.insertOrReplaceInAnimalPropertyDB(5, animalIdInt, Double.toString(Double.parseDouble(addLBW)/Double.parseDouble(addLSBA)), "false");
+        Float litterBirthweight = Float.parseFloat(addLBW)/Float.parseFloat(addLSBA);
+        dbHelper.insertOrReplaceInAnimalPropertyDB(5, animalIdInt, Float.toString(litterBirthweight), "false");
         dbHelper.insertOrReplaceInAnimalPropertyDB(7, animalIdInt, "Weight unavailable", "false");
 
         dbHelper.addToGroupingMembersDB(groupingId, animalId, "false");
