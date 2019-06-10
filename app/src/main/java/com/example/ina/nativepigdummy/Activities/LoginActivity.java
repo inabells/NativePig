@@ -145,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
         if(accountEmail.equals("baibppig@gmail.com")){
             MyApplication.id = 1;
             MyApplication.name = "BAI";
-        }else if(accountEmail.equals("benguetpig@gmai.com")){
+        }else if(accountEmail.equals("benguetpig@gmail.com")){
             MyApplication.id = 2;
             MyApplication.name = "BSU";
         }else if(accountEmail.equals("siniranganpig@gmail.com")){

@@ -71,7 +71,7 @@
 
                     <TextView
                         android:id="@+id/noOfSows"
-                        android:layout_width="80dp"
+                        android:layout_width="160dp"
                         android:layout_height="80dp"
                         android:gravity="center"
                         android:text="0"
@@ -108,7 +108,7 @@
 
                     <TextView
                         android:id="@+id/noOfGilts"
-                        android:layout_width="80dp"
+                        android:layout_width="160dp"
                         android:layout_height="80dp"
                         android:gravity="center"
                         android:text="0"
@@ -145,7 +145,7 @@
 
                     <TextView
                         android:id="@+id/noOfBoars"
-                        android:layout_width="80dp"
+                        android:layout_width="160dp"
                         android:layout_height="80dp"
                         android:gravity="center"
                         android:text="0"
@@ -192,7 +192,7 @@
 
                     <TextView
                         android:id="@+id/noOfFemaleGrowers"
-                        android:layout_width="80dp"
+                        android:layout_width="188dp"
                         android:layout_height="80dp"
                         android:gravity="center"
                         android:text="0"
@@ -229,7 +229,7 @@
 
                     <TextView
                         android:id="@+id/noOfMaleGrowers"
-                        android:layout_width="80dp"
+                        android:layout_width="188dp"
                         android:layout_height="80dp"
                         android:gravity="center"
                         android:text="0"
@@ -276,7 +276,7 @@
 
                     <TextView
                         android:id="@+id/noOfBreeders"
-                        android:layout_width="80dp"
+                        android:layout_width="188dp"
                         android:layout_height="80dp"
                         android:gravity="center"
                         android:text="0"
@@ -313,7 +313,7 @@
 
                     <TextView
                         android:id="@+id/noOfGrowers"
-                        android:layout_width="80dp"
+                        android:layout_width="188dp"
                         android:layout_height="80dp"
                         android:gravity="center"
                         android:text="0"
@@ -350,7 +350,7 @@
 
                     <TextView
                         android:id="@+id/noOfMortality"
-                        android:layout_width="80dp"
+                        android:layout_width="188dp"
                         android:layout_height="80dp"
                         android:gravity="center"
                         android:text="0"

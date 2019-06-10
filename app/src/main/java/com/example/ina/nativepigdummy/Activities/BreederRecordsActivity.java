@@ -95,29 +95,29 @@ public class BreederRecordsActivity extends AppCompatActivity {
         view_pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tab_layout));
 
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if(ApiHelper.isInternetAvailable(getApplicationContext())){
-                    if(dbHelper.syncAllTablesFromLocalToServer()){
-                        dbHelper.clearLocalDatabases();
-                        dbHelper.getAllDataFromServer();
-                        Toast.makeText(BreederRecordsActivity.this, "Local Data Added to Server", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(BreederRecordsActivity.this, "Error in Adding Local Data to Server", Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    Toast.makeText(BreederRecordsActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
-                }
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                }, 2000);
-            }
-        });
+//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                if(ApiHelper.isInternetAvailable(getApplicationContext())){
+//                    if(dbHelper.syncAllTablesFromLocalToServer()){
+//                        dbHelper.clearLocalDatabases();
+//                        dbHelper.getAllDataFromServer();
+//                        Toast.makeText(BreederRecordsActivity.this, "Local Data Added to Server", Toast.LENGTH_SHORT).show();
+//                    }else{
+//                        Toast.makeText(BreederRecordsActivity.this, "Error in Adding Local Data to Server", Toast.LENGTH_SHORT).show();
+//                    }
+//                }else{
+//                    Toast.makeText(BreederRecordsActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        swipeRefreshLayout.setRefreshing(false);
+//                    }
+//                }, 2000);
+//            }
+//        });
 
 
         navigation_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
