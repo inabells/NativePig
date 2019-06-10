@@ -1416,6 +1416,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         insertOrReplaceInGroupingsPropertyDB(43, idFromGroupingsInt, expectedDateFarrow, "false");
         insertOrReplaceInGroupingsPropertyDB(60, idFromGroupingsInt, "Bred", "false");
+//        insertOrReplaceInGroupingsPropertyDB(61, idFromGroupingsInt, "1", "false");
 
         return true;
     }

@@ -9,8 +9,8 @@ import com.loopj.android.http.*;
 
 public class ApiHelper {
 
-//    private final static String BASE_URL = "http://nativepigs.pab-is.cf/api/";
-    private final static String BASE_URL = "http://192.168.1.8:8080/api/";
+    private final static String BASE_URL = "http://nativepigs.pab-is.cf/api/";
+//    private final static String BASE_URL = "http://192.168.1.8:8080/api/";
     private static AsyncHttpClient client = new AsyncHttpClient();
 
     public ApiHelper(){
